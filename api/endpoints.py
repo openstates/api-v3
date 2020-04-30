@@ -1,5 +1,6 @@
 # from openstates_metadata import lookup
 from openstates.data.models import Person
+from collections import defaultdict
 from .framework import Resource, segment
 
 
@@ -31,12 +32,18 @@ class PersonResource(Resource):
         }
 
     @segment
-    def contact_details(self):
+    def offices(self):
         contact_details = []
+        offices = defaultdict(dict)
         for cd in self.obj.contact_details.all():
-            print(cd.__dict__)
+            offices[cd.note][cd.type] = cd.value
+        for office, details in offices.items():
+            contact_details.append({
+                "office": office,
+                **details
+            })
         return {
-            "contact_details": contact_details,
+            "offices": contact_details
         }
 
 
@@ -47,5 +54,8 @@ def legislators(state, chamber=None, segments=None):
     people = Person.objects.exclude(current_role_division_id="").filter(
         current_state=abbr
     ).order_by("name")
+
+    if "contact_details" in segments:
+        people.prefetch_related("contact_details")
 
     return [PersonResource(person).as_dict(segments) for person in people]

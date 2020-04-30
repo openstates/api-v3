@@ -26,12 +26,14 @@ def api_endpoint(f, required_params=None, optional_params=None):
             except KeyError:
                 pass
 
+        segments = request.GET.get("segments", "basic").split(",")
+
         if not error:
-            data = f(**args)
+            data = f(**args, segments=segments)
 
         return JsonResponse({"error": error, "data": data})
 
     return wrapper
 
 
-legislators = api_endpoint(endpoints.legislators, ["state"], ["chambers", "segments"])
+legislators = api_endpoint(endpoints.legislators, ["state"], ["chambers"])
