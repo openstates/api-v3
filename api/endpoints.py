@@ -32,6 +32,52 @@ class PersonResource(Resource):
         }
 
     @segment
+    def extra_bio(self):
+        return {
+            "family_name": self.obj.family_name,
+            "given_name": self.obj.given_name,
+            "image": self.obj.image,
+            "gender": self.obj.gender,
+            "birth_date": self.obj.birth_date,
+            "death_date": self.obj.death_date,
+            "extras": self.obj.extras,
+            "created_at": self.obj.created_at,
+            "updated_at": self.obj.updated_at,
+        }
+
+    @segment
+    def other_identifiers(self):
+        return {
+            "other_identifiers": [
+                {"scheme": oi.scheme, "identifier": oi.identifier} for oi in self.obj.identifiers.all()
+            ]
+        }
+
+    @segment
+    def other_names(self):
+        return {
+            "other_names": [
+                {"name": on.scheme} for on in self.obj.other_names.all()
+            ]
+        }
+
+    @segment
+    def links(self):
+        return {
+            "links": [
+                {"url": l.url, "note": l.note} for l in self.obj.links.all()
+            ]
+        }
+
+    @segment
+    def sources(self):
+        return {
+            "sources": [
+                {"url": l.url, "note": l.note} for l in self.obj.sources.all()
+            ]
+        }
+
+    @segment
     def offices(self):
         contact_details = []
         offices = defaultdict(dict)
@@ -39,7 +85,11 @@ class PersonResource(Resource):
             offices[cd.note][cd.type] = cd.value
         for office, details in offices.items():
             contact_details.append({
-                "office": office,
+                "name": office,
+                "fax": None,
+                "voice": None,
+                "email": None,
+                "address": None,
                 **details
             })
         return {
