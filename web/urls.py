@@ -1,6 +1,6 @@
 from django.urls import path
-from api import views
+from api import endpoints
 
 urlpatterns = [
-    path("legislators/", views.legislators)
+    path("legislators/", endpoints.LegislatorEndpoint().as_django_view())
 ]

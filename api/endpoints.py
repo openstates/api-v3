@@ -1,7 +1,7 @@
 # from openstates_metadata import lookup
 from openstates.data.models import Person
 from collections import defaultdict
-from .framework import Resource, segment
+from .framework import Resource, segment, Endpoint, Parameter
 
 
 def parse_state_param(state):
@@ -24,11 +24,11 @@ class PersonResource(Resource):
             "state": self.obj.current_state,
             "party": self.obj.primary_party,
             "current_role": {
-                "chamber": self.obj.current_role['chamber'],
-                "district": self.obj.current_role['district'],
-                "division_id": self.obj.current_role['division_id'],
-                "title": self.obj.current_role['role'],
-            }
+                "chamber": self.obj.current_role["chamber"],
+                "district": self.obj.current_role["district"],
+                "division_id": self.obj.current_role["division_id"],
+                "title": self.obj.current_role["role"],
+            },
         }
 
     @segment
@@ -49,32 +49,25 @@ class PersonResource(Resource):
     def other_identifiers(self):
         return {
             "other_identifiers": [
-                {"scheme": oi.scheme, "identifier": oi.identifier} for oi in self.obj.identifiers.all()
+                {"scheme": oi.scheme, "identifier": oi.identifier}
+                for oi in self.obj.identifiers.all()
             ]
         }
 
     @segment
     def other_names(self):
         return {
-            "other_names": [
-                {"name": on.scheme} for on in self.obj.other_names.all()
-            ]
+            "other_names": [{"name": on.scheme} for on in self.obj.other_names.all()]
         }
 
     @segment
     def links(self):
-        return {
-            "links": [
-                {"url": l.url, "note": l.note} for l in self.obj.links.all()
-            ]
-        }
+        return {"links": [{"url": l.url, "note": l.note} for l in self.obj.links.all()]}
 
     @segment
     def sources(self):
         return {
-            "sources": [
-                {"url": l.url, "note": l.note} for l in self.obj.sources.all()
-            ]
+            "sources": [{"url": l.url, "note": l.note} for l in self.obj.sources.all()]
         }
 
     @segment
@@ -84,28 +77,31 @@ class PersonResource(Resource):
         for cd in self.obj.contact_details.all():
             offices[cd.note][cd.type] = cd.value
         for office, details in offices.items():
-            contact_details.append({
-                "name": office,
-                "fax": None,
-                "voice": None,
-                "email": None,
-                "address": None,
-                **details
-            })
-        return {
-            "offices": contact_details
-        }
+            contact_details.append(
+                {
+                    "name": office,
+                    "fax": None,
+                    "voice": None,
+                    "email": None,
+                    "address": None,
+                    **details,
+                }
+            )
+        return {"offices": contact_details}
 
 
-def legislators(state, chamber=None, segments=None):
-    abbr = parse_state_param(state)
-    chamber = parse_chamber_param(chamber)
+class LegislatorEndpoint(Endpoint):
+    parameters = [Parameter("state"), Parameter("chamber", default=None)]
+    wrap_resource = PersonResource
 
-    people = Person.objects.exclude(current_role_division_id="").filter(
-        current_state=abbr
-    ).order_by("name")
+    def get_results(self, state, chamber, segments):
+        people = (
+            Person.objects.exclude(current_role_division_id="")
+            .filter(current_state=state.upper())
+            .order_by("name")
+        )
 
-    if "contact_details" in segments:
-        people.prefetch_related("contact_details")
+        if "contact_details" in segments:
+            people.prefetch_related("contact_details")
 
-    return [PersonResource(person).as_dict(segments) for person in people]
+        return people

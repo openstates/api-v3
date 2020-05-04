@@ -1,3 +1,6 @@
+from django.http import JsonResponse
+
+
 class InvalidSegment(Exception):
     def __init__(self, name):
         self.name = name
@@ -18,6 +21,16 @@ class ResourceMetaclass(type):
         return obj
 
 
+class Required:
+    pass
+
+
+class Parameter:
+    def __init__(self, name, *, default=Required):
+        self.name = name
+        self.default = default
+
+
 class Resource(metaclass=ResourceMetaclass):
     def as_dict(self, segments=None):
         if not segments:
@@ -30,3 +43,31 @@ class Resource(metaclass=ResourceMetaclass):
                 raise InvalidSegment(segment)
             resp.update(segfunc(self))
         return resp
+
+
+class Endpoint:
+    def as_django_view(self):
+        def viewfunc(request, *args, **kwargs):
+            error = None
+            data = None
+            params = {}
+
+            for parameter in self.parameters:
+                print(parameter.name, parameter.default)
+                try:
+                    params[parameter.name] = request.GET[parameter.name]
+                except KeyError:
+                    if parameter.default == Required:
+                        error = "missing required parameter '{arg_name}'"
+                    else:
+                        params[parameter.name] = parameter.default
+
+            segments = request.GET.get("segments", "basic").split(",")
+
+            if not error:
+                results = self.get_results(**params, segments=segments)
+            data = [self.wrap_resource(r).as_dict(segments) for r in results]
+
+            return JsonResponse({"error": error, "data": data})
+
+        return viewfunc
