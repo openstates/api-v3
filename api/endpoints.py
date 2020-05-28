@@ -1,11 +1,14 @@
-# from openstates_metadata import lookup
+from openstates_metadata import lookup
 from openstates.data.models import Person
 from collections import defaultdict
 from .framework import Resource, segment, Endpoint, Parameter
 
 
 def parse_state_param(state):
-    return state.upper()
+    if len(state) == 2:
+        return state.upper()
+    else:
+        return lookup(name=state).abbr
 
 
 def parse_chamber_param(chamber):
@@ -91,15 +94,22 @@ class PersonResource(Resource):
 
 
 class LegislatorEndpoint(Endpoint):
-    parameters = [Parameter("state"), Parameter("chamber", default=None)]
+    parameters = [
+        Parameter("state"),
+        Parameter("chamber", default=None),
+        Parameter("name", default=None),
+    ]
     wrap_resource = PersonResource
 
-    def get_results(self, state, chamber, segments):
+    def get_results(self, state, chamber, name, segments):
         people = (
             Person.objects.exclude(current_role_division_id="")
-            .filter(current_state=state.upper())
+            .filter(current_state=parse_state_param(state))
             .order_by("name")
         )
+
+        if name:
+            people = people.filter(name__icontains=name)
 
         if "contact_details" in segments:
             people.prefetch_related("contact_details")

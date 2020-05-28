@@ -53,7 +53,6 @@ class Endpoint:
             params = {}
 
             for parameter in self.parameters:
-                print(parameter.name, parameter.default)
                 try:
                     params[parameter.name] = request.GET[parameter.name]
                 except KeyError:
