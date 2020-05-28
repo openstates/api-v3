@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+import json
 
 
 class InvalidSegment(Exception):
@@ -45,28 +46,39 @@ class Resource(metaclass=ResourceMetaclass):
         return resp
 
 
+
 class Endpoint:
+    def _call_view(self, dictionary):
+        params = {}
+        error = None
+        for parameter in self.parameters:
+            try:
+                params[parameter.name] = dictionary[parameter.name]
+            except KeyError:
+                if parameter.default == Required:
+                    error = f"missing required parameter '{parameter.name}'"
+                else:
+                    params[parameter.name] = parameter.default
+        segments = dictionary.get("segments", "basic").split(",")
+        results = []
+        if not error:
+            results = self.get_results(**params, segments=segments)
+        data = [self.wrap_resource(r).as_dict(segments) for r in results]
+        return {"error": error, "data": data}
+
     def as_django_view(self):
         def viewfunc(request, *args, **kwargs):
-            error = None
-            data = None
-            params = {}
-
-            for parameter in self.parameters:
-                try:
-                    params[parameter.name] = request.GET[parameter.name]
-                except KeyError:
-                    if parameter.default == Required:
-                        error = "missing required parameter '{arg_name}'"
-                    else:
-                        params[parameter.name] = parameter.default
-
-            segments = request.GET.get("segments", "basic").split(",")
-
-            if not error:
-                results = self.get_results(**params, segments=segments)
-            data = [self.wrap_resource(r).as_dict(segments) for r in results]
-
-            return JsonResponse({"error": error, "data": data})
-
+            body = self._call_view(request.GET)
+            return JsonResponse(body)
         return viewfunc
+
+    def as_lambda_handler(self):
+        def handler(event, context):
+            query_string = event.get("queryStringParameters", {})
+            body = self._call_view(query_string)
+            return {
+                "statusCode": 200,
+                "body": json.dumps(body),
+                "headers": {"Content-Type": "application/json"},
+            }
+        return handler
