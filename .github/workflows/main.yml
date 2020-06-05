@@ -13,6 +13,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: openstates/simpleapi
-          dockerfile: docker/uwsgi/Dockerfile
+          dockerfile: /github/workspace/docker/uwsgi/Dockerfile
           tags: latest
     runs-on: ubuntu-18.04
