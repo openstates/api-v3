@@ -3,6 +3,13 @@ import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+if os.environ.get("DEBUG", "true").lower() == "false":
+    DEBUG = False
+    SECRET_KEY = os.environ["SECRET_KEY"]
+else:
+    DEBUG = True
+    SECRET_KEY = "not-a-real-secret"
+
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL", "postgis://openstates:openstates@db:5432/openstatesorg"
@@ -11,11 +18,7 @@ DATABASES = {"default": dj_database_url.parse(DATABASE_URL)}
 CONN_MAX_AGE = 60
 
 
-SECRET_KEY = "ksdvx0*&gyp#wxf#d+*k%+=+17-e-r8l7j5m=n00u#^zp0$ynm"
-DEBUG = True
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = ["openstates.data", "api"]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
