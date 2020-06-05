@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+export UWSGI_VIRTUALENV=$(poetry env info --path)
+
+echo "running $@"
+exec "$@"
