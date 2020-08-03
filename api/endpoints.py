@@ -99,7 +99,6 @@ class JurisdictionResource(Resource):
 
     @segment
     def basic(self):
-        print(self.obj._meta.fields)
         return {
             "id": self.obj.id,
             "name": self.obj.name,

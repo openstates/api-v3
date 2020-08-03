@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, InvalidPage
 import json
 
 
@@ -69,13 +69,12 @@ class Endpoint:
             )
         return per_page
 
-    def _page(self, arguments):
+    def _page(self, arguments, paginator):
         page = arguments.get("page", 1)
         try:
-            page = int(page)
-        except ValueError:
+            return paginator.page(page)
+        except InvalidPage:
             raise ErrorResponse(f"invalid page '{page}'")
-        return page
 
     def _call_view(self, dictionary):
         params = {}
@@ -95,25 +94,25 @@ class Endpoint:
 
             segments = dictionary.get("segments", "basic").split(",")
             per_page = self._per_page(dictionary)
-            page = self._page(dictionary)
 
             results = self.get_results(**params, segments=segments)
             paginator = Paginator(results, per_page)
+            page = self._page(dictionary, paginator)
             data = [
-                self.wrap_resource(r).as_dict(segments) for r in paginator.page(page)
+                self.wrap_resource(r).as_dict(segments) for r in page
             ]
             pagination = {
                 "per_page": per_page,
-                "page": page,
-                "num_pages": paginator.num_pages,
-                "num_items": paginator.count,
+                "page": page.number,
+                "max_page": paginator.num_pages,
+                "total_items": paginator.count,
             }
         except ErrorResponse as e:
             data = []
             error = e.msg
             pagination = {}
 
-        return {"error": error, "data": data, "pagination": pagination}
+        return {"error": error, "data": data, "meta": pagination}
 
     def as_django_view(self):
         def viewfunc(request, *args, **kwargs):
