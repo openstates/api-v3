@@ -4,11 +4,11 @@ from collections import defaultdict
 from .framework import Resource, segment, Endpoint, Parameter
 
 
-def parse_state_param(state):
-    if len(state) == 2:
-        return state.upper()
+def parse_jurisdiction_param(jid):
+    if len(jid) == 2:
+        return jid.upper()
     else:
-        return lookup(name=state).abbr
+        return lookup(name=jid).abbr
 
 
 def parse_chamber_param(chamber):
@@ -95,16 +95,16 @@ class PersonResource(Resource):
 
 class PeopleEndpoint(Endpoint):
     parameters = [
-        Parameter("state"),
+        Parameter("jurisdiction"),
         Parameter("chamber", default=None),
         Parameter("name", default=None),
     ]
     wrap_resource = PersonResource
 
-    def get_results(self, state, chamber, name, segments):
+    def get_results(self, jurisdiction, chamber, name, segments):
         people = (
             Person.objects.exclude(current_role_division_id="")
-            .filter(current_state=parse_state_param(state))
+            .filter(current_state=parse_jurisdiction_param(jurisdiction))
             .order_by("name")
         )
 
