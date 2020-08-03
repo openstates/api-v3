@@ -47,50 +47,73 @@ class Resource(metaclass=ResourceMetaclass):
         return resp
 
 
+class ErrorResponse(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+
 class Endpoint:
     default_per_page = 20
+    max_per_page = 50
+
+    def _per_page(self, arguments):
+        per_page = arguments.get("per_page", self.default_per_page)
+        try:
+            per_page = int(per_page)
+        except ValueError:
+            raise ErrorResponse(f"invalid per_page '{per_page}'")
+
+        if per_page < 1 or per_page > self.max_per_page:
+            raise ErrorResponse(
+                f"invalid per_page, must be in [1, {self.max_per_page}]"
+            )
+        return per_page
+
+    def _page(self, arguments):
+        page = arguments.get("page", 1)
+        try:
+            page = int(page)
+        except ValueError:
+            raise ErrorResponse(f"invalid page '{page}'")
+        return page
 
     def _call_view(self, dictionary):
         params = {}
         error = None
-        for parameter in self.parameters:
-            try:
-                params[parameter.name] = dictionary[parameter.name]
-            except KeyError:
-                if parameter.default == Required:
-                    error = f"missing required parameter '{parameter.name}'"
-                else:
-                    params[parameter.name] = parameter.default
-        segments = dictionary.get("segments", "basic").split(",")
-        per_page = dictionary.get("per_page", self.default_per_page)
-        try:
-            per_page = int(per_page)
-        except ValueError:
-            error = f"invalid per_page '{per_page}'"
-        page = dictionary.get("page", 1)
-        try:
-            page = int(page)
-        except ValueError:
-            error = f"invalid page '{page}'"
 
-        if not error:
+        try:
+            for parameter in self.parameters:
+                try:
+                    params[parameter.name] = dictionary[parameter.name]
+                except KeyError:
+                    if parameter.default == Required:
+                        raise ErrorResponse(
+                            f"missing required parameter '{parameter.name}'"
+                        )
+                    else:
+                        params[parameter.name] = parameter.default
+
+            segments = dictionary.get("segments", "basic").split(",")
+            per_page = self._per_page(dictionary)
+            page = self._page(dictionary)
+
             results = self.get_results(**params, segments=segments)
             paginator = Paginator(results, per_page)
             data = [
                 self.wrap_resource(r).as_dict(segments) for r in paginator.page(page)
             ]
-        else:
-            data = []
-        return {
-            "error": error,
-            "data": data,
-            "pagination": {
+            pagination = {
                 "per_page": per_page,
                 "page": page,
                 "num_pages": paginator.num_pages,
                 "num_items": paginator.count,
-            },
-        }
+            }
+        except ErrorResponse as e:
+            data = []
+            error = e.msg
+            pagination = {}
+
+        return {"error": error, "data": data, "pagination": pagination}
 
     def as_django_view(self):
         def viewfunc(request, *args, **kwargs):

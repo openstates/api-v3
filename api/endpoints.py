@@ -109,10 +109,10 @@ class JurisdictionResource(Resource):
 
 
 class JurisdictionEndpoint(Endpoint):
-    parameters = [
-        Parameter("classification", default=None)
-    ]
+    parameters = [Parameter("classification", default=None)]
     wrap_resource = JurisdictionResource
+    default_per_page = 52
+    max_per_page = 100
 
     def get_results(self, classification, segments):
         jset = Jurisdiction.objects.all()
