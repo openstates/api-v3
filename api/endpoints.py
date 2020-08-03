@@ -1,5 +1,5 @@
 from openstates_metadata import lookup
-from openstates.data.models import Person
+from openstates.data.models import Person, Jurisdiction
 from collections import defaultdict
 from .framework import Resource, segment, Endpoint, Parameter
 
@@ -91,6 +91,34 @@ class PersonResource(Resource):
                 }
             )
         return {"offices": contact_details}
+
+
+class JurisdictionResource(Resource):
+    def __init__(self, obj):
+        self.obj = obj
+
+    @segment
+    def basic(self):
+        print(self.obj._meta.fields)
+        return {
+            "id": self.obj.id,
+            "name": self.obj.name,
+            "url": self.obj.url,
+            "classification": self.obj.classification,
+        }
+
+
+class JurisdictionEndpoint(Endpoint):
+    parameters = [
+        Parameter("classification", default=None)
+    ]
+    wrap_resource = JurisdictionResource
+
+    def get_results(self, classification, segments):
+        jset = Jurisdiction.objects.all()
+        if classification:
+            jset = jset.filter(classification=classification)
+        return jset
 
 
 class PeopleEndpoint(Endpoint):
