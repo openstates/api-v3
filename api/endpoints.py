@@ -93,7 +93,7 @@ class PersonResource(Resource):
         return {"offices": contact_details}
 
 
-class LegislatorEndpoint(Endpoint):
+class PeopleEndpoint(Endpoint):
     parameters = [
         Parameter("state"),
         Parameter("chamber", default=None),

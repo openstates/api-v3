@@ -1,6 +1,6 @@
 functions:
-  - name: v3-legislators
-    description: "API v3 Legislators Endpoint"
+  - name: v3-people
+    description: "API v3 People Endpoint"
     runtime: python3.7
     files:
       - api/*.py
@@ -17,7 +17,7 @@ functions:
       - openstates
       - attrs
     role_arn: "arn:aws:iam::189670762819:role/v3_lambda_exec_role"
-    handler: lambda_endpoints.legislators
+    handler: lambda_endpoints.people
     layers:
       - py37-psycopg2
     environment:
