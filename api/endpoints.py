@@ -115,7 +115,7 @@ class JurisdictionEndpoint(Endpoint):
     max_per_page = 100
 
     def get_results(self, classification, segments):
-        jset = Jurisdiction.objects.all()
+        jset = Jurisdiction.objects.all().order_by("name")
         if classification:
             jset = jset.filter(classification=classification)
         return jset
