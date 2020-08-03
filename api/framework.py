@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 import json
 
 
@@ -46,8 +47,9 @@ class Resource(metaclass=ResourceMetaclass):
         return resp
 
 
-
 class Endpoint:
+    default_per_page = 20
+
     def _call_view(self, dictionary):
         params = {}
         error = None
@@ -60,16 +62,41 @@ class Endpoint:
                 else:
                     params[parameter.name] = parameter.default
         segments = dictionary.get("segments", "basic").split(",")
-        results = []
+        per_page = dictionary.get("per_page", self.default_per_page)
+        try:
+            per_page = int(per_page)
+        except ValueError:
+            error = f"invalid per_page '{per_page}'"
+        page = dictionary.get("page", 1)
+        try:
+            page = int(page)
+        except ValueError:
+            error = f"invalid page '{page}'"
+
         if not error:
             results = self.get_results(**params, segments=segments)
-        data = [self.wrap_resource(r).as_dict(segments) for r in results]
-        return {"error": error, "data": data}
+            paginator = Paginator(results, per_page)
+            data = [
+                self.wrap_resource(r).as_dict(segments) for r in paginator.page(page)
+            ]
+        else:
+            data = []
+        return {
+            "error": error,
+            "data": data,
+            "pagination": {
+                "per_page": per_page,
+                "page": page,
+                "num_pages": paginator.num_pages,
+                "num_items": paginator.count,
+            },
+        }
 
     def as_django_view(self):
         def viewfunc(request, *args, **kwargs):
             body = self._call_view(request.GET)
             return JsonResponse(body)
+
         return viewfunc
 
     def as_lambda_handler(self):
@@ -81,4 +108,5 @@ class Endpoint:
                 "body": json.dumps(body),
                 "headers": {"Content-Type": "application/json"},
             }
+
         return handler
