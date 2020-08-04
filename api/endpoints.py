@@ -1,14 +1,18 @@
+import datetime
 from openstates_metadata import lookup
-from openstates.data.models import Person, Jurisdiction
+from openstates.data.models import Person, Jurisdiction, Organization
+from django.db.models import Q
 from collections import defaultdict
 from .framework import Resource, segment, Endpoint, Parameter
 
 
 def parse_jurisdiction_param(jid):
     if len(jid) == 2:
-        return jid.upper()
+        return lookup(abbr=jid).jurisdiction_id
+    elif jid.startswith("ocd-jurisdiction"):
+        return jid
     else:
-        return lookup(name=jid).abbr
+        return lookup(name=jid).jurisdiction_id
 
 
 def parse_chamber_param(chamber):
@@ -129,11 +133,12 @@ class PeopleEndpoint(Endpoint):
     wrap_resource = PersonResource
 
     def get_results(self, jurisdiction, chamber, name, segments):
-        people = (
-            Person.objects.exclude(current_role_division_id="")
-            .filter(current_state=parse_jurisdiction_param(jurisdiction))
-            .order_by("name")
-        )
+        today = datetime.datetime.today().strftime("%Y-%m-%d")
+        jurisdiction = parse_jurisdiction_param(jurisdiction)
+        people = Person.objects.filter(
+            Q(memberships__organization__jurisdiction__id=jurisdiction)
+            & (Q(memberships__end_date__gt=today) | Q(memberships__end_date=""))
+        ).distinct().order_by("name")
 
         if name:
             people = people.filter(name__icontains=name)
