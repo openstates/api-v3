@@ -8,7 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.7"
 openstates-metadata = "^2020.4.7"
-openstates = "^4.4.1"
+openstates = "^4.7"
 django = "^3.0.5"
 
 [tool.poetry.dev-dependencies]

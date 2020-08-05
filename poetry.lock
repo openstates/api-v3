@@ -154,7 +154,7 @@ description = "core infrastructure for the openstates project"
 name = "openstates"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "4.4.1"
+version = "4.7.0"
 
 [package.dependencies]
 Django = ">=2.2"
@@ -409,8 +409,8 @@ jsonschema = [
     {file = "jsonschema-3.2.0.tar.gz", hash = "sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a"},
 ]
 openstates = [
-    {file = "openstates-4.4.1-py3-none-any.whl", hash = "sha256:ccd413edd13a188d87f756306995dd8b4be031b0cd3a1e34fb3cbd9c25ea5aea"},
-    {file = "openstates-4.4.1.tar.gz", hash = "sha256:2ffe00c4671d64620b7c02d8e197f1adaefb27bca2a8c27db1df86ec015592e8"},
+    {file = "openstates-4.7.0-py3-none-any.whl", hash = "sha256:cf2ff7346bacec069d841b3b662087f86f5fde457d3c523e4485f3081904cba2"},
+    {file = "openstates-4.7.0.tar.gz", hash = "sha256:9975f48fc3afa86853c3b99299bc28c8749c7616804797a55ba3dfa30d255a2f"},
 ]
 openstates-metadata = [
     {file = "openstates_metadata-2020.4.7-py3-none-any.whl", hash = "sha256:cb9e6a2a55ac3ef4b552fcd1dc6d64eba4949bb8f8732ba1fcf288242535e591"},
@@ -464,6 +464,7 @@ pytz = [
     {file = "pytz-2019.3.tar.gz", hash = "sha256:b02c06db6cf09c12dd25137e563b31700d3b80fcc4ad23abb7a315f2789819be"},
 ]
 requests = [
+    {file = "requests-2.23.0-py2.7.egg", hash = "sha256:5d2d0ffbb515f39417009a46c14256291061ac01ba8f875b90cad137de83beb4"},
     {file = "requests-2.23.0-py2.py3-none-any.whl", hash = "sha256:43999036bfa82904b6af1d99e4882b560e5e2c68e5c4b0aa03b655f3d7d73fee"},
     {file = "requests-2.23.0.tar.gz", hash = "sha256:b3f43d496c6daba4493e7c431722aeb7dbc6288f52a6e04e7b6023b0247817e6"},
 ]
