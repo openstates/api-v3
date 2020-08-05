@@ -1,6 +1,6 @@
 import datetime
 from openstates_metadata import lookup
-from openstates.data.models import Person, Jurisdiction, Organization
+from openstates.data.models import Person, Jurisdiction
 from django.db.models import Q
 from collections import defaultdict
 from .framework import Resource, segment, Endpoint, Parameter
@@ -28,14 +28,9 @@ class PersonResource(Resource):
         return {
             "id": self.obj.id,
             "name": self.obj.name,
-            "state": self.obj.current_state,
-            "party": self.obj.primary_party,
-            "current_role": {
-                "chamber": self.obj.current_role["chamber"],
-                "district": self.obj.current_role["district"],
-                "division_id": self.obj.current_role["division_id"],
-                "title": self.obj.current_role["role"],
-            },
+            "jurisdiction": self.obj.current_jurisdiction.name,
+            "party": self.obj.primary_party or None,
+            "current_role": self.obj.current_role,
         }
 
     @segment
