@@ -1,5 +1,12 @@
 import os
 import dj_database_url
+import sentry_sdk
+from sentry_sdk.integrations import DjangoIntegration
+
+sentry_sdk.init(
+    dsn="https://8b48c86eab184725896f0824c123a07d@o94516.ingest.sentry.io/5388471",
+    integrations=[DjangoIntegration()],
+)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
