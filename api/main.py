@@ -1,13 +1,13 @@
-import datetime
 from typing import Optional, List
+import math
 from fastapi import FastAPI, Depends
-from pydantic import BaseModel
-from enum import Enum
-from db import SessionLocal, models
-from sqlalchemy.orm import joinedload
+from pydantic import create_model
+from sqlalchemy.orm import joinedload, contains_eager
+from .db import SessionLocal, models
+from .schemas import PaginationMeta, JurisdictionEnum, Jurisdiction
 
 
-# Dependency
+# dependencies
 def get_db():
     db = SessionLocal()
     try:
@@ -16,55 +16,70 @@ def get_db():
         db.close()
 
 
-class JurisdictionEnum(str, Enum):
-    state = "state"
-    municipality = "municipality"
-    government = "government"
+class Pagination:
+    def __init__(self, page: int = 1, per_page: int = 100):
+        self.page = page
+        self.per_page = per_page
 
+    @staticmethod
+    def of(Cls):
+        # dynamically define a new class that is just results & pagination
+        # this will only be dynamically constructed at start so the cost is negligible
+        return create_model(
+            f"{Cls.__name__}List",
+            results=(List[Cls], ...),
+            pagination=(PaginationMeta, ...),
+        )
 
-class Organization(BaseModel):
-    id: str
-    name: str
-    classification: str
-
-    class Config:
-        orm_mode = True
-
-
-class Jurisdiction(BaseModel):
-    id: str
-    name: str
-    classification: JurisdictionEnum
-    division_id: Optional[str]
-    url: str
-    # TODO: add these
-    # people_last_updated: Optional[datetime.datetime]
-    # bills_last_updated: Optional[datetime.datetime]
-    organizations: List[Organization]
-
-    class Config:
-        orm_mode = True
+    def paginate(self, results):
+        # TODO: remove/make a real error/?
+        assert results._order_by, "ordering is required for pagination"
+        total_items = results.count()
+        num_pages = math.ceil(total_items / self.per_page)
+        meta = PaginationMeta(
+            total_items=total_items,
+            per_page=self.per_page,
+            page=self.page,
+            max_page=num_pages + 1,
+        )
+        return {
+            "pagination": meta,
+            "results": results.limit(self.per_page)
+            .offset((self.page - 1) * self.per_page)
+            .all(),
+        }
 
 
 app = FastAPI()
 
 
-@app.get("/jurisdictions", response_model=List[Jurisdiction])
+@app.get("/jurisdictions", response_model=Pagination.of(Jurisdiction))
 async def jurisdictions(
     classification: Optional[JurisdictionEnum] = None,
     db: SessionLocal = Depends(get_db),
+    pagination: dict = Depends(Pagination),
 ):
     # TODO: remove this conversion once database is updated
     if classification == "state":
         classification = "government"
-    query = db.query(models.Jurisdiction).options(
-        joinedload(models.Jurisdiction.organizations)
+    query = (
+        db.query(models.Jurisdiction).options(
+            joinedload(models.Jurisdiction.organizations)
+            # contains_eager(models.Jurisdiction.organizations)
+        )
+        # TODO: filter orgs that are included
+        # .filter(
+        #     models.Organization.classification.in_((
+        #         "upper", "lower", "legislature", "executive"
+        #     ))
+        # )
+        .order_by(models.Jurisdiction.name)
     )
     if classification:
         query = query.filter(models.Jurisdiction.classification == classification)
-    results = query.all()
-    # TODO: ^this too
-    for result in results:
+    resp = pagination.paginate(query)
+    # TODO: this should be removed too (see above note)
+    for result in resp["results"]:
         if result.classification == "government":
             result.classification = "state"
-    return results
+    return resp
