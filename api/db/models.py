@@ -12,7 +12,13 @@ class Jurisdiction(Base):
     classification = Column(String, index=True)
     division_id = Column(String)
 
-    organizations = relationship("Organization", back_populates="jurisdiction")
+    organizations = relationship(
+        "Organization",
+        primaryjoin="""and_(
+        Jurisdiction.id == Organization.jurisdiction_id,
+        Organization.classification.in_(('upper', 'lower', 'legislature', 'executive'))
+        )"""
+    )
 
 
 class Organization(Base):
@@ -23,4 +29,4 @@ class Organization(Base):
     classification = Column(String)
 
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
-    jurisdiction = relationship("Jurisdiction", back_populates="organizations")
+    jurisdiction = relationship("Jurisdiction")

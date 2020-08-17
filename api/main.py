@@ -34,11 +34,14 @@ class Pagination:
     def paginate(self, results, max_per_page=100):
         # shouldn't happen, but help log if it does
         if not results._order_by:
-            raise HTTPException(status_code=500, detail="ordering is required for pagination")
+            raise HTTPException(
+                status_code=500, detail="ordering is required for pagination"
+            )
 
         if self.per_page < 1 or self.per_page > max_per_page:
             raise HTTPException(
-                status_code=400, detail=f"invalid per_page, must be in [1, {max_per_page}]"
+                status_code=400,
+                detail=f"invalid per_page, must be in [1, {max_per_page}]",
             )
 
         total_items = results.count()
@@ -76,16 +79,8 @@ async def jurisdictions(
     if classification == "state":
         classification = "government"
     query = (
-        db.query(models.Jurisdiction).options(
-            joinedload(models.Jurisdiction.organizations)
-            # contains_eager(models.Jurisdiction.organizations)
-        )
-        # TODO: filter orgs that are included
-        # .filter(
-        #     models.Organization.classification.in_((
-        #         "upper", "lower", "legislature", "executive"
-        #     ))
-        # )
+        db.query(models.Jurisdiction)
+        .options(joinedload(models.Jurisdiction.organizations))
         .order_by(models.Jurisdiction.name)
     )
     if classification:
