@@ -1,20 +1,34 @@
 import datetime
 from typing import Optional, List
-from fastapi import FastAPI
-from openstates_metadata import STATES_BY_ABBR
+from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from enum import Enum
+from db import SessionLocal, models
+from sqlalchemy.orm import joinedload
+
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 class JurisdictionEnum(str, Enum):
     state = "state"
     municipality = "municipality"
+    government = "government"
 
 
 class Organization(BaseModel):
     id: str
     name: str
     classification: str
+
+    class Config:
+        orm_mode = True
 
 
 class Jurisdiction(BaseModel):
@@ -23,42 +37,30 @@ class Jurisdiction(BaseModel):
     classification: JurisdictionEnum
     division_id: Optional[str]
     url: str
-    people_last_updated: datetime.datetime
+    people_last_updated: Optional[datetime.datetime]
     bills_last_updated: Optional[datetime.datetime]
     organizations: List[Organization]
+
+    class Config:
+        orm_mode = True
 
 
 app = FastAPI()
 
 
-def _state_to_dict(s):
-    orgs = []
-    for org in s.chambers:
-        orgs.append(
-            Organization(
-                name=org.name, id=org.organization_id, classification=org.chamber_type
-            )
-        )
-    orgs.append(
-        Organization(
-            name=s.executive_name,
-            classification="executive",
-            id=s.executive_organization_id,
-        )
-    )
-
-    return {
-        "name": s.name,
-        "id": s.jurisdiction_id,
-        "classification": "state",
-        "url": s.url,
-        "division_id": s.division_id,
-        "people_last_updated": datetime.datetime.utcnow(),
-        "bills_last_updated": None,
-        "organizations": orgs,
-    }
-
-
 @app.get("/jurisdictions", response_model=List[Jurisdiction])
-async def jurisdictions(classification: Optional[JurisdictionEnum] = None):
-    return [_state_to_dict(s) for s in STATES_BY_ABBR.values()]
+async def jurisdictions(classification: Optional[JurisdictionEnum] = None,
+                        db: SessionLocal = Depends(get_db)
+                        ):
+    # TODO: remove this conversion once database is updated
+    if classification == "state":
+        classification = "government"
+    query = db.query(models.Jurisdiction).options(joinedload(models.Jurisdiction.organizations))
+    if classification:
+        query = query.filter(models.Jurisdiction.classification == classification)
+    results = query.all()
+    # TODO: ^this too
+    for result in results:
+        if result.classification == "government":
+            result.classification = "state"
+    return results
