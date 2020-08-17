@@ -1,6 +1,6 @@
 from typing import Optional, List
 import math
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from pydantic import create_model
 from sqlalchemy.orm import joinedload, contains_eager
 from .db import SessionLocal, models
@@ -31,16 +31,28 @@ class Pagination:
             pagination=(PaginationMeta, ...),
         )
 
-    def paginate(self, results):
+    def paginate(self, results, max_per_page=100):
         # TODO: remove/make a real error/?
         assert results._order_by, "ordering is required for pagination"
+
+        if self.per_page < 1 or self.per_page > max_per_page:
+            raise HTTPException(
+                status_code=400, detail=f"invalid per_page, must be in [1, {max_per_page}]"
+            )
+
         total_items = results.count()
         num_pages = math.ceil(total_items / self.per_page)
+
+        if self.page < 1 or self.page > num_pages:
+            raise HTTPException(
+                status_code=404, detail=f"no such page, must be in [1, {num_pages}]"
+            )
+
         meta = PaginationMeta(
             total_items=total_items,
             per_page=self.per_page,
             page=self.page,
-            max_page=num_pages + 1,
+            max_page=num_pages,
         )
         return {
             "pagination": meta,
