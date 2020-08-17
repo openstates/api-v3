@@ -37,8 +37,9 @@ class Jurisdiction(BaseModel):
     classification: JurisdictionEnum
     division_id: Optional[str]
     url: str
-    people_last_updated: Optional[datetime.datetime]
-    bills_last_updated: Optional[datetime.datetime]
+    # TODO: add these
+    # people_last_updated: Optional[datetime.datetime]
+    # bills_last_updated: Optional[datetime.datetime]
     organizations: List[Organization]
 
     class Config:
@@ -49,13 +50,16 @@ app = FastAPI()
 
 
 @app.get("/jurisdictions", response_model=List[Jurisdiction])
-async def jurisdictions(classification: Optional[JurisdictionEnum] = None,
-                        db: SessionLocal = Depends(get_db)
-                        ):
+async def jurisdictions(
+    classification: Optional[JurisdictionEnum] = None,
+    db: SessionLocal = Depends(get_db),
+):
     # TODO: remove this conversion once database is updated
     if classification == "state":
         classification = "government"
-    query = db.query(models.Jurisdiction).options(joinedload(models.Jurisdiction.organizations))
+    query = db.query(models.Jurisdiction).options(
+        joinedload(models.Jurisdiction.organizations)
+    )
     if classification:
         query = query.filter(models.Jurisdiction.classification == classification)
     results = query.all()
