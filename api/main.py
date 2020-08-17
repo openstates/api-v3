@@ -32,8 +32,9 @@ class Pagination:
         )
 
     def paginate(self, results, max_per_page=100):
-        # TODO: remove/make a real error/?
-        assert results._order_by, "ordering is required for pagination"
+        # shouldn't happen, but help log if it does
+        if not results._order_by:
+            raise HTTPException(status_code=500, detail="ordering is required for pagination")
 
         if self.per_page < 1 or self.per_page > max_per_page:
             raise HTTPException(
