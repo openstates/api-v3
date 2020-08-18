@@ -1,5 +1,5 @@
-from enum import Enum
 from typing import Optional, List
+from enum import Enum
 from pydantic import BaseModel
 
 
@@ -14,20 +14,9 @@ class SegmentableBase(BaseModel):
         return newobj
 
 
-class PaginationMeta(BaseModel):
-    per_page: int
-    page: int
-    max_page: int
-    total_items: int
-
-
 class JurisdictionEnum(str, Enum):
     state = "state"
     municipality = "municipality"
-
-
-class JurisdictionSegment(str, Enum):
-    organizations = "organizations"
 
 
 class Organization(BaseModel):
