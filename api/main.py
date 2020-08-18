@@ -1,8 +1,10 @@
 from typing import Optional, List
 import math
 from fastapi import FastAPI, Depends, HTTPException, Query
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from pydantic import create_model
-from sqlalchemy.orm import joinedload, noload
+from sqlalchemy.orm import joinedload, noload, raiseload
 from sqlalchemy.sql.expression import literal
 from .db import SessionLocal, models
 from .schemas import PaginationMeta, JurisdictionEnum, Jurisdiction, JurisdictionSegment
@@ -70,7 +72,11 @@ class Pagination:
 app = FastAPI()
 
 
-@app.get("/jurisdictions", response_model=Pagination.of(Jurisdiction), response_model_exclude_defaults=True)
+@app.get(
+    "/jurisdictions",
+    response_model=Pagination.of(Jurisdiction),
+    response_model_exclude_unset=True,
+)
 async def jurisdictions(
     classification: Optional[JurisdictionEnum] = None,
     segments: List[JurisdictionSegment] = Query(["basic"]),
@@ -82,20 +88,20 @@ async def jurisdictions(
         classification = "government"
     query = db.query(models.Jurisdiction).order_by(models.Jurisdiction.name)
 
+    # handle segments
     if JurisdictionSegment.organizations in segments:
         query = query.options(joinedload(models.Jurisdiction.organizations))
     else:
         query = query.options(noload(models.Jurisdiction.organizations))
 
+    # handle parameters
     if classification:
         query = query.filter(models.Jurisdiction.classification == classification)
     resp = pagination.paginate(query)
     # TODO: this should be removed too (see above note)
     for result in resp["results"]:
+        if JurisdictionSegment.organizations not in segments:
+            result.organizations = None
         if result.classification == "government":
             result.classification = "state"
     return resp
-
-
-# @app.get("/people", response_model=Pagination.of(Person))
-# async def people

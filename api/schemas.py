@@ -39,8 +39,7 @@ class Jurisdiction(BaseModel):
     # TODO: add these
     # people_last_updated: Optional[datetime.datetime]
     # bills_last_updated: Optional[datetime.datetime]
-    # organizations: Optional[List[Organization]] = None
-    organizations: List[Organization] = []
+    organizations: Optional[List[Organization]] = None
 
     class Config:
         orm_mode = True
