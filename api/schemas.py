@@ -1,6 +1,17 @@
 from enum import Enum
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+
+
+class SegmentableBase(BaseModel):
+    @classmethod
+    def with_segments(Cls, obj, segments):
+        newobj = Cls.from_orm(obj)
+        for segment, fields in Cls.__config__.segments.items():
+            if segment not in segments:
+                for field in fields:
+                    setattr(newobj, field, None)
+        return newobj
 
 
 class PaginationMeta(BaseModel):
@@ -17,7 +28,6 @@ class JurisdictionEnum(str, Enum):
 
 
 class JurisdictionSegment(str, Enum):
-    basic = "basic"
     organizations = "organizations"
 
 
@@ -30,7 +40,7 @@ class Organization(BaseModel):
         orm_mode = True
 
 
-class Jurisdiction(BaseModel):
+class Jurisdiction(SegmentableBase):
     id: str
     name: str
     classification: JurisdictionEnum
@@ -43,6 +53,9 @@ class Jurisdiction(BaseModel):
 
     class Config:
         orm_mode = True
+        segments = {
+            "organizations": ["organizations"]
+        }
 
 
 class Person(BaseModel):
