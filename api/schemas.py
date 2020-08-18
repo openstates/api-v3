@@ -1,6 +1,13 @@
 from enum import Enum
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+
+class PaginationMeta(BaseModel):
+    per_page: int
+    page: int
+    max_page: int
+    total_items: int
 
 
 class JurisdictionEnum(str, Enum):
@@ -9,11 +16,9 @@ class JurisdictionEnum(str, Enum):
     government = "government"
 
 
-class PaginationMeta(BaseModel):
-    per_page: int
-    page: int
-    max_page: int
-    total_items: int
+class JurisdictionSegment(str, Enum):
+    basic = "basic"
+    organizations = "organizations"
 
 
 class Organization(BaseModel):
@@ -29,12 +34,18 @@ class Jurisdiction(BaseModel):
     id: str
     name: str
     classification: JurisdictionEnum
-    division_id: Optional[str]
+    division_id: Optional[str] = ""  # never exclude
     url: str
     # TODO: add these
     # people_last_updated: Optional[datetime.datetime]
     # bills_last_updated: Optional[datetime.datetime]
-    organizations: List[Organization]
+    # organizations: Optional[List[Organization]] = None
+    organizations: List[Organization] = []
 
     class Config:
         orm_mode = True
+
+
+class Person(BaseModel):
+    id: str
+    name: str

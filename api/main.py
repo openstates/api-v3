@@ -1,10 +1,11 @@
 from typing import Optional, List
 import math
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Query
 from pydantic import create_model
-from sqlalchemy.orm import joinedload, contains_eager
+from sqlalchemy.orm import joinedload, noload
+from sqlalchemy.sql.expression import literal
 from .db import SessionLocal, models
-from .schemas import PaginationMeta, JurisdictionEnum, Jurisdiction
+from .schemas import PaginationMeta, JurisdictionEnum, Jurisdiction, JurisdictionSegment
 
 
 # dependencies
@@ -69,20 +70,23 @@ class Pagination:
 app = FastAPI()
 
 
-@app.get("/jurisdictions", response_model=Pagination.of(Jurisdiction))
+@app.get("/jurisdictions", response_model=Pagination.of(Jurisdiction), response_model_exclude_defaults=True)
 async def jurisdictions(
     classification: Optional[JurisdictionEnum] = None,
+    segments: List[JurisdictionSegment] = Query(["basic"]),
     db: SessionLocal = Depends(get_db),
     pagination: dict = Depends(Pagination),
 ):
     # TODO: remove this conversion once database is updated
     if classification == "state":
         classification = "government"
-    query = (
-        db.query(models.Jurisdiction)
-        .options(joinedload(models.Jurisdiction.organizations))
-        .order_by(models.Jurisdiction.name)
-    )
+    query = db.query(models.Jurisdiction).order_by(models.Jurisdiction.name)
+
+    if JurisdictionSegment.organizations in segments:
+        query = query.options(joinedload(models.Jurisdiction.organizations))
+    else:
+        query = query.options(noload(models.Jurisdiction.organizations))
+
     if classification:
         query = query.filter(models.Jurisdiction.classification == classification)
     resp = pagination.paginate(query)
@@ -91,3 +95,7 @@ async def jurisdictions(
         if result.classification == "government":
             result.classification = "state"
     return resp
+
+
+# @app.get("/people", response_model=Pagination.of(Person))
+# async def people
