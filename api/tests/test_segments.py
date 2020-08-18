@@ -9,7 +9,7 @@ def test_jurisdiction_segment_default():
     response = client.get("/jurisdictions?classification=state&per_page=1")
     response = response.json()
     # if the segment isn't included, the fields are None
-    assert response["results"][0]["organizations"] is None
+    assert "organizations" not in response["results"][0]
 
 
 def test_jurisdiction_segment_organizations():

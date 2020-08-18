@@ -3,7 +3,7 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import joinedload, noload
 from .db import SessionLocal, get_db, models
-from .schemas import Jurisdiction, JurisdictionEnum
+from .schemas import Jurisdiction, JurisdictionClassification
 from .pagination import Pagination
 
 
@@ -18,10 +18,10 @@ router = APIRouter()
 @router.get(
     "/jurisdictions",
     response_model=Pagination.of(Jurisdiction),
-    response_model_exclude_unset=True,
+    response_model_exclude_none=True,
 )
 async def jurisdictions(
-    classification: Optional[JurisdictionEnum] = None,
+    classification: Optional[JurisdictionClassification] = None,
     segments: List[JurisdictionSegment] = Query([]),
     db: SessionLocal = Depends(get_db),
     pagination: dict = Depends(Pagination),
