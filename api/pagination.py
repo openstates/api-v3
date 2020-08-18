@@ -40,7 +40,7 @@ class Pagination:
             )
 
         total_items = results.count()
-        num_pages = math.ceil(total_items / self.per_page)
+        num_pages = math.ceil(total_items / self.per_page) or 1
 
         if self.page < 1 or self.page > num_pages:
             raise HTTPException(
