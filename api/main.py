@@ -1,10 +1,10 @@
 from typing import Optional, List
 import math
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Query
 from pydantic import create_model
-from sqlalchemy.orm import joinedload, contains_eager
+from sqlalchemy.orm import joinedload, noload
 from .db import SessionLocal, models
-from .schemas import PaginationMeta, JurisdictionEnum, Jurisdiction
+from .schemas import PaginationMeta, JurisdictionEnum, Jurisdiction, JurisdictionSegment
 
 
 # dependencies
@@ -69,23 +69,35 @@ class Pagination:
 app = FastAPI()
 
 
-@app.get("/jurisdictions", response_model=Pagination.of(Jurisdiction))
+@app.get(
+    "/jurisdictions",
+    response_model=Pagination.of(Jurisdiction),
+    response_model_exclude_unset=True,
+)
 async def jurisdictions(
     classification: Optional[JurisdictionEnum] = None,
+    segments: List[JurisdictionSegment] = Query(["basic"]),
     db: SessionLocal = Depends(get_db),
     pagination: dict = Depends(Pagination),
 ):
     # TODO: remove this conversion once database is updated
     if classification == "state":
         classification = "government"
-    query = (
-        db.query(models.Jurisdiction)
-        .options(joinedload(models.Jurisdiction.organizations))
-        .order_by(models.Jurisdiction.name)
-    )
+    query = db.query(models.Jurisdiction).order_by(models.Jurisdiction.name)
+
+    # handle segments
+    if JurisdictionSegment.organizations in segments:
+        query = query.options(joinedload(models.Jurisdiction.organizations))
+    else:
+        query = query.options(noload(models.Jurisdiction.organizations))
+
+    # handle parameters
     if classification:
         query = query.filter(models.Jurisdiction.classification == classification)
     resp = pagination.paginate(query)
+
+    resp["results"] = [Jurisdiction.with_segments(r, segments) for r in resp["results"]]
+
     # TODO: this should be removed too (see above note)
     for result in resp["results"]:
         if result.classification == "government":
