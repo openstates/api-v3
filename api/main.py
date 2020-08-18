@@ -76,7 +76,7 @@ app = FastAPI()
 )
 async def jurisdictions(
     classification: Optional[JurisdictionEnum] = None,
-    segments: List[JurisdictionSegment] = Query(["basic"]),
+    segments: List[JurisdictionSegment] = Query([]),
     db: SessionLocal = Depends(get_db),
     pagination: dict = Depends(Pagination),
 ):
@@ -96,10 +96,10 @@ async def jurisdictions(
         query = query.filter(models.Jurisdiction.classification == classification)
     resp = pagination.paginate(query)
 
-    resp["results"] = [Jurisdiction.with_segments(r, segments) for r in resp["results"]]
-
     # TODO: this should be removed too (see above note)
     for result in resp["results"]:
         if result.classification == "government":
             result.classification = "state"
+    resp["results"] = [Jurisdiction.with_segments(r, segments) for r in resp["results"]]
+
     return resp

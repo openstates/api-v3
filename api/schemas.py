@@ -24,7 +24,6 @@ class PaginationMeta(BaseModel):
 class JurisdictionEnum(str, Enum):
     state = "state"
     municipality = "municipality"
-    government = "government"
 
 
 class JurisdictionSegment(str, Enum):
