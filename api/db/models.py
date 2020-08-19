@@ -1,3 +1,4 @@
+from collections import defaultdict
 from . import Base
 from sqlalchemy import Column, String, ForeignKey, DateTime, Integer
 from sqlalchemy.dialects.postgresql import JSONB
@@ -60,6 +61,27 @@ class Person(Base):
     other_names = relationship("PersonName")
     links = relationship("PersonLink")
     sources = relationship("PersonSource")
+    contact_details = relationship("PersonContactDetail")
+
+    @property
+    def offices(self):
+        """ transform contact details to something more usable """
+        contact_details = []
+        offices = defaultdict(dict)
+        for cd in self.contact_details:
+            offices[cd.note][cd.type] = cd.value
+        for office, details in offices.items():
+            contact_details.append(
+                {
+                    "name": office,
+                    "fax": None,
+                    "voice": None,
+                    "email": None,
+                    "address": None,
+                    **details,
+                }
+            )
+        return contact_details
 
 
 class PersonIdentifier(Base):
@@ -70,6 +92,7 @@ class PersonIdentifier(Base):
     person = relationship(Person)
     identifier = Column(String)
     scheme = Column(String)
+
 
 class PersonName(Base):
     __tablename__ = "opencivicdata_personname"
@@ -99,3 +122,15 @@ class PersonSource(Base):
     person = relationship(Person)
     url = Column(String)
     note = Column(String)
+
+
+class PersonContactDetail(Base):
+    __tablename__ = "opencivicdata_personcontactdetail"
+
+    id = Column(Integer, primary_key=True, index=True)
+    person_id = Column(String, ForeignKey(Person.id))
+    person = relationship(Person)
+    type = Column(String)
+    value = Column(String)
+    note = Column(String)
+    # TODO: label?

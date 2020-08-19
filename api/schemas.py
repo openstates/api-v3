@@ -88,10 +88,10 @@ class Link(BaseModel):
 
 class Office(BaseModel):
     name: str
-    fax: str
-    voice: str
-    email: str
-    address: str
+    fax: Optional[str]
+    voice: Optional[str]
+    email: Optional[str]
+    address: Optional[str]
 
     class Config:
         orm_mode = True

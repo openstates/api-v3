@@ -13,6 +13,7 @@ class PersonSegment(str, Enum):
     other_identifiers = "other_identifiers"
     links = "links"
     sources = "sources"
+    offices = "offices"
 
 
 router = APIRouter()
@@ -30,8 +31,6 @@ def jurisdiction_filter(j):
         return models.Jurisdiction.name == j
 
 
-
-
 @router.get(
     "/people", response_model=Pagination.of(Person), response_model_exclude_none=True
 )
@@ -47,7 +46,7 @@ async def people(
 
     query = query.filter(
         jurisdiction_filter(jurisdiction),
-        models.Person.current_role.isnot(None),     # current members only for now
+        models.Person.current_role.isnot(None),  # current members only for now
     ).join(models.Jurisdiction)
 
     # handle segments
@@ -55,6 +54,7 @@ async def people(
     query = joined_or_noload(query, PersonSegment.other_identifiers, segments)
     query = joined_or_noload(query, PersonSegment.links, segments)
     query = joined_or_noload(query, PersonSegment.sources, segments)
+    query = joined_or_noload(query, PersonSegment.offices, segments, dbname="contact_details")
 
     resp = pagination.paginate(query)
 
