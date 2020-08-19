@@ -1,5 +1,5 @@
 from . import Base
-from sqlalchemy import Column, String, ForeignKey, DateTime
+from sqlalchemy import Column, String, ForeignKey, DateTime, Integer
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
@@ -55,3 +55,47 @@ class Person(Base):
         "current_jurisdiction_id", String, ForeignKey(Jurisdiction.id)
     )
     jurisdiction = relationship("Jurisdiction")
+
+    other_identifiers = relationship("PersonIdentifier")
+    other_names = relationship("PersonName")
+    links = relationship("PersonLink")
+    sources = relationship("PersonSource")
+
+
+class PersonIdentifier(Base):
+    __tablename__ = "opencivicdata_personidentifier"
+
+    id = Column(Integer, primary_key=True, index=True)
+    person_id = Column(String, ForeignKey(Person.id))
+    person = relationship(Person)
+    identifier = Column(String)
+    scheme = Column(String)
+
+class PersonName(Base):
+    __tablename__ = "opencivicdata_personname"
+
+    id = Column(Integer, primary_key=True, index=True)
+    person_id = Column(String, ForeignKey(Person.id))
+    person = relationship(Person)
+    name = Column(String)
+    note = Column(String)
+
+
+class PersonLink(Base):
+    __tablename__ = "opencivicdata_personlink"
+
+    id = Column(Integer, primary_key=True, index=True)
+    person_id = Column(String, ForeignKey(Person.id))
+    person = relationship(Person)
+    url = Column(String)
+    note = Column(String)
+
+
+class PersonSource(Base):
+    __tablename__ = "opencivicdata_personsource"
+
+    id = Column(Integer, primary_key=True, index=True)
+    person_id = Column(String, ForeignKey(Person.id))
+    person = relationship(Person)
+    url = Column(String)
+    note = Column(String)

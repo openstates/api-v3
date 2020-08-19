@@ -1,11 +1,10 @@
 from enum import Enum
 from typing import Optional, List
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import joinedload, noload
 from .db import SessionLocal, get_db, models
 from .schemas import Jurisdiction, JurisdictionClassification
 from .pagination import Pagination
-
+from .utils import joined_or_noload
 
 
 class JurisdictionSegment(str, Enum):
@@ -32,10 +31,7 @@ async def jurisdictions(
     query = db.query(models.Jurisdiction).order_by(models.Jurisdiction.name)
 
     # handle segments
-    if JurisdictionSegment.organizations in segments:
-        query = query.options(joinedload(models.Jurisdiction.organizations))
-    else:
-        query = query.options(noload(models.Jurisdiction.organizations))
+    query = joined_or_noload(query, JurisdictionSegment.organizations, segments)
 
     # handle parameters
     if classification:

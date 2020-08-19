@@ -8,10 +8,9 @@ class SegmentableBase(BaseModel):
     @classmethod
     def with_segments(Cls, obj, segments):
         newobj = Cls.from_orm(obj)
-        for segment, fields in Cls.__config__.segments.items():
+        for segment in Cls.__config__.segments:
             if segment not in segments:
-                for field in fields:
-                    setattr(newobj, field, None)
+                setattr(newobj, segment, None)
         return newobj
 
 
@@ -50,7 +49,7 @@ class Jurisdiction(SegmentableBase):
 
     class Config:
         orm_mode = True
-        segments = {"organizations": ["organizations"]}
+        segments = ["organizations"]
 
 
 class CurrentRole(BaseModel):
@@ -64,23 +63,23 @@ class CurrentRole(BaseModel):
 
 
 class AltIdentifier(BaseModel):
-    scheme: str
     identifier: str
+    scheme: str
 
     class Config:
         orm_mode = True
 
 
 class AltName(BaseModel):
-    scheme: str
     name: str
+    note: str
 
     class Config:
         orm_mode = True
 
 
 class Link(BaseModel):
-    link: str
+    url: str
     note: str
 
     class Config:
@@ -135,3 +134,4 @@ class Person(SegmentableBase):
 
     class Config:
         orm_mode = True
+        segments = ["other_names", "other_identifiers", "links", "sources", "offices"]
