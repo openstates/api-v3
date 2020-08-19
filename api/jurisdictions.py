@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query
 from .db import SessionLocal, get_db, models
 from .schemas import Jurisdiction, JurisdictionClassification
 from .pagination import Pagination
+from .auth import apikey_auth
 from .utils import joined_or_noload
 
 
@@ -23,7 +24,8 @@ async def jurisdictions(
     classification: Optional[JurisdictionClassification] = None,
     segments: List[JurisdictionSegment] = Query([]),
     db: SessionLocal = Depends(get_db),
-    pagination: dict = Depends(Pagination),
+    pagination: Pagination = Depends(Pagination),
+    auth: str = Depends(apikey_auth),
 ):
     # TODO: remove this conversion once database is updated
     if classification == "state":

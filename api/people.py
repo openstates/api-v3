@@ -5,6 +5,7 @@ from openstates_metadata import lookup
 from .db import SessionLocal, get_db, models
 from .schemas import Person
 from .pagination import Pagination
+from .auth import apikey_auth
 from .utils import joined_or_noload
 
 
@@ -40,7 +41,8 @@ async def people(
     name: Optional[str] = None,
     segments: List[PersonSegment] = Query([]),
     db: SessionLocal = Depends(get_db),
-    pagination: dict = Depends(Pagination),
+    pagination: Pagination = Depends(Pagination),
+    auth: str = Depends(apikey_auth),
 ):
     query = db.query(models.Person).order_by(models.Person.name)
 
