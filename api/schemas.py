@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional, List, Union
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SegmentableBase(BaseModel):
@@ -58,6 +58,9 @@ class CurrentRole(BaseModel):
     division_id: str
     org_classification: OrgClassification
 
+    class Config:
+        orm_mode = True
+
 
 class AltIdentifier(BaseModel):
     scheme: str
@@ -85,10 +88,10 @@ class Office(BaseModel):
 class Person(SegmentableBase):
     id: str
     name: str
-    jurisdiction: str
-    jurisdiction_id: str
-    party: str
-    current_role: OrgClassification
+    # jurisdiction: str
+    jurisdiction_id: str = Field()
+    party: str = Field()
+    current_role: CurrentRole
 
     # extra_bio
     family_name: Optional[str]
@@ -107,3 +110,6 @@ class Person(SegmentableBase):
     links: Optional[List[Link]]
     sources: Optional[List[Link]]
     offices: Optional[List[Office]]
+
+    class Config:
+        orm_mode = True
