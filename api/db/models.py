@@ -18,7 +18,7 @@ class Jurisdiction(Base):
         primaryjoin="""and_(
         Jurisdiction.id == Organization.jurisdiction_id,
         Organization.classification.in_(('upper', 'lower', 'legislature', 'executive'))
-        )"""
+        )""",
     )
 
 
@@ -51,4 +51,7 @@ class Person(Base):
     created_at = Column(DateTime(timezone=True))
     updated_at = Column(DateTime(timezone=True))
     extras = Column(JSONB)
-    jurisdiction_id = Column("current_jurisdiction_id", String)
+    jurisdiction_id = Column(
+        "current_jurisdiction_id", String, ForeignKey(Jurisdiction.id)
+    )
+    jurisdiction = relationship("Jurisdiction")

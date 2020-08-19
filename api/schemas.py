@@ -18,6 +18,7 @@ class SegmentableBase(BaseModel):
 class JurisdictionClassification(str, Enum):
     state = "state"
     municipality = "municipality"
+    government = "government"   # TODO: remove this before release
 
 
 class OrgClassification(str, Enum):
@@ -66,15 +67,24 @@ class AltIdentifier(BaseModel):
     scheme: str
     identifier: str
 
+    class Config:
+        orm_mode = True
+
 
 class AltName(BaseModel):
     scheme: str
     name: str
 
+    class Config:
+        orm_mode = True
+
 
 class Link(BaseModel):
     link: str
     note: str
+
+    class Config:
+        orm_mode = True
 
 
 class Office(BaseModel):
@@ -84,13 +94,25 @@ class Office(BaseModel):
     email: str
     address: str
 
+    class Config:
+        orm_mode = True
+
+
+class PersonJurisdiction(BaseModel):
+    id: str
+    name: str
+    classification: JurisdictionClassification
+
+    class Config:
+        orm_mode = True
+
 
 class Person(SegmentableBase):
     id: str
     name: str
-    # jurisdiction: str
-    jurisdiction_id: str = Field()
-    party: str = Field()
+    jurisdiction: PersonJurisdiction
+    jurisdiction_id: str
+    party: str
     current_role: CurrentRole
 
     # extra_bio
