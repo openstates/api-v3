@@ -25,6 +25,7 @@ class OrgClassification(str, Enum):
     executive = "executive"
     lower = "lower"
     upper = "upper"
+    government = "government"
 
 
 class Organization(BaseModel):
@@ -54,9 +55,9 @@ class Jurisdiction(SegmentableBase):
 
 class CurrentRole(BaseModel):
     title: str
-    district: Union[str, int]
-    division_id: str
     org_classification: OrgClassification
+    district: Union[str, int, None] = ""
+    division_id: Optional[str] = ""
 
     class Config:
         orm_mode = True
