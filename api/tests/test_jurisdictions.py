@@ -1,8 +1,16 @@
 from fastapi.testclient import TestClient
 from api.main import app
-
+from api.auth import apikey_auth
 
 client = TestClient(app)
+
+app.dependency_overrides[apikey_auth] = lambda: "disable api key"
+
+
+def test_jurisdictions_simplest():
+    response = client.get("/jurisdictions")
+    response = response.json()
+    assert response["results"] != []
 
 
 def test_jurisdiction_segment_default():
