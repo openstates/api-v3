@@ -29,6 +29,7 @@ app.dependency_overrides[apikey_auth] = lambda: "disable api key"
 @pytest.fixture(scope="session", autouse=True)
 def create_test_database():
     url = TEST_DATABASE_URL
+    print("C")
     try:
         if database_exists(url):
             drop_database(url)
@@ -41,7 +42,7 @@ def create_test_database():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def jurisdictions_data():
+def common_data(create_test_database):
     db = TestingSessionLocal()
     j = Jurisdiction(
         id="ocd-jurisdiction/country:us/state:ne/government",
@@ -50,8 +51,22 @@ def jurisdictions_data():
         classification="government",
         division_id="ocd-division/country:us/state:ne",
     )
-    db.add(Organization(id="abc", name="Nebraska Legislature", classification="legislature", jurisdiction=j))
-    db.add(Organization(id="def", name="Nebraska Executive", classification="executive", jurisdiction=j))
+    db.add(
+        Organization(
+            id="nel",
+            name="Nebraska Legislature",
+            classification="legislature",
+            jurisdiction=j,
+        )
+    )
+    db.add(
+        Organization(
+            id="nee",
+            name="Nebraska Executive",
+            classification="executive",
+            jurisdiction=j,
+        )
+    )
     db.add(j)
     j = Jurisdiction(
         id="ocd-jurisdiction/country:us/state:oh/government",
@@ -60,8 +75,19 @@ def jurisdictions_data():
         classification="government",
         division_id="ocd-division/country:us/state:oh",
     )
-    db.add(Organization(id="ghi", name="Ohio Legislature", classification="legislature", jurisdiction=j))
-    db.add(Organization(id="jkl", name="Ohio Executive", classification="executive", jurisdiction=j))
+    db.add(
+        Organization(
+            id="ohl",
+            name="Ohio Legislature",
+            classification="legislature",
+            jurisdiction=j,
+        )
+    )
+    db.add(
+        Organization(
+            id="ohe", name="Ohio Executive", classification="executive", jurisdiction=j
+        )
+    )
     db.add(j)
     j = Jurisdiction(
         id="ocd-jurisdiction/country:us/state:oh/place:mentor",

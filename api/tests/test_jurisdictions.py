@@ -31,7 +31,7 @@ def test_jurisdiction_include_organizations(client):
     # segment is included, organizations are inline
     assert len(response["results"][0]["organizations"]) == 2
     assert response["results"][0]["organizations"][0] == {
-        "id": "abc",
+        "id": "nel",
         "classification": "legislature",
         "name": "Nebraska Legislature",
     }
