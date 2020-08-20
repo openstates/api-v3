@@ -43,7 +43,6 @@ class Person(Base):
     given_name = Column(String)
     image = Column(String)
     gender = Column(String)
-    summary = Column(String)
     biography = Column(String)
     birth_date = Column(String)
     death_date = Column(String)

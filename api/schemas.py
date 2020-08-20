@@ -113,7 +113,7 @@ class Person(SegmentableBase):
     jurisdiction: PersonJurisdiction
     jurisdiction_id: str
     party: str
-    current_role: CurrentRole
+    current_role: Optional[CurrentRole]
 
     # extra_bio
     family_name: Optional[str]

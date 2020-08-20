@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from api.main import app
 from api.auth import apikey_auth
 from api.db import Base, get_db
-from api.db.models import Jurisdiction, Organization
+from api.db.models import Jurisdiction, Organization, Person
 
 TEST_DATABASE_URL = "postgresql://v3test:v3test@localhost/v3test"
 engine = create_engine(TEST_DATABASE_URL)
@@ -65,6 +65,46 @@ def common_data(create_test_database):
             name="Nebraska Executive",
             classification="executive",
             jurisdiction=j,
+        )
+    )
+    db.add(
+        Person(
+            id="1",
+            name="Amy Adams",
+            family_name="Amy",
+            given_name="Adams",
+            gender="female",
+            birth_date="2000-01-01",
+            party="Democratic",
+            current_role={
+                "org_classification": "legislature",
+                "district": 1,
+                "title": "Senator",
+                "division_id": "ocd-division/country:us/state:ne/sldu:1",
+            },
+            jurisdiction_id=j.id,
+        )
+    )
+    db.add(
+        Person(
+            id="2",
+            name="Boo Berri",
+            birth_date="1973-12-25",
+            party="Libertarian",
+            current_role={
+                "org_classification": "executive",
+                "title": "Governor",
+            },
+            jurisdiction_id=j.id,
+        )
+    )
+    db.add(
+        Person(
+            id="3",
+            name="Rita Red",     # retired
+            birth_date="1973-12-25",
+            party="Republican",
+            jurisdiction_id=j.id,
         )
     )
     db.add(j)
