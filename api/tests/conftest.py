@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils.functions import database_exists, drop_database, create_database
 from sqlalchemy.exc import OperationalError
@@ -14,9 +14,25 @@ engine = create_engine(TEST_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
+class QueryLogger:
+    def __init__(self):
+        self.count = 0
+
+    def reset(self):
+        self.count = 0
+
+    def callback(self, *args):
+        self.count += 1
+
+
+query_logger = QueryLogger()
+
+
 def get_test_db():
     try:
         db = TestingSessionLocal()
+        query_logger.reset()
+        event.listen(engine, "after_cursor_execute", query_logger.callback)
         yield db
     finally:
         db.close()
@@ -91,17 +107,14 @@ def common_data(create_test_database):
             name="Boo Berri",
             birth_date="1973-12-25",
             party="Libertarian",
-            current_role={
-                "org_classification": "executive",
-                "title": "Governor",
-            },
+            current_role={"org_classification": "executive", "title": "Governor"},
             jurisdiction_id=j.id,
         )
     )
     db.add(
         Person(
             id="3",
-            name="Rita Red",     # retired
+            name="Rita Red",  # retired
             birth_date="1973-12-25",
             party="Republican",
             jurisdiction_id=j.id,

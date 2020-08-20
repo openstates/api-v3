@@ -1,5 +1,8 @@
+from .conftest import query_logger
+
 def test_jurisdictions_simplest(client):
     response = client.get("/jurisdictions")
+    assert query_logger.count == 2
     response = response.json()
     assert len(response["results"]) == 3
     assert response["results"][0]["name"] == "Mentor"
@@ -18,9 +21,11 @@ def test_jurisdictions_filter(client):
     response = client.get("/jurisdictions?classification=state")
     response = response.json()
     assert len(response["results"]) == 2
+    assert query_logger.count == 2
     response = client.get("/jurisdictions?classification=municipality")
     response = response.json()
     assert len(response["results"]) == 1
+    assert query_logger.count == 2
 
 
 def test_jurisdiction_include_organizations(client):
@@ -29,6 +34,7 @@ def test_jurisdiction_include_organizations(client):
     )
     response = response.json()
     # segment is included, organizations are inline
+    assert query_logger.count == 2
     assert len(response["results"][0]["organizations"]) == 2
     assert response["results"][0]["organizations"][0] == {
         "id": "nel",
@@ -44,3 +50,4 @@ def test_jurisdiction_include_organizations_empty(client):
     response = response.json()
     # segment is included, but the field is empty
     assert len(response["results"][0]["organizations"]) == 0
+    assert query_logger.count == 2
