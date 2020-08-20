@@ -5,20 +5,14 @@ networks:
       name: openstates-network
 
 services:
-  django:
+  api:
     build:
       context: .
-      dockerfile: docker/uwsgi/Dockerfile
     volumes:
       - .:/code
     environment:
-      # dev settings to reload python files when edited
-      - UWSGI_PYTHON_AUTORELOAD=3
-      - UWSGI_ENABLE_THREADS=1
-      - DEBUG
-      - SECRET_KEY
       - DATABASE_URL=postgis://openstates:openstates@db/openstatesorg
     ports:
-      - "7000:7000"
+      - "7000:80"
     networks:
       - openstates-network
