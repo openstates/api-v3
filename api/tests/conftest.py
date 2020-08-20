@@ -21,7 +21,8 @@ class QueryLogger:
     def reset(self):
         self.count = 0
 
-    def callback(self, *args):
+    def callback(self, conn, cursor, statement, parameters, context, executemany):
+        print(statement, parameters)
         self.count += 1
 
 
