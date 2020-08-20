@@ -9,6 +9,17 @@ def test_pagination_basic(client):
     }
 
 
+def test_pagination_empty(client):
+    response = client.get("/people?jurisdiction=wi")
+    response = response.json()
+    assert response["pagination"] == {
+        "page": 1,
+        "max_page": 1,
+        "per_page": 100,
+        "total_items": 0,
+    }
+
+
 def test_pagination_per_page(client):
     response = client.get("/jurisdictions?per_page=2")
     response = response.json()
