@@ -44,7 +44,7 @@ class Pagination:
 
         if self.page < 1 or self.page > num_pages:
             raise HTTPException(
-                status_code=404, detail=f"no such page, must be in [1, {num_pages}]"
+                status_code=404, detail=f"invalid page, must be in [1, {num_pages}]"
             )
 
         meta = PaginationMeta(
