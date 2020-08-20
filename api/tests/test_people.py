@@ -64,11 +64,11 @@ def test_by_id(client):
 
 def test_no_filter(client):
     response = client.get("/people")
-    assert query_logger.count == 2
+    assert query_logger.count == 0
     assert response.status_code == 400
     assert "is required" in response.json()["detail"]
 
     response = client.get("/people?org_classification=upper")
-    assert query_logger.count == 2
+    assert query_logger.count == 0
     assert response.status_code == 400
     assert "is required" in response.json()["detail"]

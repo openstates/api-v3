@@ -2,6 +2,7 @@ from typing import Optional, List
 from enum import Enum
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import func
+from sqlalchemy.orm import contains_eager
 from openstates_metadata import lookup
 from .db import SessionLocal, get_db, models
 from .schemas import Person, OrgClassification
@@ -47,7 +48,10 @@ async def people(
     auth: str = Depends(apikey_auth),
 ):
     query = (
-        db.query(models.Person).join(models.Jurisdiction).order_by(models.Person.name)
+        db.query(models.Person)
+        .join(models.Person.jurisdiction)
+        .order_by(models.Person.name)
+        .options(contains_eager(models.Person.jurisdiction))
     )
     filtered = False
 
