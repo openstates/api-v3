@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from api.main import app
 from api.auth import apikey_auth
 from api.db import Base, get_db
-from api.db.models import Jurisdiction
+from api.db.models import Jurisdiction, Organization
 
 TEST_DATABASE_URL = "postgresql://v3test:v3test@localhost/v3test"
 engine = create_engine(TEST_DATABASE_URL)
@@ -40,7 +40,7 @@ def create_test_database():
     drop_database(url)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def jurisdictions_data():
     db = TestingSessionLocal()
     j = Jurisdiction(
@@ -50,6 +50,8 @@ def jurisdictions_data():
         classification="government",
         division_id="ocd-division/country:us/state:ne",
     )
+    db.add(Organization(id="abc", name="Nebraska Legislature", classification="legislature", jurisdiction=j))
+    db.add(Organization(id="def", name="Nebraska Executive", classification="executive", jurisdiction=j))
     db.add(j)
     j = Jurisdiction(
         id="ocd-jurisdiction/country:us/state:oh/government",
@@ -58,6 +60,8 @@ def jurisdictions_data():
         classification="government",
         division_id="ocd-division/country:us/state:oh",
     )
+    db.add(Organization(id="ghi", name="Ohio Legislature", classification="legislature", jurisdiction=j))
+    db.add(Organization(id="jkl", name="Ohio Executive", classification="executive", jurisdiction=j))
     db.add(j)
     j = Jurisdiction(
         id="ocd-jurisdiction/country:us/state:oh/place:mentor",
