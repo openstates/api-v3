@@ -1,7 +1,16 @@
-def test_jurisdictions_simplest(client):
+def test_jurisdictions_simplest(client, jurisdictions_data):
     response = client.get("/jurisdictions")
     response = response.json()
-    assert response["results"] != []
+    assert len(response["results"]) == 3
+    assert response["results"][0]["name"] == "Mentor"
+    assert response["results"][1]["name"] == "Nebraska"
+    assert response["results"][2] == {
+        "id": "ocd-jurisdiction/country:us/state:oh/government",
+        "name": "Ohio",
+        "url": "https://ohio.gov",
+        "division_id": "ocd-division/country:us/state:oh",
+        "classification": "state",
+    }
 
 
 def test_jurisdiction_segment_default(client):
