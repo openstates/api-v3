@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional, List, Union
 from enum import Enum
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class SegmentableBase(BaseModel):
@@ -17,7 +17,7 @@ class SegmentableBase(BaseModel):
 class JurisdictionClassification(str, Enum):
     state = "state"
     municipality = "municipality"
-    government = "government"   # TODO: remove this before release
+    government = "government"  # TODO: remove this before release
 
 
 class OrgClassification(str, Enum):

@@ -1,5 +1,6 @@
 from .conftest import query_logger
 
+
 def test_jurisdictions_simplest(client):
     response = client.get("/jurisdictions")
     assert query_logger.count == 2
