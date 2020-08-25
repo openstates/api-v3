@@ -1,7 +1,7 @@
 from typing import Optional, List
 from enum import Enum
 from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import contains_eager
 from openstates_metadata import lookup
 from .db import SessionLocal, get_db, models
@@ -62,7 +62,13 @@ async def people(
         )
         filtered = True
     if name:
-        query = query.filter(func.lower(models.Person.name) == name.lower())
+        lname = name.lower()
+        query = query.filter(
+            or_(
+                func.lower(models.Person.name) == lname,
+                func.lower(models.PersonName.name) == lname,
+            )
+        ).outerjoin(models.PersonName)
         filtered = True
     if id:
         query = query.filter(models.Person.id.in_(id))

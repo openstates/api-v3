@@ -51,7 +51,11 @@ def test_by_name(client):
     assert response["results"][0]["name"] == "Rita Red"
 
 
-# TODO: test alternate names and IDs
+def test_by_name_other_name(client):
+    response = client.get("/people?name=Amy 'Aardvark' Adams").json()
+    assert query_logger.count == 2
+    assert len(response["results"]) == 1
+    assert response["results"][0]["name"] == "Amy Adams"
 
 
 def test_by_id(client):
