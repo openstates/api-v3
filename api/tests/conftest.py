@@ -7,7 +7,15 @@ from fastapi.testclient import TestClient
 from api.main import app
 from api.auth import apikey_auth
 from api.db import Base, get_db
-from api.db.models import Jurisdiction, Organization, Person
+from api.db.models import (
+    Jurisdiction,
+    Organization,
+    Person,
+    PersonName,
+    PersonLink,
+    PersonSource,
+    PersonContactDetail,
+)
 
 TEST_DATABASE_URL = "postgresql://v3test:v3test@localhost/v3test"
 engine = create_engine(TEST_DATABASE_URL)
@@ -100,6 +108,19 @@ def common_data(create_test_database):
                 "division_id": "ocd-division/country:us/state:ne/sldu:1",
             },
             jurisdiction_id=j.id,
+        )
+    )
+    db.add(PersonName(person_id="1", name="Amy 'Aardvark' Adams", note="nickname"))
+    db.add(PersonLink(person_id="1", url="https://example.com/amy", note=""))
+    db.add(PersonSource(person_id="1", url="https://example.com/amy", note=""))
+    db.add(
+        PersonContactDetail(
+            person_id="1", type="voice", value="555-555-5555", note="Capitol Office"
+        )
+    )
+    db.add(
+        PersonContactDetail(
+            person_id="1", type="email", value="amy@example.com", note="Capitol Office"
         )
     )
     db.add(

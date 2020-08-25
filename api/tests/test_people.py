@@ -72,3 +72,28 @@ def test_no_filter(client):
     assert query_logger.count == 0
     assert response.status_code == 400
     assert "is required" in response.json()["detail"]
+
+
+def test_people_segments_normal(client):
+    response = client.get(
+        "/people?id=1&segments=other_names&segments=other_identifiers&segments=links&segments=sources"
+    ).json()
+    assert query_logger.count == 2  # no extra queries
+    assert response["results"][0]["other_names"] == [
+        {"name": "Amy 'Aardvark' Adams", "note": "nickname"}
+    ]
+    assert response["results"][0]["other_identifiers"] == []  # empty is ok
+    assert response["results"][0]["links"] == [
+        {"url": "https://example.com/amy", "note": ""}
+    ]
+    assert response["results"][0]["sources"] == [
+        {"url": "https://example.com/amy", "note": ""}
+    ]
+
+
+def test_people_segments_office(client):
+    response = client.get("/people?id=1&segments=offices").json()
+    assert query_logger.count == 2  # no extra queries
+    assert response["results"][0]["offices"] == [
+        {"name": "Capitol Office", "email": "amy@example.com", "voice": "555-555-5555"}
+    ]
