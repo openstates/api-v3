@@ -1,6 +1,52 @@
 from fastapi import FastAPI
+from fastapi.openapi.utils import get_openapi
 from . import jurisdictions, people
+
 
 app = FastAPI()
 app.include_router(jurisdictions.router)
 app.include_router(people.router)
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="Open States API v3",
+        version="0.3.2",
+        # description="Open States' API",
+        routes=app.routes,
+    )
+    openapi_schema["paths"]["/divisions.geo"] = {
+        "get": {
+            "summary": "Divisions Geo",
+            "operationId": "divisions_geo_get",
+            "parameters": [
+                {
+                    "required": True,
+                    "schema": {"title": "Latitude", "type": "number"},
+                    "name": "lat",
+                    "in": "query",
+                },
+                {
+                    "required": True,
+                    "schema": {"title": "Longitude", "type": "number"},
+                    "name": "lng",
+                    "in": "query",
+                },
+            ],
+            "responses": {
+                "200": {"description": "Successful Response"},
+                "content": {
+                    "application/json": {
+                        "schema": "#/components/schemas/JurisdictionList"
+                    }
+                },
+            },
+        }
+    }
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
