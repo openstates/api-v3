@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
-from . import jurisdictions, people
+from . import jurisdictions, people, bills
 
 
 app = FastAPI()
 app.include_router(jurisdictions.router)
 app.include_router(people.router)
+app.include_router(bills.router)
 
 
 def custom_openapi():

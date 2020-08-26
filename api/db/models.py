@@ -1,7 +1,7 @@
 from collections import defaultdict
 from . import Base
 from sqlalchemy import Column, String, ForeignKey, DateTime, Integer
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, ARRAY, UUID
 from sqlalchemy.orm import relationship
 
 
@@ -21,6 +21,20 @@ class Jurisdiction(Base):
         Organization.classification.in_(('upper', 'lower', 'legislature', 'executive'))
         )""",
     )
+
+
+class LegislativeSession(Base):
+    __tablename__ = "opencivicdata_legislativesession"
+
+    id = Column(UUID, primary_key=True, index=True)
+    identifier = Column(String)
+    name = Column(String)
+    classification = Column(String)
+    start_date = Column(String)
+    end_date = Column(String)
+
+    jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
+    jurisdiction = relationship("Jurisdiction")
 
 
 class Organization(Base):
@@ -133,3 +147,35 @@ class PersonContactDetail(Base):
     value = Column(String)
     note = Column(String)
     # TODO: label?
+
+
+class Bill(Base):
+    __tablename__ = "opencivicdata_bill"
+
+    id = Column(String, primary_key=True, index=True)
+    identifier = Column(String)
+    title = Column(String)
+    classification = Column(ARRAY(String))
+    subject = Column(ARRAY(String))
+    extras = Column(JSONB)
+    created_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True))
+
+    from_organization_id = Column(String, ForeignKey(Organization.id))
+    from_organization = relationship("Organization")
+    legislative_session_id = Column(UUID, ForeignKey(LegislativeSession.id))
+    legislative_session = relationship("LegislativeSession")
+
+    @property
+    def jurisdiction(self):
+        return self.legislative_session.jurisdiction
+
+    @property
+    def session(self):
+        return self.legislative_session.identifier
+
+    # computed fields
+    first_action_date = Column(String)
+    latest_action_date = Column(String)
+    latest_action_description = Column(String)
+    latest_passage_date = Column(String)

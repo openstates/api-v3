@@ -28,6 +28,12 @@ class OrgClassification(str, Enum):
     government = "government"
 
 
+# class LegislativeSessionClassification(str, Enum):
+#     primary = "primary"
+#     special = "special"
+#     unset = ""
+
+
 class Organization(BaseModel):
     id: str
     name: str
@@ -98,7 +104,7 @@ class Office(BaseModel):
         orm_mode = True
 
 
-class PersonJurisdiction(BaseModel):
+class CompactJurisdiction(BaseModel):
     id: str
     name: str
     classification: JurisdictionClassification
@@ -110,11 +116,11 @@ class PersonJurisdiction(BaseModel):
 class Person(SegmentableBase):
     id: str
     name: str
-    jurisdiction: PersonJurisdiction
-    jurisdiction_id: str
+    jurisdiction: CompactJurisdiction
     party: str
     current_role: Optional[CurrentRole]
 
+    # TODO: make these required?
     # extra_bio
     family_name: Optional[str]
     given_name: Optional[str]
@@ -136,3 +142,31 @@ class Person(SegmentableBase):
     class Config:
         orm_mode = True
         segments = ["other_names", "other_identifiers", "links", "sources", "offices"]
+
+
+class LegislativeSession(BaseModel):
+    identifier: str
+    name: str
+    classification: str
+    start_date: str
+    end_date: str
+
+    class Config:
+        orm_mode = True
+
+
+class Bill(SegmentableBase):
+    id: str
+    session: str
+    jurisdiction: CompactJurisdiction
+    identifier: str
+    title: str
+    classification: List[str]
+    subject: List[str]
+    extras: dict
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    class Config:
+        orm_mode = True
+        segments = []
