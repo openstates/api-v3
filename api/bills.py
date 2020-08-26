@@ -1,8 +1,8 @@
+import re
 from typing import Optional, List
 from enum import Enum
 from fastapi import APIRouter, Depends, Query, HTTPException
-
-# from sqlalchemy import func, or_
+from sqlalchemy import func
 from sqlalchemy.orm import contains_eager
 from openstates_metadata import lookup
 from .db import SessionLocal, get_db, models
@@ -35,6 +35,20 @@ def jurisdiction_filter(j):
         return models.Jurisdiction.name == j
 
 
+# This code has to match openstates.transformers (TODO: combine into a package?)
+
+_bill_id_re = re.compile(r"([A-Z]*)\s*0*([-\d]+)")
+_mi_bill_id_re = re.compile(r"(SJR|HJR)\s*([A-Z]+)")
+_likely_bill_id = re.compile(r"\w{1,3}\s*\d{1,5}")
+
+
+def fix_bill_id(bill_id):
+    # special case for MI Joint Resolutions
+    if _mi_bill_id_re.match(bill_id):
+        return _mi_bill_id_re.sub(r"\1 \2", bill_id, 1).strip()
+    return _bill_id_re.sub(r"\1 \2", bill_id, 1).strip()
+
+
 @router.get(
     "/bills", response_model=Pagination.of(Bill), response_model_exclude_none=True
 )
@@ -43,11 +57,11 @@ async def bills(
     session: Optional[str] = None,
     chamber: Optional[str] = None,
     classification: Optional[str] = None,
-    subject: Optional[str] = None,
+    subject: Optional[List[str]] = Query([]),
     updated_since: Optional[str] = None,
     action_since: Optional[str] = None,
-    # sponsor
-    # q
+    # TODO: sponsor: Optional[str] = None,
+    q: Optional[str] = None,
     segments: List[BillSegment] = Query([]),
     db: SessionLocal = Depends(get_db),
     pagination: Pagination = Depends(Pagination),
@@ -61,11 +75,9 @@ async def bills(
         .options(contains_eager(models.Bill.legislative_session))
         # .options(contains_eager(models.Bill.legislative_session.jurisdiction))
     )
-    filtered = False
 
     if jurisdiction:
         query = query.filter(jurisdiction_filter(jurisdiction))
-        filtered = True
     if session:
         query = query.filter(models.LegislativeSession.identifier == session)
     if chamber:
@@ -73,13 +85,22 @@ async def bills(
     if classification:
         query = query.filter(models.Bill.classification.any(classification))
     if subject:
-        query = query.filter(models.Bill.subject.any(subject))
+        query = query.filter(models.Bill.subject.contains(subject))
     if updated_since:
         query = query.filter(models.Bill.updated_at > updated_since)
     if action_since:
         query = query.filter(models.Bill.latest_action_date > action_since)
+    if q:
+        if _likely_bill_id.match(q):
+            query = query.filter(func.upper(models.Bill.identifier) == fix_bill_id(q))
+        else:
+            query = query.join(models.SearchableBill).filter(
+                models.SearchableBill.search_vector.op("@@")(
+                    func.websearch_to_tsquery(q, config="english")
+                )
+            )
 
-    if not filtered:
+    if not q and not jurisdiction:
         raise HTTPException(400, "either 'jurisdiction' or 'q' required")
 
     # TODO: handle segments

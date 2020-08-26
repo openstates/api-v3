@@ -1,7 +1,7 @@
 from collections import defaultdict
 from . import Base
 from sqlalchemy import Column, String, ForeignKey, DateTime, Integer
-from sqlalchemy.dialects.postgresql import JSONB, ARRAY, UUID
+from sqlalchemy.dialects.postgresql import JSONB, ARRAY, UUID, TSVECTOR
 from sqlalchemy.orm import relationship
 
 
@@ -179,3 +179,12 @@ class Bill(Base):
     latest_action_date = Column(String)
     latest_action_description = Column(String)
     latest_passage_date = Column(String)
+
+
+class SearchableBill(Base):
+    __tablename__ = "opencivicdata_searchablebill"
+
+    id = Column(Integer, primary_key=True, index=True)
+    search_vector = Column(TSVECTOR)
+    bill_id = Column(String, ForeignKey(Bill.id))
+    bill = relationship(Bill)
