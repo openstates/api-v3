@@ -2,9 +2,9 @@ from sqlalchemy import Column, String, ForeignKey, DateTime, Integer, Boolean
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY, TSVECTOR
 from sqlalchemy.orm import relationship
 from .. import Base
-from .common import PrimaryUUID, LinkBase
+from .common import PrimaryUUID, LinkBase, RelatedEntityBase
 from .jurisdiction import LegislativeSession
-from .people_orgs import Organization, Person
+from .people_orgs import Organization
 
 
 class Bill(Base):
@@ -82,19 +82,13 @@ class BillSource(LinkBase, Base):
     bill = relationship(Bill)
 
 
-class BillSponsorship(PrimaryUUID, Base):
+class BillSponsorship(RelatedEntityBase, Base):
     __tablename__ = "opencivicdata_billsponsorship"
 
     bill_id = Column(String, ForeignKey(Bill.id))
     bill = relationship(Bill)
-    name = Column(String)
-    entity_type = Column(String)
     primary = Column(Boolean)
     classification = Column(String)
-    organization_id = Column(String, ForeignKey(Organization.id))
-    organization = relationship(Organization)
-    person_id = Column(String, ForeignKey(Person.id))
-    person = relationship(Person)
 
 
 class BillAction(PrimaryUUID, Base):
@@ -111,7 +105,7 @@ class BillAction(PrimaryUUID, Base):
     extras = Column(JSONB)
 
 
-# class BillActionRelatedEntity(PrimaryUUID, Base):
+# class BillActionRelatedEntity(RelatedEntityBase, Base):
 #     __tablename__ "opencivicdata_billactionrelatedentity"
 
 #     action_id = Column(String, ForeignKey(BillAction.id))
