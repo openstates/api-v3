@@ -1,9 +1,9 @@
-import uuid
 from collections import defaultdict
 from sqlalchemy import Column, String, ForeignKey, DateTime
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from .. import Base
+from .common import PrimaryUUID
 from .jurisdiction import Jurisdiction
 
 
@@ -67,50 +67,45 @@ class Person(Base):
         return contact_details
 
 
-class PersonIdentifier(Base):
+class PersonIdentifier(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_personidentifier"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     person_id = Column(String, ForeignKey(Person.id))
     person = relationship(Person)
     identifier = Column(String)
     scheme = Column(String)
 
 
-class PersonName(Base):
+class PersonName(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_personname"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     person_id = Column(String, ForeignKey(Person.id))
     person = relationship(Person)
     name = Column(String)
     note = Column(String)
 
 
-class PersonLink(Base):
+class PersonLink(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_personlink"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     person_id = Column(String, ForeignKey(Person.id))
     person = relationship(Person)
     url = Column(String)
     note = Column(String)
 
 
-class PersonSource(Base):
+class PersonSource(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_personsource"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     person_id = Column(String, ForeignKey(Person.id))
     person = relationship(Person)
     url = Column(String)
     note = Column(String)
 
 
-class PersonContactDetail(Base):
+class PersonContactDetail(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_personcontactdetail"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     person_id = Column(String, ForeignKey(Person.id))
     person = relationship(Person)
     type = Column(String)

@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, ForeignKey, DateTime, Integer, Boolean
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY, TSVECTOR
 from sqlalchemy.orm import relationship
 from .. import Base
+from .common import PrimaryUUID
 from .jurisdiction import LegislativeSession
 from .people_orgs import Organization, Person
 
@@ -45,10 +46,9 @@ class Bill(Base):
     latest_passage_date = Column(String)
 
 
-class BillAbstract(Base):
+class BillAbstract(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_billabstract"
 
-    id = Column(UUID, primary_key=True, index=True)
     bill_id = Column(String, ForeignKey(Bill.id))
     bill = relationship(Bill)
     abstract = Column(String)
@@ -56,20 +56,18 @@ class BillAbstract(Base):
     date = Column(String)
 
 
-class BillTitle(Base):
+class BillTitle(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_billtitle"
 
-    id = Column(UUID, primary_key=True, index=True)
     bill_id = Column(String, ForeignKey(Bill.id))
     bill = relationship(Bill)
     title = Column(String)
     note = Column(String)
 
 
-class BillIdentifier(Base):
+class BillIdentifier(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_billidentifier"
 
-    id = Column(UUID, primary_key=True, index=True)
     bill_id = Column(String, ForeignKey(Bill.id))
     bill = relationship(Bill)
     identifier = Column(String)
@@ -77,20 +75,18 @@ class BillIdentifier(Base):
     note = Column(String)
 
 
-class BillSource(Base):
+class BillSource(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_billsource"
 
-    id = Column(Integer, primary_key=True, index=True)
     bill_id = Column(String, ForeignKey(Bill.id))
     bill = relationship(Bill)
     url = Column(String)
     note = Column(String)
 
 
-class BillSponsorship(Base):
+class BillSponsorship(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_billsponsorship"
 
-    id = Column(UUID, primary_key=True, index=True)
     bill_id = Column(String, ForeignKey(Bill.id))
     bill = relationship(Bill)
     name = Column(String)
@@ -103,10 +99,9 @@ class BillSponsorship(Base):
     person = relationship(Person)
 
 
-class BillAction(Base):
+class BillAction(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_billaction"
 
-    id = Column(UUID, primary_key=True, index=True)
     bill_id = Column(String, ForeignKey(Bill.id))
     bill = relationship(Bill)
     organization_id = Column(String, ForeignKey(Organization.id))
@@ -118,10 +113,9 @@ class BillAction(Base):
     extras = Column(JSONB)
 
 
-# class BillActionRelatedEntity(Base):
+# class BillActionRelatedEntity(PrimaryUUID, Base):
 #     __tablename__ "opencivicdata_billactionrelatedentity"
 
-#     id = Column(UUID, primary_key=True, index=True)
 #     action_id = Column(String, ForeignKey(BillAction.id))
 #     action = relationship(BillAction)
 

@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import relationship
 from .. import Base
+from .common import PrimaryUUID
 from .jurisdiction import LegislativeSession
 from .people_orgs import Organization, Person
 from .bills import Bill
@@ -26,10 +27,9 @@ class VoteEvent(Base):
     bill = relationship(Bill)
 
 
-class VoteCount(Base):
+class VoteCount(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_votecount"
 
-    id = Column(UUID, primary_key=True, index=True)
     vote_event_id = Column(String, ForeignKey(Bill.id))
     vote_event = relationship(Bill)
 
@@ -37,10 +37,9 @@ class VoteCount(Base):
     value = Column(Integer)
 
 
-class VoteSource(Base):
+class VoteSource(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_votesource"
 
-    id = Column(UUID, primary_key=True, index=True)
     vote_event_id = Column(String, ForeignKey(Bill.id))
     vote_event = relationship(Bill)
 
@@ -48,10 +47,9 @@ class VoteSource(Base):
     note = Column(String)
 
 
-class PersonVote(Base):
+class PersonVote(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_personvote"
 
-    id = Column(UUID, primary_key=True, index=True)
     vote_event_id = Column(String, ForeignKey(Bill.id))
     vote_event = relationship(Bill)
 
