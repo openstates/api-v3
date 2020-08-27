@@ -181,6 +181,108 @@ class Bill(Base):
     latest_passage_date = Column(String)
 
 
+class BillAbstract(Base):
+    __tablename__ = "opencivicdata_billabstract"
+
+    id = Column(UUID, primary_key=True, index=True)
+    bill_id = Column(String, ForeignKey(Bill.id))
+    bill = relationship(Bill)
+    abstract = Column(String)
+    note = Column(String)
+    date = Column(String)
+
+
+class BillTitle(Base):
+    __tablename__ = "opencivicdata_billtitle"
+
+    id = Column(UUID, primary_key=True, index=True)
+    bill_id = Column(String, ForeignKey(Bill.id))
+    bill = relationship(Bill)
+    title = Column(String)
+    note = Column(String)
+
+
+class BillIdentifier(Base):
+    __tablename__ = "opencivicdata_billidentifier"
+
+    id = Column(UUID, primary_key=True, index=True)
+    bill_id = Column(String, ForeignKey(Bill.id))
+    bill = relationship(Bill)
+    identifier = Column(String)
+    scheme = Column(String)
+    note = Column(String)
+
+
+class BillAction(Base):
+    __tablename__ = "opencivicdata_billaction"
+
+    id = Column(UUID, primary_key=True, index=True)
+    bill_id = Column(String, ForeignKey(Bill.id))
+    bill = relationship(Bill)
+    organization_id = Column(String, ForeignKey(Organization.id))
+    organization = relationship(Organization)
+    description = Column(String)
+    date = Column(String)
+    classification = Column(ARRAY(String))
+    order = Column(Integer)
+    extras = Column(JSONB)
+
+
+class VoteEvent(Base):
+    __tablename__ = "opencivicdata_voteevent"
+
+    id = Column(String, primary_key=True, index=True)
+    identifier = Column(String)
+    motion_text = Column(String)
+    motion_classification = Column(ARRAY(String))
+    start_date = Column(String)
+    result = Column(String)
+    extras = Column(JSONB)
+
+    organization_id = Column(String, ForeignKey(Organization.id))
+    organization = relationship(Organization)
+    legislative_session_id = Column(UUID, ForeignKey(LegislativeSession.id))
+    legislative_session = relationship(LegislativeSession)
+    bill_id = Column(String, ForeignKey(Bill.id))
+    bill = relationship(Bill)
+
+
+class VoteCount(Base):
+    __tablename__ = "opencivicdata_votecount"
+
+    id = Column(UUID, primary_key=True, index=True)
+    vote_event_id = Column(String, ForeignKey(Bill.id))
+    vote_event = relationship(Bill)
+
+    option = Column(String)
+    value = Column(Integer)
+
+
+class VoteSource(Base):
+    __tablename__ = "opencivicdata_votesource"
+
+    id = Column(UUID, primary_key=True, index=True)
+    vote_event_id = Column(String, ForeignKey(Bill.id))
+    vote_event = relationship(Bill)
+
+    url = Column(String)
+    note = Column(String)
+
+
+class PersonVote(Base):
+    __tablename__ = "opencivicdata_personvote"
+
+    id = Column(UUID, primary_key=True, index=True)
+    vote_event_id = Column(String, ForeignKey(Bill.id))
+    vote_event = relationship(Bill)
+
+    option = Column(String)
+    voter_name = Column(String)
+    voter_id = Column(String, ForeignKey(Person.id))
+    voter = relationship(Person)
+    note = Column(String)
+
+
 class SearchableBill(Base):
     __tablename__ = "opencivicdata_searchablebill"
 
