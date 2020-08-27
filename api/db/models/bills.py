@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime, Integer, Boolean
+from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY, TSVECTOR
 from sqlalchemy.orm import relationship
 from .. import Base
@@ -46,56 +47,42 @@ class Bill(Base):
     latest_passage_date = Column(String)
 
 
-class BillAbstract(PrimaryUUID, Base):
+class BillRelatedBase(PrimaryUUID):
+    @declared_attr
+    def bill_id(cls):
+        return Column("bill_id", ForeignKey(Bill.id))
+
+    @declared_attr
+    def bill(cls):
+        return relationship(Bill)
+
+
+class BillAbstract(BillRelatedBase, Base):
     __tablename__ = "opencivicdata_billabstract"
 
-    bill_id = Column(String, ForeignKey(Bill.id))
-    bill = relationship(Bill)
     abstract = Column(String)
     note = Column(String)
     date = Column(String)
 
 
-class BillTitle(PrimaryUUID, Base):
+class BillTitle(BillRelatedBase, Base):
     __tablename__ = "opencivicdata_billtitle"
 
-    bill_id = Column(String, ForeignKey(Bill.id))
-    bill = relationship(Bill)
     title = Column(String)
     note = Column(String)
 
 
-class BillIdentifier(PrimaryUUID, Base):
+class BillIdentifier(BillRelatedBase, Base):
     __tablename__ = "opencivicdata_billidentifier"
 
-    bill_id = Column(String, ForeignKey(Bill.id))
-    bill = relationship(Bill)
     identifier = Column(String)
     scheme = Column(String)
     note = Column(String)
 
 
-class BillSource(LinkBase, Base):
-    __tablename__ = "opencivicdata_billsource"
-
-    bill_id = Column(String, ForeignKey(Bill.id))
-    bill = relationship(Bill)
-
-
-class BillSponsorship(RelatedEntityBase, Base):
-    __tablename__ = "opencivicdata_billsponsorship"
-
-    bill_id = Column(String, ForeignKey(Bill.id))
-    bill = relationship(Bill)
-    primary = Column(Boolean)
-    classification = Column(String)
-
-
-class BillAction(PrimaryUUID, Base):
+class BillAction(BillRelatedBase, Base):
     __tablename__ = "opencivicdata_billaction"
 
-    bill_id = Column(String, ForeignKey(Bill.id))
-    bill = relationship(Bill)
     organization_id = Column(String, ForeignKey(Organization.id))
     organization = relationship(Organization)
     description = Column(String)
@@ -105,11 +92,71 @@ class BillAction(PrimaryUUID, Base):
     extras = Column(JSONB)
 
 
-# class BillActionRelatedEntity(RelatedEntityBase, Base):
-#     __tablename__ "opencivicdata_billactionrelatedentity"
+class BillActionRelatedEntity(RelatedEntityBase, Base):
+    __tablename__ = "opencivicdata_billactionrelatedentity"
 
-#     action_id = Column(String, ForeignKey(BillAction.id))
-#     action = relationship(BillAction)
+    action_id = Column(UUID, ForeignKey(BillAction.id))
+    action = relationship(BillAction)
+
+
+class RelatedBill(PrimaryUUID, Base):
+    __tablename__ = "opencivicdata_relatedbill"
+
+    bill_id = Column(String, ForeignKey(Bill.id))
+    bill = relationship(Bill, foreign_keys=[bill_id])
+    related_bill_id = Column(String, ForeignKey(Bill.id))
+    related_bill = relationship(Bill, foreign_keys=[related_bill_id])
+
+    identifier = Column(String)
+    legislative_session = Column(String)  # not a FK, it can be unknown
+    relation_type = Column(String)
+
+
+class BillSponsorship(RelatedEntityBase, BillRelatedBase, Base):
+    __tablename__ = "opencivicdata_billsponsorship"
+
+    primary = Column(Boolean)
+    classification = Column(String)
+
+
+class BillSource(LinkBase, BillRelatedBase, Base):
+    __tablename__ = "opencivicdata_billsource"
+
+
+class DocVerBase(BillRelatedBase):
+    """ base class for document & version """
+
+    note = Column(String)
+    date = Column(String)
+    extras = Column(JSONB)
+
+
+class DocumentLinkBase(PrimaryUUID):
+    media_type = Column(String)
+    url = Column(String)
+    text = Column(String)
+
+
+class BillDocument(DocVerBase, Base):
+    __tablename__ = "opencivicdata_billdocument"
+
+
+class BillVersion(DocVerBase, Base):
+    __tablename__ = "opencivicdata_billversion"
+
+
+class BillDocumentLink(DocumentLinkBase, Base):
+    __tablename__ = "opencivicdata_billdocumentlink"
+
+    document_id = Column(UUID, ForeignKey(BillDocument.id))
+    document = relationship(BillDocument)
+
+
+class BillVersionLink(DocumentLinkBase, Base):
+    __tablename__ = "opencivicdata_billversionlink"
+
+    version_id = Column(UUID, ForeignKey(BillVersion.id))
+    version = relationship(BillVersion)
 
 
 class SearchableBill(Base):
