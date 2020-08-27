@@ -155,6 +155,56 @@ class LegislativeSession(BaseModel):
         orm_mode = True
 
 
+class BillAbstract(BaseModel):
+    abstract: str
+    note: str
+    date: str
+
+    class Config:
+        orm_mode = True
+
+
+class BillTitle(BaseModel):
+    title: str
+    note: str
+
+    class Config:
+        orm_mode = True
+
+
+class BillIdentifier(BaseModel):
+    identifier: str
+    scheme: str
+    note: str
+
+    class Config:
+        orm_mode = True
+
+
+class BillSponsorship(BaseModel):
+    name: str
+    entity_type: str  # TODO: enum organization or person?
+    organization: Optional[Organization]
+    person: Optional[Person]
+    primary: bool
+    classification: str
+
+    class Config:
+        orm_mode = True
+
+
+class BillAction(BaseModel):
+    organization: Organization
+    description: str
+    date: str
+    classification: List[str]
+    order: int
+    extras: dict
+
+    class Config:
+        orm_mode = True
+
+
 class Bill(SegmentableBase):
     id: str
     session: str
@@ -167,6 +217,20 @@ class Bill(SegmentableBase):
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
+    abstracts: Optional[List[BillAbstract]]
+    other_titles: Optional[List[BillTitle]]
+    other_identifiers: Optional[List[BillIdentifier]]
+    sponsorships: Optional[List[BillSponsorship]]
+    actions: Optional[List[BillAction]]
+    sources: Optional[List[Link]]
+
     class Config:
         orm_mode = True
-        segments = []
+        segments = [
+            "abstracts",
+            "other_titles",
+            "other_identifiers",
+            "actions",
+            "sponsorships",
+            "sources",
+        ]

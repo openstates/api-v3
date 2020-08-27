@@ -15,6 +15,11 @@ from .auth import apikey_auth
 
 class BillSegment(str, Enum):
     sponsorships = "sponsorships"
+    abstracts = "abstracts"
+    other_titles = "other_titles"
+    other_identifiers = "other_identifiers"
+    actions = "actions"
+    sources = "sources"
 
 
 router = APIRouter()

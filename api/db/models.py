@@ -1,6 +1,6 @@
 from collections import defaultdict
 from . import Base
-from sqlalchemy import Column, String, ForeignKey, DateTime, Integer
+from sqlalchemy import Column, String, ForeignKey, DateTime, Integer, Boolean
 from sqlalchemy.dialects.postgresql import JSONB, ARRAY, UUID, TSVECTOR
 from sqlalchemy.orm import relationship
 
@@ -166,6 +166,13 @@ class Bill(Base):
     legislative_session_id = Column(UUID, ForeignKey(LegislativeSession.id))
     legislative_session = relationship("LegislativeSession")
 
+    abstracts = relationship("BillAbstract")
+    other_titles = relationship("BillTitle")
+    other_identifiers = relationship("BillIdentifier")
+    sponsorships = relationship("BillSponsorship")
+    actions = relationship("BillAction")
+    sources = relationship("BillSource")
+
     @property
     def jurisdiction(self):
         return self.legislative_session.jurisdiction
@@ -211,6 +218,32 @@ class BillIdentifier(Base):
     identifier = Column(String)
     scheme = Column(String)
     note = Column(String)
+
+
+class BillSource(Base):
+    __tablename__ = "opencivicdata_billsource"
+
+    id = Column(Integer, primary_key=True, index=True)
+    bill_id = Column(String, ForeignKey(Bill.id))
+    bill = relationship(Bill)
+    url = Column(String)
+    note = Column(String)
+
+
+class BillSponsorship(Base):
+    __tablename__ = "opencivicdata_billsponsorship"
+
+    id = Column(UUID, primary_key=True, index=True)
+    bill_id = Column(String, ForeignKey(Bill.id))
+    bill = relationship(Bill)
+    name = Column(String)
+    entity_type = Column(String)
+    primary = Column(Boolean)
+    classification = Column(String)
+    organization_id = Column(String, ForeignKey(Organization.id))
+    organization = relationship(Organization)
+    person_id = Column(String, ForeignKey(Person.id))
+    person = relationship(Person)
 
 
 class BillAction(Base):
