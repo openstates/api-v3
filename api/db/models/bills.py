@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, ForeignKey, DateTime, Integer, Boolean
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY, TSVECTOR
 from sqlalchemy.orm import relationship
 from .. import Base
-from .common import PrimaryUUID
+from .common import PrimaryUUID, LinkBase
 from .jurisdiction import LegislativeSession
 from .people_orgs import Organization, Person
 
@@ -75,13 +75,11 @@ class BillIdentifier(PrimaryUUID, Base):
     note = Column(String)
 
 
-class BillSource(PrimaryUUID, Base):
+class BillSource(LinkBase, Base):
     __tablename__ = "opencivicdata_billsource"
 
     bill_id = Column(String, ForeignKey(Bill.id))
     bill = relationship(Bill)
-    url = Column(String)
-    note = Column(String)
 
 
 class BillSponsorship(PrimaryUUID, Base):

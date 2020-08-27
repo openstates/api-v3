@@ -3,7 +3,7 @@ from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from .. import Base
-from .common import PrimaryUUID
+from .common import PrimaryUUID, LinkBase
 from .jurisdiction import Jurisdiction
 
 
@@ -85,22 +85,18 @@ class PersonName(PrimaryUUID, Base):
     note = Column(String)
 
 
-class PersonLink(PrimaryUUID, Base):
+class PersonLink(LinkBase, Base):
     __tablename__ = "opencivicdata_personlink"
 
     person_id = Column(String, ForeignKey(Person.id))
     person = relationship(Person)
-    url = Column(String)
-    note = Column(String)
 
 
-class PersonSource(PrimaryUUID, Base):
+class PersonSource(LinkBase, Base):
     __tablename__ = "opencivicdata_personsource"
 
     person_id = Column(String, ForeignKey(Person.id))
     person = relationship(Person)
-    url = Column(String)
-    note = Column(String)
 
 
 class PersonContactDetail(PrimaryUUID, Base):
