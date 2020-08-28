@@ -7,15 +7,7 @@ from fastapi.testclient import TestClient
 from api.main import app
 from api.auth import apikey_auth
 from api.db import Base, get_db
-from api.db.models import (
-    Jurisdiction,
-    Organization,
-    Person,
-    PersonName,
-    PersonLink,
-    PersonSource,
-    PersonContactDetail,
-)
+from . import fixtures
 
 TEST_DATABASE_URL = "postgresql://v3test:v3test@localhost/v3test"
 engine = create_engine(TEST_DATABASE_URL)
@@ -54,7 +46,6 @@ app.dependency_overrides[apikey_auth] = lambda: "disable api key"
 @pytest.fixture(scope="session", autouse=True)
 def create_test_database():
     url = TEST_DATABASE_URL
-    print("C")
     try:
         if database_exists(url):
             drop_database(url)
@@ -69,109 +60,12 @@ def create_test_database():
 @pytest.fixture(scope="session", autouse=True)
 def common_data(create_test_database):
     db = TestingSessionLocal()
-    j = Jurisdiction(
-        id="ocd-jurisdiction/country:us/state:ne/government",
-        name="Nebraska",
-        url="https://nebraska.gov",
-        classification="government",
-        division_id="ocd-division/country:us/state:ne",
-    )
-    db.add(
-        Organization(
-            id="nel",
-            name="Nebraska Legislature",
-            classification="legislature",
-            jurisdiction=j,
-        )
-    )
-    db.add(
-        Organization(
-            id="nee",
-            name="Nebraska Executive",
-            classification="executive",
-            jurisdiction=j,
-        )
-    )
-    db.add(
-        Person(
-            id="1",
-            name="Amy Adams",
-            family_name="Amy",
-            given_name="Adams",
-            gender="female",
-            birth_date="2000-01-01",
-            party="Democratic",
-            current_role={
-                "org_classification": "legislature",
-                "district": 1,
-                "title": "Senator",
-                "division_id": "ocd-division/country:us/state:ne/sldu:1",
-            },
-            jurisdiction_id=j.id,
-        )
-    )
-    db.add(PersonName(person_id="1", name="Amy 'Aardvark' Adams", note="nickname"))
-    db.add(PersonLink(person_id="1", url="https://example.com/amy", note=""))
-    db.add(PersonSource(person_id="1", url="https://example.com/amy", note=""))
-    db.add(
-        PersonContactDetail(
-            person_id="1", type="voice", value="555-555-5555", note="Capitol Office"
-        )
-    )
-    db.add(
-        PersonContactDetail(
-            person_id="1", type="email", value="amy@example.com", note="Capitol Office"
-        )
-    )
-    db.add(
-        Person(
-            id="2",
-            name="Boo Berri",
-            birth_date="1973-12-25",
-            party="Libertarian",
-            current_role={"org_classification": "executive", "title": "Governor"},
-            jurisdiction_id=j.id,
-        )
-    )
-    db.add(
-        Person(
-            id="3",
-            name="Rita Red",  # retired
-            birth_date="1973-12-25",
-            party="Republican",
-            jurisdiction_id=j.id,
-        )
-    )
-    db.add(j)
-    j = Jurisdiction(
-        id="ocd-jurisdiction/country:us/state:oh/government",
-        name="Ohio",
-        url="https://ohio.gov",
-        classification="government",
-        division_id="ocd-division/country:us/state:oh",
-    )
-    db.add(
-        Organization(
-            id="ohl",
-            name="Ohio Legislature",
-            classification="legislature",
-            jurisdiction=j,
-        )
-    )
-    db.add(
-        Organization(
-            id="ohe", name="Ohio Executive", classification="executive", jurisdiction=j
-        )
-    )
-    db.add(j)
-    j = Jurisdiction(
-        id="ocd-jurisdiction/country:us/state:oh/place:mentor",
-        name="Mentor",
-        url="https://mentoroh.gov",
-        classification="municipality",
-        division_id="ocd-division/country:us/state:oh/place:mentor",
-    )
-    db.add(j)
+    for obj in fixtures.nebraska():
+        db.add(obj)
+    for obj in fixtures.ohio():
+        db.add(obj)
+    for obj in fixtures.mentor():
+        db.add(obj)
     db.commit()
 
 

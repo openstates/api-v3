@@ -1,7 +1,7 @@
 from .. import Base
 from sqlalchemy import Column, String, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+from .common import PrimaryUUID
 
 
 class Jurisdiction(Base):
@@ -22,10 +22,9 @@ class Jurisdiction(Base):
     )
 
 
-class LegislativeSession(Base):
+class LegislativeSession(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_legislativesession"
 
-    id = Column(UUID, primary_key=True, index=True)
     identifier = Column(String)
     name = Column(String)
     classification = Column(String)
