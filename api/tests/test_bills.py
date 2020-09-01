@@ -34,11 +34,11 @@ def test_bills_filter_by_subject(client):
     assert len(response["results"]) == 2
 
 
-# def test_bills_filter_by_updated_since(client):
-#     response = client.get("/bills?jurisdiction=ne&updated_since=2020")
-#     assert len(response.json()["results"]) == 7
-#     response = client.get("/bills?jurisdiction=ne&updated_since=2022")
-#     assert len(response.json()["results"]) == 0
+def test_bills_filter_by_updated_since(client):
+    response = client.get("/bills?jurisdiction=ne&updated_since=2020")
+    assert len(response.json()["results"]) == 7
+    response = client.get("/bills?jurisdiction=ne&updated_since=2022")
+    assert len(response.json()["results"]) == 0
 
 
 # TODO

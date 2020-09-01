@@ -2,7 +2,7 @@ import re
 from typing import Optional, List
 from enum import Enum
 from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy import func
+from sqlalchemy import func, cast, String
 from sqlalchemy.orm import contains_eager
 from openstates_metadata import lookup
 from .db import SessionLocal, get_db, models
@@ -95,7 +95,7 @@ async def bills(
     if subject:
         query = query.filter(models.Bill.subject.contains(subject))
     if updated_since:
-        query = query.filter(models.Bill.updated_at > updated_since)
+        query = query.filter(cast(models.Bill.updated_at, String) > updated_since)
     if action_since:
         query = query.filter(models.Bill.latest_action_date > action_since)
     if q:
