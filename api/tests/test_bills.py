@@ -18,7 +18,10 @@ def test_bills_filter_by_session(client):
 def test_bills_filter_by_chamber(client):
     response = client.get("/bills?jurisdiction=ne&chamber=legislature")
     assert len(response.json()["results"]) == 7
-    # TODO: test other chambers
+    response = client.get("/bills?jurisdiction=oh&chamber=upper")
+    assert len(response.json()["results"]) == 1
+    response = client.get("/bills?jurisdiction=oh&chamber=lower")
+    assert len(response.json()["results"]) == 0
 
 
 def test_bills_filter_by_classification(client):
