@@ -26,6 +26,7 @@ def create_test_bill(
     sources=0,
     subjects=None,
     identifier=None,
+    classification=None,
 ):
     b = Bill(
         id="ocd-bill/" + str(uuid.uuid4()),
@@ -34,7 +35,7 @@ def create_test_bill(
         legislative_session=session,
         from_organization=chamber,
         subject=subjects or [],
-        classification=["bill"],
+        classification=classification or ["bill"],
         extras={},
         created_at=datetime.datetime.utcnow(),
         updated_at=datetime.datetime.utcnow(),
@@ -50,7 +51,8 @@ def nebraska():
         classification="government",
         division_id="ocd-division/country:us/state:ne",
     )
-    ls = LegislativeSession(jurisdiction=j, identifier="2020")
+    ls2020 = LegislativeSession(jurisdiction=j, identifier="2020")
+    ls2021 = LegislativeSession(jurisdiction=j, identifier="2021")
     leg = Organization(
         id="nel",
         name="Nebraska Legislature",
@@ -61,7 +63,7 @@ def nebraska():
     for n in range(5):
         bills.append(
             create_test_bill(
-                ls,
+                ls2020,
                 leg,
                 sponsors=n,
                 actions=n,
@@ -71,10 +73,25 @@ def nebraska():
                 subjects=["sample"],
             )
         )
+    for n in range(2):
+        bills.append(
+            create_test_bill(
+                ls2021,
+                leg,
+                sponsors=n,
+                actions=n,
+                versions=n,
+                documents=n,
+                sources=n,
+                subjects=["futurism"],
+                classification=["resolution"],
+            )
+        )
 
     return [
         j,
-        ls,
+        ls2020,
+        ls2021,
         leg,
         *bills,
         Organization(
@@ -134,14 +151,20 @@ def ohio():
         classification="government",
         division_id="ocd-division/country:us/state:oh",
     )
+    leg = Organization(
+        id="ohl", name="Ohio Legislature", classification="legislature", jurisdiction=j,
+    )
+    upper = Organization(
+        id="ohs", name="Ohio Senate", classification="upper", jurisdiction=j,
+    )
+    lower = Organization(
+        id="ohh", name="Ohio House", classification="lower", jurisdiction=j,
+    )
     return [
         j,
-        Organization(
-            id="ohl",
-            name="Ohio Legislature",
-            classification="legislature",
-            jurisdiction=j,
-        ),
+        leg,
+        upper,
+        lower,
         Organization(
             id="ohe", name="Ohio Executive", classification="executive", jurisdiction=j
         ),
