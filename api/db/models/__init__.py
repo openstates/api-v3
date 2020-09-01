@@ -8,5 +8,5 @@ from .people_orgs import (
     PersonSource,
     PersonContactDetail,
 )
-from .bills import Bill
+from .bills import Bill, BillAction
 from .votes import VoteEvent

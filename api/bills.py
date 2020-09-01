@@ -95,9 +95,9 @@ async def bills(
     if subject:
         query = query.filter(models.Bill.subject.contains(subject))
     if updated_since:
-        query = query.filter(cast(models.Bill.updated_at, String) > updated_since)
+        query = query.filter(cast(models.Bill.updated_at, String) >= updated_since)
     if action_since:
-        query = query.filter(models.Bill.latest_action_date > action_since)
+        query = query.filter(models.Bill.latest_action_date >= action_since)
     if q:
         if _likely_bill_id.match(q):
             query = query.filter(func.upper(models.Bill.identifier) == fix_bill_id(q))

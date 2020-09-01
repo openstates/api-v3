@@ -11,6 +11,7 @@ from api.db.models import (
     PersonSource,
     PersonContactDetail,
     Bill,
+    BillAction,
 )
 
 
@@ -39,8 +40,13 @@ def create_test_bill(
         extras={},
         created_at=datetime.datetime.utcnow(),
         updated_at=datetime.datetime.utcnow(),
+        latest_action_date=session.identifier,  # have the actions take place the same year as session
     )
-    return b
+    yield b
+    for n in range(actions):
+        yield BillAction(
+            bill=b, description="an action took place", date=session.identifier
+        )
 
 
 def nebraska():
@@ -61,7 +67,7 @@ def nebraska():
     )
     bills = []
     for n in range(5):
-        bills.append(
+        bills.extend(
             create_test_bill(
                 ls2020,
                 leg,
@@ -74,7 +80,7 @@ def nebraska():
             )
         )
     for n in range(2):
-        bills.append(
+        bills.extend(
             create_test_bill(
                 ls2021,
                 leg,
