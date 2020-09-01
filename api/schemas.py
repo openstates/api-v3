@@ -120,17 +120,16 @@ class Person(IncludeBase):
     party: str
     current_role: Optional[CurrentRole]
 
-    # TODO: make these required?
-    # extra_bio
-    family_name: Optional[str]
-    given_name: Optional[str]
-    image: Optional[str]
-    gender: Optional[str]
-    birth_date: Optional[str]
-    death_date: Optional[str]
-    extras: Optional[dict]
-    created_at: Optional[datetime.datetime]
-    updated_at: Optional[datetime.datetime]
+    # extra detail
+    family_name: str
+    given_name: str
+    image: str
+    gender: str
+    birth_date: str
+    death_date: str
+    extras: dict
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
 
     # joins
     other_identifiers: Optional[List[AltIdentifier]]

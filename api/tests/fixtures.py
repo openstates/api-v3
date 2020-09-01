@@ -123,6 +123,8 @@ def nebraska():
                 "division_id": "ocd-division/country:us/state:ne/sldu:1",
             },
             jurisdiction_id=j.id,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow(),
         ),
         PersonName(person_id="1", name="Amy 'Aardvark' Adams", note="nickname"),
         PersonLink(person_id="1", url="https://example.com/amy", note=""),
@@ -140,6 +142,8 @@ def nebraska():
             party="Libertarian",
             current_role={"org_classification": "executive", "title": "Governor"},
             jurisdiction_id=j.id,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow(),
         ),
         Person(
             id="3",
@@ -147,6 +151,8 @@ def nebraska():
             birth_date="1973-12-25",
             party="Republican",
             jurisdiction_id=j.id,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow(),
         ),
     ]
 
