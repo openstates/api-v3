@@ -211,9 +211,9 @@ class Bill(SegmentableBase):
     jurisdiction: CompactJurisdiction
     identifier: str
     title: str
-    classification: List[str]
-    subject: List[str]
-    extras: dict
+    classification: List[str] = list
+    subject: List[str] = list
+    extras: dict = dict
     created_at: datetime.datetime
     updated_at: datetime.datetime
 

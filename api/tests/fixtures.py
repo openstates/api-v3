@@ -1,4 +1,6 @@
 import random
+import uuid
+import datetime
 from api.db.models import (
     LegislativeSession,
     Jurisdiction,
@@ -13,7 +15,6 @@ from api.db.models import (
 
 
 def create_test_bill(
-    db,
     session,
     chamber,
     *,
@@ -26,16 +27,18 @@ def create_test_bill(
     subjects=None,
     identifier=None,
 ):
-    chamber = db.query(Organization).filter(classification=chamber)[0].id
-    session = db.query(LegislativeSession).filter(identifier=session)[0].id
     b = Bill(
+        id="ocd-bill/" + str(uuid.uuid4()),
         identifier=identifier or ("Bill " + str(random.randint(1000, 9000))),
         title="Random Bill",
-        legislative_session_id=session,
-        from_organization_id=chamber,
+        legislative_session=session,
+        from_organization=chamber,
         subject=subjects or [],
+        classification=["bill"],
+        extras={},
+        created_at=datetime.datetime.utcnow(),
+        updated_at=datetime.datetime.utcnow(),
     )
-    db.add(b)
     return b
 
 
@@ -47,16 +50,33 @@ def nebraska():
         classification="government",
         division_id="ocd-division/country:us/state:ne",
     )
+    ls = LegislativeSession(jurisdiction=j, identifier="2020")
+    leg = Organization(
+        id="nel",
+        name="Nebraska Legislature",
+        classification="legislature",
+        jurisdiction=j,
+    )
+    bills = []
+    for n in range(5):
+        bills.append(
+            create_test_bill(
+                ls,
+                leg,
+                sponsors=n,
+                actions=n,
+                versions=n,
+                documents=n,
+                sources=n,
+                subjects=["sample"],
+            )
+        )
 
     return [
         j,
-        LegislativeSession(jurisdiction=j, identifier="2020"),
-        Organization(
-            id="nel",
-            name="Nebraska Legislature",
-            classification="legislature",
-            jurisdiction=j,
-        ),
+        ls,
+        leg,
+        *bills,
         Organization(
             id="nee",
             name="Nebraska Executive",

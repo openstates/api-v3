@@ -22,7 +22,9 @@ class Bill(Base):
 
     from_organization_id = Column(String, ForeignKey(Organization.id))
     from_organization = relationship("Organization")
-    legislative_session_id = Column(UUID, ForeignKey(LegislativeSession.id))
+    legislative_session_id = Column(
+        UUID(as_uuid=True), ForeignKey(LegislativeSession.id)
+    )
     legislative_session = relationship("LegislativeSession")
 
     abstracts = relationship("BillAbstract")
