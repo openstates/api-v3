@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, ForeignKey, DateTime, Integer, Boolean
+from sqlalchemy import Column, String, ForeignKey, DateTime, Integer, Boolean, Text
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY, TSVECTOR
 from sqlalchemy.orm import relationship
@@ -14,8 +14,9 @@ class Bill(Base):
     id = Column(String, primary_key=True, index=True)
     identifier = Column(String)
     title = Column(String)
-    classification = Column(ARRAY(String))
-    subject = Column(ARRAY(String))
+    # important for ARRAY types to use Text to avoid casting to String
+    classification = Column(ARRAY(Text))
+    subject = Column(ARRAY(Text))
     extras = Column(JSONB)
     created_at = Column(DateTime(timezone=True))
     updated_at = Column(DateTime(timezone=True))
@@ -89,7 +90,7 @@ class BillAction(BillRelatedBase, Base):
     organization = relationship(Organization)
     description = Column(String)
     date = Column(String)
-    classification = Column(ARRAY(String))
+    classification = Column(ARRAY(Text))
     order = Column(Integer)
     extras = Column(JSONB)
 

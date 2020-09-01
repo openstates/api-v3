@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, ForeignKey, Integer
+from sqlalchemy import Column, String, ForeignKey, Integer, Text
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import relationship
 from .. import Base
@@ -14,7 +14,7 @@ class VoteEvent(Base):
     id = Column(String, primary_key=True, index=True)
     identifier = Column(String)
     motion_text = Column(String)
-    motion_classification = Column(ARRAY(String))
+    motion_classification = Column(ARRAY(Text))
     start_date = Column(String)
     result = Column(String)
     extras = Column(JSONB)

@@ -28,10 +28,10 @@ def test_bills_filter_by_classification(client):
     assert len(response.json()["results"]) == 2
 
 
-# def test_bills_filter_by_subject(client):
-#     response = client.get("/bills?jurisdiction=ne&subject=futurism")
-#     response = response.json()
-#     assert len(response["results"]) == 2
+def test_bills_filter_by_subject(client):
+    response = client.get("/bills?jurisdiction=ne&subject=futurism")
+    response = response.json()
+    assert len(response["results"]) == 2
 
 
 # def test_bills_filter_by_updated_since(client):
