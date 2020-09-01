@@ -49,7 +49,21 @@ def test_bills_filter_by_action_since(client):
 
 
 def test_bills_filter_by_query(client):
-    pass
+    response = client.get("/bills?q=HIOO")
+    assert len(response.json()["results"]) == 1
+    response = client.get("/bills?q=Ohio")
+    assert len(response.json()["results"]) == 1
+    response = client.get("/bills?q=Cleveland")
+    assert len(response.json()["results"]) == 0
+
+
+def test_bills_filter_by_query_bill_id(client):
+    response = client.get("/bills?q=HB 1")
+    assert len(response.json()["results"]) == 1
+    response = client.get("/bills?q=hb1")
+    assert len(response.json()["results"]) == 1
+    response = client.get("/bills?q=hb6")
+    assert len(response.json()["results"]) == 0
 
 
 def test_bills_no_filter(client):

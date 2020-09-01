@@ -100,7 +100,9 @@ async def bills(
         query = query.filter(models.Bill.latest_action_date >= action_since)
     if q:
         if _likely_bill_id.match(q):
-            query = query.filter(func.upper(models.Bill.identifier) == fix_bill_id(q))
+            query = query.filter(
+                func.upper(models.Bill.identifier) == fix_bill_id(q).upper()
+            )
         else:
             query = query.join(models.SearchableBill).filter(
                 models.SearchableBill.search_vector.op("@@")(
@@ -111,7 +113,7 @@ async def bills(
     if not q and not jurisdiction:
         raise HTTPException(400, "either 'jurisdiction' or 'q' required")
 
-    # TODO: handle segments
+    # handle segments
     for segval in BillSegment:
         query = joined_or_noload(query, segval, segments)
 

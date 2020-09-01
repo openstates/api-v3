@@ -1,6 +1,7 @@
 import random
 import uuid
 import datetime
+from sqlalchemy import func
 from api.db.models import (
     LegislativeSession,
     Jurisdiction,
@@ -12,6 +13,7 @@ from api.db.models import (
     PersonContactDetail,
     Bill,
     BillAction,
+    SearchableBill,
 )
 
 
@@ -157,6 +159,7 @@ def ohio():
         classification="government",
         division_id="ocd-division/country:us/state:oh",
     )
+    ls2021 = LegislativeSession(jurisdiction=j, identifier="2021")
     leg = Organization(
         id="ohl", name="Ohio Legislature", classification="legislature", jurisdiction=j,
     )
@@ -166,11 +169,33 @@ def ohio():
     lower = Organization(
         id="ohh", name="Ohio House", classification="lower", jurisdiction=j,
     )
+    hb1 = Bill(
+        id="ocd-bill/1234",
+        identifier="HB 1",
+        title="Alphabetization of OHIO Act",
+        legislative_session=ls2021,
+        from_organization=upper,
+        subject=[],
+        classification=["bill"],
+        extras={},
+        created_at=datetime.datetime.utcnow(),
+        updated_at=datetime.datetime.utcnow(),
+        latest_action_date="2021-01-01",
+    )
+    btext = SearchableBill(
+        bill=hb1,
+        search_vector=func.to_tsvector(
+            "This bill renames Ohio to HIOO, it is a good idea.", config="english"
+        ),
+    )
     return [
         j,
         leg,
         upper,
         lower,
+        ls2021,
+        hb1,
+        btext,
         Organization(
             id="ohe", name="Ohio Executive", classification="executive", jurisdiction=j
         ),

@@ -8,5 +8,20 @@ from .people_orgs import (
     PersonSource,
     PersonContactDetail,
 )
-from .bills import Bill, BillAction
+from .bills import (
+    Bill,
+    BillAbstract,
+    BillTitle,
+    BillIdentifier,
+    BillAction,
+    BillActionRelatedEntity,
+    RelatedBill,
+    BillSponsorship,
+    BillSource,
+    BillDocument,
+    BillDocumentLink,
+    BillVersion,
+    BillVersionLink,
+    SearchableBill,
+)
 from .votes import VoteEvent
