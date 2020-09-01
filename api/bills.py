@@ -12,7 +12,7 @@ from .auth import apikey_auth
 from .utils import joined_or_noload
 
 
-class BillSegment(str, Enum):
+class BillInclude(str, Enum):
     sponsorships = "sponsorships"
     abstracts = "abstracts"
     other_titles = "other_titles"
@@ -66,7 +66,7 @@ async def bills(
     action_since: Optional[str] = None,
     # TODO: sponsor: Optional[str] = None,
     q: Optional[str] = None,
-    segments: List[BillSegment] = Query([]),
+    include: List[BillInclude] = Query([]),
     db: SessionLocal = Depends(get_db),
     pagination: Pagination = Depends(Pagination),
     auth: str = Depends(apikey_auth),
@@ -113,12 +113,12 @@ async def bills(
     if not q and not jurisdiction:
         raise HTTPException(400, "either 'jurisdiction' or 'q' required")
 
-    # handle segments
-    for segval in BillSegment:
-        query = joined_or_noload(query, segval, segments)
+    # handle includes
+    for segval in BillInclude:
+        query = joined_or_noload(query, segval, include)
 
     resp = pagination.paginate(query)
 
-    resp["results"] = [Bill.with_segments(r, segments) for r in resp["results"]]
+    resp["results"] = [Bill.with_includes(r, include) for r in resp["results"]]
 
     return resp

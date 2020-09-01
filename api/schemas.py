@@ -4,13 +4,13 @@ from enum import Enum
 from pydantic import BaseModel
 
 
-class SegmentableBase(BaseModel):
+class IncludeBase(BaseModel):
     @classmethod
-    def with_segments(Cls, obj, segments):
+    def with_includes(Cls, obj, includes):
         newobj = Cls.from_orm(obj)
-        for segment in Cls.__config__.segments:
-            if segment not in segments:
-                setattr(newobj, segment, None)
+        for include in Cls.__config__.includes:
+            if include not in includes:
+                setattr(newobj, include, None)
         return newobj
 
 
@@ -43,7 +43,7 @@ class Organization(BaseModel):
         orm_mode = True
 
 
-class Jurisdiction(SegmentableBase):
+class Jurisdiction(IncludeBase):
     id: str
     name: str
     classification: JurisdictionClassification
@@ -56,7 +56,7 @@ class Jurisdiction(SegmentableBase):
 
     class Config:
         orm_mode = True
-        segments = ["organizations"]
+        includes = ["organizations"]
 
 
 class CurrentRole(BaseModel):
@@ -113,7 +113,7 @@ class CompactJurisdiction(BaseModel):
         orm_mode = True
 
 
-class Person(SegmentableBase):
+class Person(IncludeBase):
     id: str
     name: str
     jurisdiction: CompactJurisdiction
@@ -132,7 +132,7 @@ class Person(SegmentableBase):
     created_at: Optional[datetime.datetime]
     updated_at: Optional[datetime.datetime]
 
-    # join segments
+    # joins
     other_identifiers: Optional[List[AltIdentifier]]
     other_names: Optional[List[AltName]]
     links: Optional[List[Link]]
@@ -141,7 +141,7 @@ class Person(SegmentableBase):
 
     class Config:
         orm_mode = True
-        segments = ["other_names", "other_identifiers", "links", "sources", "offices"]
+        includes = ["other_names", "other_identifiers", "links", "sources", "offices"]
 
 
 class LegislativeSession(BaseModel):
@@ -205,7 +205,7 @@ class BillAction(BaseModel):
         orm_mode = True
 
 
-class Bill(SegmentableBase):
+class Bill(IncludeBase):
     id: str
     session: str
     jurisdiction: CompactJurisdiction
@@ -226,7 +226,7 @@ class Bill(SegmentableBase):
 
     class Config:
         orm_mode = True
-        segments = [
+        includes = [
             "abstracts",
             "other_titles",
             "other_identifiers",

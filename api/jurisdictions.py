@@ -8,7 +8,7 @@ from .auth import apikey_auth
 from .utils import joined_or_noload
 
 
-class JurisdictionSegment(str, Enum):
+class JurisdictionInclude(str, Enum):
     organizations = "organizations"
 
 
@@ -22,7 +22,7 @@ router = APIRouter()
 )
 async def jurisdictions(
     classification: Optional[JurisdictionClassification] = None,
-    segments: List[JurisdictionSegment] = Query([]),
+    include: List[JurisdictionInclude] = Query([]),
     db: SessionLocal = Depends(get_db),
     pagination: Pagination = Depends(Pagination),
     auth: str = Depends(apikey_auth),
@@ -32,8 +32,8 @@ async def jurisdictions(
         classification = "government"
     query = db.query(models.Jurisdiction).order_by(models.Jurisdiction.name)
 
-    # handle segments
-    query = joined_or_noload(query, JurisdictionSegment.organizations, segments)
+    # handle includes
+    query = joined_or_noload(query, JurisdictionInclude.organizations, include)
 
     # handle parameters
     if classification:
@@ -44,6 +44,6 @@ async def jurisdictions(
     for result in resp["results"]:
         if result.classification == "government":
             result.classification = "state"
-    resp["results"] = [Jurisdiction.with_segments(r, segments) for r in resp["results"]]
+    resp["results"] = [Jurisdiction.with_includes(r, include) for r in resp["results"]]
 
     return resp

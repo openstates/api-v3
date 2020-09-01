@@ -11,7 +11,7 @@ from .auth import apikey_auth
 from .utils import joined_or_noload
 
 
-class PersonSegment(str, Enum):
+class PersonInclude(str, Enum):
     other_names = "other_names"
     other_identifiers = "other_identifiers"
     links = "links"
@@ -42,7 +42,7 @@ async def people(
     name: Optional[str] = None,
     id: Optional[List[str]] = Query([]),
     org_classification: Optional[OrgClassification] = None,
-    segments: List[PersonSegment] = Query([]),
+    include: List[PersonInclude] = Query([]),
     db: SessionLocal = Depends(get_db),
     pagination: Pagination = Depends(Pagination),
     auth: str = Depends(apikey_auth),
@@ -82,17 +82,17 @@ async def people(
     if not filtered:
         raise HTTPException(400, "either 'jurisdiction', 'name', or 'id' is required")
 
-    # handle segments
-    query = joined_or_noload(query, PersonSegment.other_names, segments)
-    query = joined_or_noload(query, PersonSegment.other_identifiers, segments)
-    query = joined_or_noload(query, PersonSegment.links, segments)
-    query = joined_or_noload(query, PersonSegment.sources, segments)
+    # handle includes
+    query = joined_or_noload(query, PersonInclude.other_names, include)
+    query = joined_or_noload(query, PersonInclude.other_identifiers, include)
+    query = joined_or_noload(query, PersonInclude.links, include)
+    query = joined_or_noload(query, PersonInclude.sources, include)
     query = joined_or_noload(
-        query, PersonSegment.offices, segments, dbname="contact_details"
+        query, PersonInclude.offices, include, dbname="contact_details"
     )
 
     resp = pagination.paginate(query)
 
-    resp["results"] = [Person.with_segments(r, segments) for r in resp["results"]]
+    resp["results"] = [Person.with_includes(r, include) for r in resp["results"]]
 
     return resp

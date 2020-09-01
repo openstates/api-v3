@@ -78,9 +78,9 @@ def test_no_filter(client):
     assert "is required" in response.json()["detail"]
 
 
-def test_people_segments_normal(client):
+def test_people_includes_normal(client):
     response = client.get(
-        "/people?id=1&segments=other_names&segments=other_identifiers&segments=links&segments=sources"
+        "/people?id=1&include=other_names&include=other_identifiers&include=links&include=sources"
     ).json()
     assert query_logger.count == 2  # no extra queries
     assert response["results"][0]["other_names"] == [
@@ -95,8 +95,8 @@ def test_people_segments_normal(client):
     ]
 
 
-def test_people_segments_office(client):
-    response = client.get("/people?id=1&segments=offices").json()
+def test_people_include_office(client):
+    response = client.get("/people?id=1&include=offices").json()
     assert query_logger.count == 2  # no extra queries
     assert response["results"][0]["offices"] == [
         {"name": "Capitol Office", "email": "amy@example.com", "voice": "555-555-5555"}

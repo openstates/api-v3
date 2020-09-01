@@ -31,10 +31,10 @@ def test_jurisdictions_filter(client):
 
 def test_jurisdiction_include_organizations(client):
     response = client.get(
-        "/jurisdictions?classification=state&per_page=1&segments=organizations"
+        "/jurisdictions?classification=state&per_page=1&include=organizations"
     )
     response = response.json()
-    # segment is included, organizations are inline
+    # is included, organizations are inline
     assert query_logger.count == 2
     assert len(response["results"][0]["organizations"]) == 2
     assert response["results"][0]["organizations"][0] == {
@@ -46,9 +46,9 @@ def test_jurisdiction_include_organizations(client):
 
 def test_jurisdiction_include_organizations_empty(client):
     response = client.get(
-        "/jurisdictions?classification=municipality&per_page=1&segments=organizations"
+        "/jurisdictions?classification=municipality&per_page=1&include=organizations"
     )
     response = response.json()
-    # segment is included, but the field is empty
+    # is included, but the field is empty
     assert len(response["results"][0]["organizations"]) == 0
     assert query_logger.count == 2
