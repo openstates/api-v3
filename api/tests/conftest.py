@@ -22,8 +22,8 @@ class QueryLogger:
         self.count = 0
 
     def callback(self, conn, cursor, statement, parameters, context, executemany):
-        print(statement, parameters)
         self.count += 1
+        print(f"==== QUERY #{self.count} ====\n", statement, parameters)
 
 
 query_logger = QueryLogger()

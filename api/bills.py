@@ -9,8 +9,7 @@ from .db import SessionLocal, get_db, models
 from .schemas import Bill
 from .pagination import Pagination
 from .auth import apikey_auth
-
-# from .utils import joined_or_noload
+from .utils import joined_or_noload
 
 
 class BillSegment(str, Enum):
@@ -77,8 +76,12 @@ async def bills(
         .join(models.Bill.legislative_session)
         .join(models.Bill.from_organization)
         .order_by(models.LegislativeSession.identifier, models.Bill.identifier)
-        .options(contains_eager(models.Bill.legislative_session))
-        # .options(contains_eager(models.Bill.legislative_session.jurisdiction))
+        .options(
+            contains_eager(
+                models.Bill.legislative_session, models.LegislativeSession.jurisdiction
+            )
+        )
+        .options(contains_eager(models.Bill.from_organization))
     )
 
     if jurisdiction:
@@ -109,7 +112,8 @@ async def bills(
         raise HTTPException(400, "either 'jurisdiction' or 'q' required")
 
     # TODO: handle segments
-    # query = joined_or_noload(query, PersonSegment.other_names, segments)
+    for segval in BillSegment:
+        query = joined_or_noload(query, segval, segments)
 
     resp = pagination.paginate(query)
 
