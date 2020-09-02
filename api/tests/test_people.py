@@ -82,7 +82,7 @@ def test_people_includes_normal(client):
     response = client.get(
         "/people?id=1&include=other_names&include=other_identifiers&include=links&include=sources"
     ).json()
-    assert query_logger.count == 2  # no extra queries
+    assert query_logger.count == 6  # 4 extra queries
     assert response["results"][0]["other_names"] == [
         {"name": "Amy 'Aardvark' Adams", "note": "nickname"}
     ]
@@ -97,7 +97,7 @@ def test_people_includes_normal(client):
 
 def test_people_include_office(client):
     response = client.get("/people?id=1&include=offices").json()
-    assert query_logger.count == 2  # no extra queries
+    assert query_logger.count == 3  # 1 extra query
     assert response["results"][0]["offices"] == [
         {"name": "Capitol Office", "email": "amy@example.com", "voice": "555-555-5555"}
     ]

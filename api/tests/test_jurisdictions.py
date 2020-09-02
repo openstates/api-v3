@@ -35,7 +35,7 @@ def test_jurisdiction_include_organizations(client):
     )
     response = response.json()
     # is included, organizations are inline
-    assert query_logger.count == 2
+    assert query_logger.count == 3
     assert len(response["results"][0]["organizations"]) == 2
     assert response["results"][0]["organizations"][0] == {
         "id": "nel",
@@ -51,4 +51,4 @@ def test_jurisdiction_include_organizations_empty(client):
     response = response.json()
     # is included, but the field is empty
     assert len(response["results"][0]["organizations"]) == 0
-    assert query_logger.count == 2
+    assert query_logger.count == 3
