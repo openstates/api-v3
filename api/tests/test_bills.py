@@ -74,3 +74,19 @@ def test_bills_no_filter(client):
     assert query_logger.count == 0
     assert response.status_code == 400
     assert "required" in response.json()["detail"]
+
+
+def test_bills_include_basics(client):
+    response = client.get(
+        "/bills?jurisdiction=ne&session=2020&include=sponsorships&include=abstracts"
+        "&include=other_titles&include=other_identifiers&include=actions&include=sources"
+    )
+    assert query_logger.count == 8
+    assert response.status_code == 200
+    for b in response.json()["results"]:
+        assert len(b["sponsorships"]) == 2
+        assert len(b["abstracts"]) == 0
+        assert len(b["other_titles"]) == 0
+        assert len(b["other_identifiers"]) == 0
+        assert len(b["actions"]) == 5
+        assert len(b["sources"]) == 1

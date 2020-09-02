@@ -13,6 +13,8 @@ from api.db.models import (
     PersonContactDetail,
     Bill,
     BillAction,
+    BillSponsorship,
+    BillSource,
     SearchableBill,
 )
 
@@ -45,10 +47,24 @@ def create_test_bill(
         latest_action_date=session.identifier,  # have the actions take place the same year as session
     )
     yield b
+    for n in range(sponsors):
+        yield BillSponsorship(
+            bill=b,
+            primary=True,
+            classification="sponsor",
+            name="Someone",
+            entity_type="person",
+        )
     for n in range(actions):
         yield BillAction(
-            bill=b, description="an action took place", date=session.identifier
+            bill=b,
+            description="an action took place",
+            date=session.identifier,
+            organization=chamber,
+            order=n,
         )
+    for n in range(sources):
+        yield BillSource(bill=b, url="https://example.com/source", note="")
 
 
 def nebraska():
@@ -73,26 +89,18 @@ def nebraska():
             create_test_bill(
                 ls2020,
                 leg,
-                sponsors=n,
-                actions=n,
-                versions=n,
-                documents=n,
-                sources=n,
+                sponsors=2,
+                actions=5,
+                versions=3,
+                documents=3,
+                sources=1,
                 subjects=["sample"],
             )
         )
     for n in range(2):
         bills.extend(
             create_test_bill(
-                ls2021,
-                leg,
-                sponsors=n,
-                actions=n,
-                versions=n,
-                documents=n,
-                sources=n,
-                subjects=["futurism"],
-                classification=["resolution"],
+                ls2021, leg, subjects=["futurism"], classification=["resolution"],
             )
         )
 

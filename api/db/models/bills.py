@@ -90,9 +90,9 @@ class BillAction(BillRelatedBase, Base):
     organization = relationship(Organization)
     description = Column(String)
     date = Column(String)
-    classification = Column(ARRAY(Text))
+    classification = Column(ARRAY(Text), default=list)
     order = Column(Integer)
-    extras = Column(JSONB)
+    extras = Column(JSONB, default=dict)
 
 
 class BillActionRelatedEntity(RelatedEntityBase, Base):

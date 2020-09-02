@@ -19,6 +19,9 @@ class BillInclude(str, Enum):
     other_identifiers = "other_identifiers"
     actions = "actions"
     sources = "sources"
+    # documents = "documents"
+    # versions = "versions"
+    # votes = "votes"
 
 
 router = APIRouter()
