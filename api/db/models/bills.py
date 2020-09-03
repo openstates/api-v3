@@ -34,6 +34,8 @@ class Bill(Base):
     sponsorships = relationship("BillSponsorship")
     actions = relationship("BillAction")
     sources = relationship("BillSource")
+    documents = relationship("BillDocument")
+    versions = relationship("BillVersion")
 
     @property
     def jurisdiction(self):
@@ -98,7 +100,7 @@ class BillAction(BillRelatedBase, Base):
 class BillActionRelatedEntity(RelatedEntityBase, Base):
     __tablename__ = "opencivicdata_billactionrelatedentity"
 
-    action_id = Column(UUID, ForeignKey(BillAction.id))
+    action_id = Column(UUID(as_uuid=True), ForeignKey(BillAction.id))
     action = relationship(BillAction)
 
 
@@ -143,22 +145,26 @@ class DocumentLinkBase(PrimaryUUID):
 class BillDocument(DocVerBase, Base):
     __tablename__ = "opencivicdata_billdocument"
 
+    links = relationship("BillDocumentLink")
+
 
 class BillVersion(DocVerBase, Base):
     __tablename__ = "opencivicdata_billversion"
+
+    links = relationship("BillVersionLink")
 
 
 class BillDocumentLink(DocumentLinkBase, Base):
     __tablename__ = "opencivicdata_billdocumentlink"
 
-    document_id = Column(UUID, ForeignKey(BillDocument.id))
+    document_id = Column(UUID(as_uuid=True), ForeignKey(BillDocument.id))
     document = relationship(BillDocument)
 
 
 class BillVersionLink(DocumentLinkBase, Base):
     __tablename__ = "opencivicdata_billversionlink"
 
-    version_id = Column(UUID, ForeignKey(BillVersion.id))
+    version_id = Column(UUID(as_uuid=True), ForeignKey(BillVersion.id))
     version = relationship(BillVersion)
 
 

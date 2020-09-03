@@ -15,6 +15,10 @@ from api.db.models import (
     BillAction,
     BillSponsorship,
     BillSource,
+    BillVersion,
+    BillVersionLink,
+    BillDocument,
+    BillDocumentLink,
     SearchableBill,
 )
 
@@ -65,6 +69,18 @@ def create_test_bill(
         )
     for n in range(sources):
         yield BillSource(bill=b, url="https://example.com/source", note="")
+    for n in range(versions):
+        bv = BillVersion(bill=b, note=f"Version {n}", date="2020")
+        yield bv
+        yield BillVersionLink(
+            version=bv, url=f"https://example.com/{n}", media_type="text/html"
+        )
+    for n in range(documents):
+        bd = BillDocument(bill=b, note=f"Version {n}", date="2020")
+        yield bd
+        yield BillDocumentLink(
+            document=bd, url=f"https://example.com/{n}", media_type="text/html"
+        )
 
 
 def nebraska():
@@ -91,7 +107,7 @@ def nebraska():
                 leg,
                 sponsors=2,
                 actions=5,
-                versions=3,
+                versions=2,
                 documents=3,
                 sources=1,
                 subjects=["sample"],

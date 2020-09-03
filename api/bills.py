@@ -19,8 +19,8 @@ class BillInclude(str, Enum):
     other_identifiers = "other_identifiers"
     actions = "actions"
     sources = "sources"
-    # documents = "documents"
-    # versions = "versions"
+    documents = "documents"
+    versions = "versions"
     # votes = "votes"
 
 
@@ -119,6 +119,12 @@ async def bills(
     # handle includes
     for segval in BillInclude:
         query = joined_or_noload(query, segval, include)
+    query = joined_or_noload(
+        query, BillInclude.versions, include, dbname="versions.links"
+    )
+    query = joined_or_noload(
+        query, BillInclude.documents, include, dbname="documents.links"
+    )
 
     resp = pagination.paginate(query)
 

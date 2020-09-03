@@ -204,6 +204,23 @@ class BillAction(BaseModel):
         orm_mode = True
 
 
+class BillDocumentLink(BaseModel):
+    url: str
+    media_type: str
+
+    class Config:
+        orm_mode = True
+
+
+class BillDocumentOrVersion(BaseModel):
+    note: str
+    date: str
+    links: List[BillDocumentLink]
+
+    class Config:
+        orm_mode = True
+
+
 class Bill(IncludeBase):
     id: str
     session: str
@@ -222,6 +239,8 @@ class Bill(IncludeBase):
     sponsorships: Optional[List[BillSponsorship]]
     actions: Optional[List[BillAction]]
     sources: Optional[List[Link]]
+    versions: Optional[List[BillDocumentOrVersion]]
+    documents: Optional[List[BillDocumentOrVersion]]
 
     class Config:
         orm_mode = True
@@ -232,4 +251,6 @@ class Bill(IncludeBase):
             "actions",
             "sponsorships",
             "sources",
+            "versions",
+            "documents",
         ]

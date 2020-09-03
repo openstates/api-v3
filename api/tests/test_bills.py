@@ -90,3 +90,21 @@ def test_bills_include_basics(client):
         assert len(b["other_identifiers"]) == 0
         assert len(b["actions"]) == 5
         assert len(b["sources"]) == 1
+        assert "documents" not in b
+
+
+def test_bills_include_documents_versions(client):
+    response = client.get(
+        "/bills?jurisdiction=ne&session=2020&include=documents&include=versions"
+    )
+    assert query_logger.count == 6
+    assert response.status_code == 200
+    for b in response.json()["results"]:
+        assert len(b["documents"]) == 3
+        assert len(b["versions"]) == 2
+        assert b["versions"][0] == {
+            "note": "Version 0",
+            "date": "2020",
+            "links": [{"media_type": "text/html", "url": "https://example.com/0"}],
+        }
+        assert "other_titles" not in b
