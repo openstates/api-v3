@@ -4,16 +4,6 @@ from enum import Enum
 from pydantic import BaseModel
 
 
-class IncludeBase(BaseModel):
-    @classmethod
-    def with_includes(Cls, obj, includes):
-        newobj = Cls.from_orm(obj)
-        for include in Cls.__config__.includes:
-            if include not in includes:
-                setattr(newobj, include, None)
-        return newobj
-
-
 class JurisdictionClassification(str, Enum):
     state = "state"
     municipality = "municipality"
@@ -43,7 +33,7 @@ class Organization(BaseModel):
         orm_mode = True
 
 
-class Jurisdiction(IncludeBase):
+class Jurisdiction(BaseModel):
     id: str
     name: str
     classification: JurisdictionClassification
@@ -56,7 +46,6 @@ class Jurisdiction(IncludeBase):
 
     class Config:
         orm_mode = True
-        includes = ["organizations"]
 
 
 class CurrentRole(BaseModel):
@@ -113,7 +102,7 @@ class CompactJurisdiction(BaseModel):
         orm_mode = True
 
 
-class Person(IncludeBase):
+class Person(BaseModel):
     id: str
     name: str
     jurisdiction: CompactJurisdiction
@@ -140,7 +129,6 @@ class Person(IncludeBase):
 
     class Config:
         orm_mode = True
-        includes = ["other_names", "other_identifiers", "links", "sources", "offices"]
 
 
 class LegislativeSession(BaseModel):
@@ -256,7 +244,7 @@ class VoteEvent(BaseModel):
         orm_mode = True
 
 
-class Bill(IncludeBase):
+class Bill(BaseModel):
     id: str
     session: str
     jurisdiction: CompactJurisdiction
@@ -280,14 +268,3 @@ class Bill(IncludeBase):
 
     class Config:
         orm_mode = True
-        includes = [
-            "abstracts",
-            "other_titles",
-            "other_identifiers",
-            "actions",
-            "sponsorships",
-            "sources",
-            "versions",
-            "documents",
-            "votes",
-        ]
