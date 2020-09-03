@@ -5,7 +5,6 @@ from .db import SessionLocal, get_db, models
 from .schemas import Jurisdiction, JurisdictionClassification
 from .pagination import Pagination
 from .auth import apikey_auth
-from .utils import joined_or_noload
 
 
 class JurisdictionInclude(str, Enum):
@@ -15,6 +14,7 @@ class JurisdictionInclude(str, Enum):
 class JurisdictionPagination(Pagination):
     ObjCls = Jurisdiction
     IncludeEnum = JurisdictionInclude
+    include_map_overrides = {}  # no overrides
 
 
 router = APIRouter()
@@ -36,9 +36,6 @@ async def jurisdictions(
     if classification == "state":
         classification = "government"
     query = db.query(models.Jurisdiction).order_by(models.Jurisdiction.name)
-
-    # handle includes
-    query = joined_or_noload(query, JurisdictionInclude.organizations, include)
 
     # handle parameters
     if classification:

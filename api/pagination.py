@@ -2,6 +2,7 @@ import math
 from typing import List
 from pydantic import create_model, BaseModel
 from fastapi import HTTPException
+from sqlalchemy.orm import noload, selectinload
 
 
 class PaginationMeta(BaseModel):
@@ -12,9 +13,20 @@ class PaginationMeta(BaseModel):
 
 
 class Pagination:
+    """
+    Must set the following properties on subclasses:
+        - ObjCls - the Pydantic model to use for the objects
+        - IncludeEnum - the valid include= parameters enumeration
+        - include_map_overrides - mapping of what fields to select-in if included
+                        (default to same name as IncludeEnum properties)
+    """
+
     def __init__(self, page: int = 1, per_page: int = 100):
         self.page = page
         self.per_page = per_page
+
+        self.include_map = {key: [key] for key in self.IncludeEnum}
+        self.include_map.update(self.include_map_overrides)
 
     @classmethod
     def response_model(cls):
@@ -59,6 +71,9 @@ class Pagination:
             page=self.page,
             max_page=num_pages,
         )
+
+        # before the query, do the appropriate joins and noload operations
+        results = self.select_or_noload(results, includes)
         results = (
             results.limit(self.per_page).offset((self.page - 1) * self.per_page).all()
         )
@@ -66,8 +81,25 @@ class Pagination:
         return {"pagination": meta, "results": results}
 
     def to_obj_with_includes(self, data, includes):
+        # remove the non-included data from the response by setting the fields to
+        # None instead of [], and returning the Pydantic objects directly
         newobj = self.ObjCls.from_orm(data)
         for include in self.IncludeEnum:
             if include not in includes:
                 setattr(newobj, include, None)
         return newobj
+
+    def select_or_noload(self, query, includes):
+        """ either pre-join or no-load data based on whether it has been requested """
+        for fieldname in self.IncludeEnum:
+            if fieldname in includes:
+                # selectinload seems like a strong default choice, but it is possible that
+                # some configurability might be desirable eventually for some types of data
+                loader = selectinload
+            else:
+                loader = noload
+
+            # update the query with appropriate loader
+            for dbname in self.include_map[fieldname]:
+                query = query.options(loader(dbname))
+        return query
