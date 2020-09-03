@@ -77,6 +77,7 @@ async def bills(
     query = (
         db.query(models.Bill)
         .join(models.Bill.legislative_session)
+        .join(models.LegislativeSession.jurisdiction)
         .join(models.Bill.from_organization)
         .order_by(models.LegislativeSession.identifier, models.Bill.identifier)
         .options(
