@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.openapi.utils import get_openapi
 from uvicorn.workers import UvicornWorker
 from . import jurisdictions, people, bills
@@ -8,6 +8,18 @@ app = FastAPI()
 app.include_router(jurisdictions.router)
 app.include_router(people.router)
 app.include_router(bills.router)
+
+
+@app.get("/debug")
+def read_root(request: Request):
+    print(request.scope)
+    return {
+        "headers": request.headers,
+        "url": request.url,
+        "scope.type": request.scope["type"],
+        "scope.http_version": request.scope["http_version"],
+        "scope.server": request.scope["server"],
+    }
 
 
 def custom_openapi():
