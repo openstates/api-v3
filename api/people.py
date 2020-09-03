@@ -8,7 +8,6 @@ from .db import SessionLocal, get_db, models
 from .schemas import Person, OrgClassification
 from .pagination import Pagination
 from .auth import apikey_auth
-from .utils import joined_or_noload
 
 
 class PersonInclude(str, Enum):
@@ -22,6 +21,7 @@ class PersonInclude(str, Enum):
 class PeoplePagination(Pagination):
     ObjCls = Person
     IncludeEnum = PersonInclude
+    include_map_overrides = {PersonInclude.offices: ["contact_details"]}
 
 
 router = APIRouter()
@@ -88,15 +88,6 @@ async def people(
 
     if not filtered:
         raise HTTPException(400, "either 'jurisdiction', 'name', or 'id' is required")
-
-    # handle includes
-    query = joined_or_noload(query, PersonInclude.other_names, include)
-    query = joined_or_noload(query, PersonInclude.other_identifiers, include)
-    query = joined_or_noload(query, PersonInclude.links, include)
-    query = joined_or_noload(query, PersonInclude.sources, include)
-    query = joined_or_noload(
-        query, PersonInclude.offices, include, dbname="contact_details"
-    )
 
     resp = pagination.paginate(query, includes=include)
 

@@ -9,7 +9,6 @@ from .db import SessionLocal, get_db, models
 from .schemas import Bill
 from .pagination import Pagination
 from .auth import apikey_auth
-from .utils import joined_or_noload
 
 
 class BillInclude(str, Enum):
@@ -27,6 +26,11 @@ class BillInclude(str, Enum):
 class BillPagination(Pagination):
     ObjCls = Bill
     IncludeEnum = BillInclude
+    include_map_overrides = {
+        BillInclude.versions: ["versions", "versions.links"],
+        BillInclude.documents: ["documents", "documents.links"],
+        BillInclude.votes: ["votes", "votes.votes", "votes.counts", "votes.sources"],
+    }
 
 
 router = APIRouter()
@@ -125,17 +129,6 @@ async def bills(
         raise HTTPException(400, "either 'jurisdiction' or 'q' required")
 
     # handle includes
-    for segval in BillInclude:
-        query = joined_or_noload(query, segval, include)
-    query = joined_or_noload(
-        query, BillInclude.versions, include, dbname="versions.links"
-    )
-    query = joined_or_noload(
-        query, BillInclude.documents, include, dbname="documents.links"
-    )
-    query = joined_or_noload(query, BillInclude.votes, include, dbname="votes.votes")
-    query = joined_or_noload(query, BillInclude.votes, include, dbname="votes.counts")
-    query = joined_or_noload(query, BillInclude.votes, include, dbname="votes.sources")
 
     resp = pagination.paginate(query, includes=include)
 
