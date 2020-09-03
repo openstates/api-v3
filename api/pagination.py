@@ -12,8 +12,6 @@ class PaginationMeta(BaseModel):
 
 
 class Pagination:
-    ObjCls = None
-
     def __init__(self, page: int = 1, per_page: int = 100):
         self.page = page
         self.per_page = per_page
@@ -23,16 +21,6 @@ class Pagination:
         return create_model(
             f"{cls.ObjCls.__name__}List",
             results=(List[cls.ObjCls], ...),
-            pagination=(PaginationMeta, ...),
-        )
-
-    @staticmethod
-    def of(Cls):
-        # dynamically define a new class that is just results & pagination
-        # this will only be dynamically constructed at start so the cost is negligible
-        return create_model(
-            f"{Cls.__name__}List",
-            results=(List[Cls], ...),
             pagination=(PaginationMeta, ...),
         )
 
@@ -74,8 +62,7 @@ class Pagination:
         results = (
             results.limit(self.per_page).offset((self.page - 1) * self.per_page).all()
         )
-        if self.ObjCls:
-            results = [self.to_obj_with_includes(data, includes) for data in results]
+        results = [self.to_obj_with_includes(data, includes) for data in results]
         return {"pagination": meta, "results": results}
 
     def to_obj_with_includes(self, data, includes):
