@@ -24,6 +24,11 @@ class BillInclude(str, Enum):
     votes = "votes"
 
 
+class BillPagination(Pagination):
+    ObjCls = Bill
+    IncludeEnum = BillInclude
+
+
 router = APIRouter()
 
 
@@ -57,7 +62,9 @@ def fix_bill_id(bill_id):
 
 
 @router.get(
-    "/bills", response_model=Pagination.of(Bill), response_model_exclude_none=True
+    "/bills",
+    response_model=BillPagination.response_model(),
+    response_model_exclude_none=True,
 )
 async def bills(
     jurisdiction: Optional[str] = None,
@@ -71,7 +78,7 @@ async def bills(
     q: Optional[str] = None,
     include: List[BillInclude] = Query([]),
     db: SessionLocal = Depends(get_db),
-    pagination: Pagination = Depends(Pagination),
+    pagination: BillPagination = Depends(),
     auth: str = Depends(apikey_auth),
 ):
     query = (
@@ -130,8 +137,6 @@ async def bills(
     query = joined_or_noload(query, BillInclude.votes, include, dbname="votes.counts")
     query = joined_or_noload(query, BillInclude.votes, include, dbname="votes.sources")
 
-    resp = pagination.paginate(query)
-
-    resp["results"] = [Bill.with_includes(r, include) for r in resp["results"]]
+    resp = pagination.paginate(query, includes=include)
 
     return resp

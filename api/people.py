@@ -19,6 +19,11 @@ class PersonInclude(str, Enum):
     offices = "offices"
 
 
+class PeoplePagination(Pagination):
+    ObjCls = Person
+    IncludeEnum = PersonInclude
+
+
 router = APIRouter()
 
 
@@ -35,7 +40,9 @@ def jurisdiction_filter(j):
 
 
 @router.get(
-    "/people", response_model=Pagination.of(Person), response_model_exclude_none=True
+    "/people",
+    response_model=PeoplePagination.response_model(),
+    response_model_exclude_none=True,
 )
 async def people(
     jurisdiction: Optional[str] = None,
@@ -44,7 +51,7 @@ async def people(
     org_classification: Optional[OrgClassification] = None,
     include: List[PersonInclude] = Query([]),
     db: SessionLocal = Depends(get_db),
-    pagination: Pagination = Depends(Pagination),
+    pagination: PeoplePagination = Depends(),
     auth: str = Depends(apikey_auth),
 ):
     query = (
@@ -91,8 +98,6 @@ async def people(
         query, PersonInclude.offices, include, dbname="contact_details"
     )
 
-    resp = pagination.paginate(query)
-
-    resp["results"] = [Person.with_includes(r, include) for r in resp["results"]]
+    resp = pagination.paginate(query, includes=include)
 
     return resp
