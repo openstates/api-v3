@@ -221,6 +221,32 @@ class BillDocumentOrVersion(BaseModel):
         orm_mode = True
 
 
+class VoteCount(BaseModel):
+    option: str
+    value: int
+
+
+class PersonVote(BaseModel):
+    option: str
+    voter_name: str
+    voter: Person
+
+
+class VoteEvent(BaseModel):
+    id: str
+    identifier: str
+    motion_text: str
+    motion_classification: List[str] = list
+    start_date: str
+    result: str
+    extras: dict = dict
+
+    organization: Organization
+    votes: List[PersonVote]
+    counts: List[VoteCount]
+    sources: List[Link]
+
+
 class Bill(IncludeBase):
     id: str
     session: str
@@ -241,6 +267,7 @@ class Bill(IncludeBase):
     sources: Optional[List[Link]]
     versions: Optional[List[BillDocumentOrVersion]]
     documents: Optional[List[BillDocumentOrVersion]]
+    votes: Optional[List[VoteEvent]]
 
     class Config:
         orm_mode = True
@@ -253,4 +280,5 @@ class Bill(IncludeBase):
             "sources",
             "versions",
             "documents",
+            "votes",
         ]

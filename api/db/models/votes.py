@@ -14,10 +14,10 @@ class VoteEvent(Base):
     id = Column(String, primary_key=True, index=True)
     identifier = Column(String)
     motion_text = Column(String)
-    motion_classification = Column(ARRAY(Text))
+    motion_classification = Column(ARRAY(Text), default=list)
     start_date = Column(String)
     result = Column(String)
-    extras = Column(JSONB)
+    extras = Column(JSONB, default=dict)
 
     organization_id = Column(String, ForeignKey(Organization.id))
     organization = relationship(Organization)
@@ -56,4 +56,4 @@ class PersonVote(PrimaryUUID, Base):
     voter_name = Column(String)
     voter_id = Column(String, ForeignKey(Person.id))
     voter = relationship(Person)
-    note = Column(String)
+    note = Column(String)  # TODO: check this field

@@ -21,7 +21,7 @@ class BillInclude(str, Enum):
     sources = "sources"
     documents = "documents"
     versions = "versions"
-    # votes = "votes"
+    votes = "votes"
 
 
 router = APIRouter()

@@ -36,6 +36,7 @@ class Bill(Base):
     sources = relationship("BillSource")
     documents = relationship("BillDocument")
     versions = relationship("BillVersion")
+    votes = relationship("VoteEvent")
 
     @property
     def jurisdiction(self):
