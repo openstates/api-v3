@@ -20,6 +20,9 @@ from api.db.models import (
     BillDocument,
     BillDocumentLink,
     SearchableBill,
+    VoteEvent,
+    VoteCount,
+    PersonVote,
 )
 
 
@@ -218,6 +221,24 @@ def ohio():
             "This bill renames Ohio to HIOO, it is a good idea.", config="english"
         ),
     )
+    v1 = VoteEvent(
+        id="ocd-vote/1",
+        bill=hb1,
+        identifier="Vote on HB1",
+        motion_text="Floor Vote",
+        start_date="2021-01-01",
+        result="passed",
+        organization=lower,
+    )
+    v2 = VoteEvent(
+        id="ocd-vote/2",
+        bill=hb1,
+        identifier="Vote on HB1",
+        motion_text="Floor Vote",
+        start_date="2021-02-01",
+        result="passed",
+        organization=upper,
+    )
     return [
         j,
         leg,
@@ -225,6 +246,15 @@ def ohio():
         lower,
         ls2021,
         hb1,
+        v1,
+        v2,
+        VoteCount(vote_event=v1, option="yes", value=2),
+        VoteCount(vote_event=v1, option="no", value=1),
+        PersonVote(vote_event=v1, option="yes", voter_name="Bart"),
+        PersonVote(vote_event=v1, option="yes", voter_name="Harley"),
+        PersonVote(vote_event=v1, option="no", voter_name="Jarvis"),
+        VoteCount(vote_event=v2, option="yes", value=42),
+        VoteCount(vote_event=v2, option="no", value=0),
         btext,
         Organization(
             id="ohe", name="Ohio Executive", classification="executive", jurisdiction=j

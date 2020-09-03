@@ -126,6 +126,9 @@ async def bills(
     query = joined_or_noload(
         query, BillInclude.documents, include, dbname="documents.links"
     )
+    query = joined_or_noload(query, BillInclude.votes, include, dbname="votes.votes")
+    query = joined_or_noload(query, BillInclude.votes, include, dbname="votes.counts")
+    query = joined_or_noload(query, BillInclude.votes, include, dbname="votes.sources")
 
     resp = pagination.paginate(query)
 

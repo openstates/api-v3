@@ -28,12 +28,16 @@ class VoteEvent(Base):
     bill_action_id = Column(UUID, ForeignKey(BillAction.id))
     bill_action = relationship(BillAction)
 
+    votes = relationship("PersonVote")
+    counts = relationship("VoteCount")
+    sources = relationship("VoteSource")
+
 
 class VoteCount(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_votecount"
 
-    vote_event_id = Column(String, ForeignKey(Bill.id))
-    vote_event = relationship(Bill)
+    vote_event_id = Column(String, ForeignKey(VoteEvent.id))
+    vote_event = relationship(VoteEvent)
 
     option = Column(String)
     value = Column(Integer)
@@ -42,15 +46,15 @@ class VoteCount(PrimaryUUID, Base):
 class VoteSource(LinkBase, Base):
     __tablename__ = "opencivicdata_votesource"
 
-    vote_event_id = Column(String, ForeignKey(Bill.id))
-    vote_event = relationship(Bill)
+    vote_event_id = Column(String, ForeignKey(VoteEvent.id))
+    vote_event = relationship(VoteEvent)
 
 
 class PersonVote(PrimaryUUID, Base):
     __tablename__ = "opencivicdata_personvote"
 
-    vote_event_id = Column(String, ForeignKey(Bill.id))
-    vote_event = relationship(Bill)
+    vote_event_id = Column(String, ForeignKey(VoteEvent.id))
+    vote_event = relationship(VoteEvent)
 
     option = Column(String)
     voter_name = Column(String)

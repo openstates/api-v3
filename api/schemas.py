@@ -225,11 +225,17 @@ class VoteCount(BaseModel):
     option: str
     value: int
 
+    class Config:
+        orm_mode = True
+
 
 class PersonVote(BaseModel):
     option: str
     voter_name: str
-    voter: Person
+    voter: Optional[Person]
+
+    class Config:
+        orm_mode = True
 
 
 class VoteEvent(BaseModel):
@@ -245,6 +251,9 @@ class VoteEvent(BaseModel):
     votes: List[PersonVote]
     counts: List[VoteCount]
     sources: List[Link]
+
+    class Config:
+        orm_mode = True
 
 
 class Bill(IncludeBase):

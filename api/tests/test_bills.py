@@ -108,3 +108,46 @@ def test_bills_include_documents_versions(client):
             "links": [{"media_type": "text/html", "url": "https://example.com/0"}],
         }
         assert "other_titles" not in b
+
+
+def test_bills_include_votes(client):
+    response = client.get("/bills?q=HB1&include=votes")
+    assert query_logger.count == 7
+    assert response.status_code == 200
+    b = response.json()["results"][0]
+    assert b["votes"] == [
+        {
+            "id": "ocd-vote/1",
+            "identifier": "Vote on HB1",
+            "motion_text": "Floor Vote",
+            "start_date": "2021-01-01",
+            "result": "passed",
+            "organization": {
+                "id": "ohh",
+                "name": "Ohio House",
+                "classification": "lower",
+            },
+            "votes": [
+                {"option": "yes", "voter_name": "Bart"},
+                {"option": "yes", "voter_name": "Harley"},
+                {"option": "no", "voter_name": "Jarvis"},
+            ],
+            "counts": [{"option": "yes", "value": 2}, {"option": "no", "value": 1}],
+            "sources": [],
+        },
+        {
+            "id": "ocd-vote/2",
+            "identifier": "Vote on HB1",
+            "motion_text": "Floor Vote",
+            "start_date": "2021-02-01",
+            "result": "passed",
+            "organization": {
+                "id": "ohs",
+                "name": "Ohio Senate",
+                "classification": "upper",
+            },
+            "votes": [],
+            "counts": [{"option": "yes", "value": 42}, {"option": "no", "value": 0}],
+            "sources": [],
+        },
+    ]
