@@ -279,6 +279,23 @@ six = ">=1.12"
 
 [[package]]
 category = "main"
+description = "WSGI HTTP Server for UNIX"
+name = "gunicorn"
+optional = false
+python-versions = ">=3.4"
+version = "20.0.4"
+
+[package.dependencies]
+setuptools = ">=3.0"
+
+[package.extras]
+eventlet = ["eventlet (>=0.9.7)"]
+gevent = ["gevent (>=0.13)"]
+setproctitle = ["setproctitle"]
+tornado = ["tornado (>=0.2)"]
+
+[[package]]
+category = "main"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
 name = "h11"
 optional = false
@@ -729,7 +746,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "e863680b313059fc51bf580e030d473995e22afcf33a93d85b56c8e5d8dc05b7"
+content-hash = "535b7008618bba31843f1a44c3319fdf84334432a965a854fe25c8b0af7aaeb0"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -808,6 +825,10 @@ graphql-core = [
 graphql-relay = [
     {file = "graphql-relay-2.0.1.tar.gz", hash = "sha256:870b6b5304123a38a0b215a79eace021acce5a466bf40cd39fa18cb8528afabb"},
     {file = "graphql_relay-2.0.1-py3-none-any.whl", hash = "sha256:ac514cb86db9a43014d7e73511d521137ac12cf0101b2eaa5f0a3da2e10d913d"},
+]
+gunicorn = [
+    {file = "gunicorn-20.0.4-py2.py3-none-any.whl", hash = "sha256:cd4a810dd51bf497552cf3f863b575dabd73d6ad6a91075b65936b151cbf4f9c"},
+    {file = "gunicorn-20.0.4.tar.gz", hash = "sha256:1904bb2b8a43658807108d59c3f3d56c2b6121a701161de0ddf9ad140073c626"},
 ]
 h11 = [
     {file = "h11-0.9.0-py2.py3-none-any.whl", hash = "sha256:4bc6d6a1238b7615b266ada57e0618568066f57dd6fa967d1290ec9309b2f2f1"},

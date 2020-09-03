@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
+from uvicorn.workers import UvicornWorker
 from . import jurisdictions, people, bills
 
 
@@ -51,3 +52,8 @@ def custom_openapi():
 
 
 app.openapi = custom_openapi
+
+
+# based on suggestion in https://github.com/encode/uvicorn/issues/343 to add proxy_headers
+class CustomUvicornWorker(UvicornWorker):
+    CONFIG_KWARGS = {"loop": "asyncio", "http": "h11", "proxy_headers": True}
