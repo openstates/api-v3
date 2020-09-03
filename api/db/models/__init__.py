@@ -25,3 +25,4 @@ from .bills import (
     SearchableBill,
 )
 from .votes import VoteEvent, PersonVote, VoteCount, VoteSource
+from .auth import Profile
