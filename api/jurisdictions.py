@@ -12,19 +12,24 @@ class JurisdictionInclude(str, Enum):
     organizations = "organizations"
 
 
+class JurisdictionPagination(Pagination):
+    ObjCls = Jurisdiction
+    IncludeEnum = JurisdictionInclude
+
+
 router = APIRouter()
 
 
 @router.get(
     "/jurisdictions",
-    response_model=Pagination.of(Jurisdiction),
+    response_model=JurisdictionPagination.response_model(),
     response_model_exclude_none=True,
 )
 async def jurisdictions(
     classification: Optional[JurisdictionClassification] = None,
     include: List[JurisdictionInclude] = Query([]),
     db: SessionLocal = Depends(get_db),
-    pagination: Pagination = Depends(Pagination),
+    pagination: JurisdictionPagination = Depends(),
     auth: str = Depends(apikey_auth),
 ):
     # TODO: remove this conversion once database is updated
@@ -38,12 +43,12 @@ async def jurisdictions(
     # handle parameters
     if classification:
         query = query.filter(models.Jurisdiction.classification == classification)
-    resp = pagination.paginate(query)
+
+    resp = pagination.paginate(query, includes=include)
 
     # TODO: this should be removed too (see above note)
     for result in resp["results"]:
         if result.classification == "government":
             result.classification = "state"
-    resp["results"] = [Jurisdiction.with_includes(r, include) for r in resp["results"]]
 
     return resp

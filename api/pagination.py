@@ -12,9 +12,19 @@ class PaginationMeta(BaseModel):
 
 
 class Pagination:
+    ObjCls = None
+
     def __init__(self, page: int = 1, per_page: int = 100):
         self.page = page
         self.per_page = per_page
+
+    @classmethod
+    def response_model(cls):
+        return create_model(
+            f"{cls.ObjCls.__name__}List",
+            results=(List[cls.ObjCls], ...),
+            pagination=(PaginationMeta, ...),
+        )
 
     @staticmethod
     def of(Cls):
@@ -26,7 +36,15 @@ class Pagination:
             pagination=(PaginationMeta, ...),
         )
 
-    def paginate(self, results, max_per_page=100):
+    def paginate(
+        self,
+        results,
+        *,
+        max_per_page=100,
+        cls=None,
+        includes=None,
+        available_includes=None,
+    ):
         # shouldn't happen, but help log if it does
         if not results._order_by:
             raise HTTPException(
@@ -53,9 +71,16 @@ class Pagination:
             page=self.page,
             max_page=num_pages,
         )
-        return {
-            "pagination": meta,
-            "results": results.limit(self.per_page)
-            .offset((self.page - 1) * self.per_page)
-            .all(),
-        }
+        results = (
+            results.limit(self.per_page).offset((self.page - 1) * self.per_page).all()
+        )
+        if self.ObjCls:
+            results = [self.to_obj_with_includes(data, includes) for data in results]
+        return {"pagination": meta, "results": results}
+
+    def to_obj_with_includes(self, data, includes):
+        newobj = self.ObjCls.from_orm(data)
+        for include in self.IncludeEnum:
+            if include not in includes:
+                setattr(newobj, include, None)
+        return newobj
