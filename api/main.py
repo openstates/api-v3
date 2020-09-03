@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from uvicorn.workers import UvicornWorker
 from . import jurisdictions, people, bills
@@ -10,16 +10,17 @@ app.include_router(people.router)
 app.include_router(bills.router)
 
 
-@app.get("/debug")
-def read_root(request: Request):
-    print(request.scope)
-    return {
-        "headers": request.headers,
-        "url": request.url,
-        "scope.type": request.scope["type"],
-        "scope.http_version": request.scope["http_version"],
-        "scope.server": request.scope["server"],
-    }
+# @app.get("/debug")
+# def read_root(request: Request):
+#     print(request.scope)
+#     return {
+#         "headers": request.headers,
+#         "url": request.url,
+#         "scope.type": request.scope["type"],
+#         "scope.http_version": request.scope["http_version"],
+#         "scope.server": request.scope["server"],
+#         "scope.client": request.scope["client"],
+#     }
 
 
 def custom_openapi():
@@ -67,5 +68,6 @@ app.openapi = custom_openapi
 
 
 # based on suggestion in https://github.com/encode/uvicorn/issues/343 to add proxy_headers
+# also need to set environment variable FORWARDED_ALLOW_IPS (can be * in ECS)
 class CustomUvicornWorker(UvicornWorker):
     CONFIG_KWARGS = {"loop": "asyncio", "http": "h11", "proxy_headers": True}
