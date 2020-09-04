@@ -83,6 +83,12 @@ def test_jurisdiction_detail_by_jid(client):
     assert query_logger.count == 1
 
 
+def test_jurisdiction_detail_404(client):
+    response = client.get("/jurisdictions/xy")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "No such Jurisdiction."}
+
+
 def test_jurisdiction_include(client):
     response = client.get("/jurisdictions/ne?include=organizations").json()
     assert len(response["organizations"]) == 2
