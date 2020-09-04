@@ -66,5 +66,4 @@ async def jurisdiction_detail(
     query = db.query(models.Jurisdiction).filter(
         jurisdiction_filter(jurisdiction_id, jid_field=models.Jurisdiction.id)
     )
-
     return JurisdictionPagination.detail(query, includes=include)

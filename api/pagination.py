@@ -3,6 +3,7 @@ from typing import List
 from pydantic import create_model, BaseModel
 from fastapi import HTTPException
 from sqlalchemy.orm import noload, selectinload
+from sqlalchemy.orm.exc import NoResultFound
 
 
 class PaginationMeta(BaseModel):
@@ -96,7 +97,12 @@ class Pagination:
     def detail(cls, query, *, includes):
         """ convert a single instance query to a model with the appropriate includes """
         query = cls.select_or_noload(query, includes)
-        obj = query.one()
+        try:
+            obj = query.one()
+        except NoResultFound:
+            raise HTTPException(
+                status_code=404, detail=f"No such {cls.ObjCls.__name__}."
+            )
         return cls.to_obj_with_includes(obj, includes)
 
     @classmethod
