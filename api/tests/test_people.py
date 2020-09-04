@@ -1,18 +1,26 @@
 from .conftest import query_logger
 
 
-def test_by_jurisdiction(client):
+def test_by_jurisdiction_abbr(client):
+    # by abbr
     response = client.get("/people?jurisdiction=ne").json()
     assert query_logger.count == 2
     assert len(response["results"]) == 2
     assert response["results"][0]["name"] == "Amy Adams"
     assert response["results"][1]["name"] == "Boo Berri"
+
+
+def test_by_jurisdiction_name(client):
+    # by name
     response = client.get("/people?jurisdiction=Nebraska").json()
     assert query_logger.count == 2
     assert len(response["results"]) == 2
     assert response["results"][0]["name"] == "Amy Adams"
     assert response["results"][1]["name"] == "Boo Berri"
 
+
+def test_by_jurisdiction_jid(client):
+    # by full ID
     response = client.get(
         "/people?jurisdiction=ocd-jurisdiction/country:us/state:ne/government"
     ).json()

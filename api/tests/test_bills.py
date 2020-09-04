@@ -1,8 +1,33 @@
 from .conftest import query_logger
 
 
-def test_bills_filter_by_jurisdiction(client):
+def test_bills_filter_by_jurisdiction_abbr(client):
+    # state short ID lower case
     response = client.get("/bills?jurisdiction=ne")
+    assert query_logger.count == 2
+    response = response.json()
+    assert len(response["results"]) == 7
+
+    # state short ID upper case
+    response = client.get("/bills?jurisdiction=NE")
+    assert query_logger.count == 2
+    response = response.json()
+    assert len(response["results"]) == 7
+
+
+def test_bills_filter_by_jurisdiction_name(client):
+    # by full name
+    response = client.get("/bills?jurisdiction=Nebraska")
+    assert query_logger.count == 2
+    response = response.json()
+    assert len(response["results"]) == 7
+
+
+def test_bills_filter_by_jurisdiction_jid(client):
+    # by jid
+    response = client.get(
+        "/bills?jurisdiction=ocd-jurisdiction/country:us/state:ne/government"
+    )
     assert query_logger.count == 2
     response = response.json()
     assert len(response["results"]) == 7

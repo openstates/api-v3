@@ -3,11 +3,11 @@ from enum import Enum
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import func, or_
 from sqlalchemy.orm import contains_eager
-from openstates_metadata import lookup
 from .db import SessionLocal, get_db, models
 from .schemas import Person, OrgClassification
 from .pagination import Pagination
 from .auth import apikey_auth
+from .utils import jurisdiction_filter
 
 
 class PersonInclude(str, Enum):
@@ -25,18 +25,6 @@ class PeoplePagination(Pagination):
 
 
 router = APIRouter()
-
-
-def jurisdiction_filter(j):
-    if len(j) == 2:
-        try:
-            return models.Person.jurisdiction_id == lookup(abbr=j).jurisdiction_id
-        except KeyError:
-            return models.Jurisdiction.name == j
-    elif j.startswith("ocd-jurisdiction"):
-        return models.Person.jurisdiction_id == j
-    else:
-        return models.Jurisdiction.name == j
 
 
 @router.get(
@@ -64,7 +52,7 @@ async def people(
 
     if jurisdiction:
         query = query.filter(
-            jurisdiction_filter(jurisdiction),
+            jurisdiction_filter(jurisdiction, model=models.Person),
             models.Person.current_role.isnot(None),  # current members only for now
         )
         filtered = True

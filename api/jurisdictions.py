@@ -25,7 +25,7 @@ router = APIRouter()
     response_model=JurisdictionPagination.response_model(),
     response_model_exclude_none=True,
 )
-async def jurisdictions(
+async def jurisdiction_list(
     classification: Optional[JurisdictionClassification] = None,
     include: List[JurisdictionInclude] = Query([]),
     db: SessionLocal = Depends(get_db),
@@ -49,3 +49,32 @@ async def jurisdictions(
             result.classification = "state"
 
     return resp
+
+
+# @router.get(
+#     "/jurisdictions/{jurisdiction_id}",
+#     response_model=Jurisdiction,
+#     response_model_exclude_none=True,
+# )
+# async def jurisdiction_detail(
+#     jurisdiction_id: str,
+#     include: List[JurisdictionInclude] = Query([]),
+#     db: SessionLocal = Depends(get_db),
+#     auth: str = Depends(apikey_auth),
+# ):
+#     query = db.query(models.Jurisdiction).filter(
+#         models.Jurisdiction.id == jurisdiction_id
+#     )
+
+#     # handle parameters
+#     if classification:
+#         query = query.filter(models.Jurisdiction.classification == classification)
+
+#     resp = pagination.paginate(query, includes=include)
+
+#     # TODO: this should be removed too (see above note)
+#     for result in resp["results"]:
+#         if result.classification == "government":
+#             result.classification = "state"
+
+#     return resp

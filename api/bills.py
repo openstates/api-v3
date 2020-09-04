@@ -4,11 +4,11 @@ from enum import Enum
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import func, cast, String
 from sqlalchemy.orm import contains_eager
-from openstates_metadata import lookup
 from .db import SessionLocal, get_db, models
 from .schemas import Bill
 from .pagination import Pagination
 from .auth import apikey_auth
+from .utils import jurisdiction_filter
 
 
 class BillInclude(str, Enum):
@@ -34,21 +34,6 @@ class BillPagination(Pagination):
 
 
 router = APIRouter()
-
-
-def jurisdiction_filter(j):
-    if len(j) == 2:
-        try:
-            return (
-                models.LegislativeSession.jurisdiction_id
-                == lookup(abbr=j).jurisdiction_id
-            )
-        except KeyError:
-            return models.Jurisdiction.name == j
-    elif j.startswith("ocd-jurisdiction"):
-        return models.LegislativeSession.jurisdiction_id == j
-    else:
-        return models.Jurisdiction.name == j
 
 
 # This code has to match openstates.transformers (TODO: combine into a package?)
@@ -100,7 +85,9 @@ async def bills(
     )
 
     if jurisdiction:
-        query = query.filter(jurisdiction_filter(jurisdiction))
+        query = query.filter(
+            jurisdiction_filter(jurisdiction, model=models.LegislativeSession)
+        )
     if session:
         query = query.filter(models.LegislativeSession.identifier == session)
     if chamber:
