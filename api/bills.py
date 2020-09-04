@@ -50,6 +50,21 @@ def fix_bill_id(bill_id):
     return _bill_id_re.sub(r"\1 \2", bill_id, 1).strip()
 
 
+def base_query(db):
+    return (
+        db.query(models.Bill)
+        .join(models.Bill.legislative_session)
+        .join(models.LegislativeSession.jurisdiction)
+        .join(models.Bill.from_organization)
+        .options(
+            contains_eager(
+                models.Bill.legislative_session, models.LegislativeSession.jurisdiction
+            )
+        )
+        .options(contains_eager(models.Bill.from_organization))
+    )
+
+
 @router.get(
     "/bills",
     response_model=BillPagination.response_model(),
@@ -70,18 +85,8 @@ async def bills_search(
     pagination: BillPagination = Depends(),
     auth: str = Depends(apikey_auth),
 ):
-    query = (
-        db.query(models.Bill)
-        .join(models.Bill.legislative_session)
-        .join(models.LegislativeSession.jurisdiction)
-        .join(models.Bill.from_organization)
-        .order_by(models.LegislativeSession.identifier, models.Bill.identifier)
-        .options(
-            contains_eager(
-                models.Bill.legislative_session, models.LegislativeSession.jurisdiction
-            )
-        )
-        .options(contains_eager(models.Bill.from_organization))
+    query = base_query(db).order_by(
+        models.LegislativeSession.identifier, models.Bill.identifier
     )
 
     if jurisdiction:
@@ -122,3 +127,43 @@ async def bills_search(
     resp = pagination.paginate(query, includes=include)
 
     return resp
+
+
+@router.get(
+    # we have to use the Starlette path type to allow slashes here
+    "/bills/ocd-bill/{openstates_bill_id}",
+    response_model=Bill,
+    response_model_exclude_none=True,
+)
+async def bill_detail_by_id(
+    openstates_bill_id: str,
+    include: List[BillInclude] = Query([]),
+    db: SessionLocal = Depends(get_db),
+    auth: str = Depends(apikey_auth),
+):
+    query = base_query(db).filter(models.Bill.id == "ocd-bill/" + openstates_bill_id)
+    return BillPagination.detail(query, includes=include)
+
+
+@router.get(
+    # we have to use the Starlette path type to allow slashes here
+    "/bills/{jurisdiction}/{session}/{bill_id}",
+    response_model=Bill,
+    response_model_exclude_none=True,
+)
+async def bill_detail(
+    jurisdiction: str,
+    session: str,
+    bill_id: str,
+    include: List[BillInclude] = Query([]),
+    db: SessionLocal = Depends(get_db),
+    auth: str = Depends(apikey_auth),
+):
+    query = base_query(db).filter(
+        models.Bill.identifier == fix_bill_id(bill_id).upper(),
+        models.LegislativeSession.identifier == session,
+        jurisdiction_filter(
+            jurisdiction, jid_field=models.LegislativeSession.jurisdiction_id
+        ),
+    )
+    return BillPagination.detail(query, includes=include)

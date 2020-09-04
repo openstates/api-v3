@@ -176,3 +176,40 @@ def test_bills_include_votes(client):
             "sources": [],
         },
     ]
+
+
+def test_bill_detail_basic(client):
+    response = client.get("/bills/oh/2021/HB 1").json()
+    assert response["id"] == "ocd-bill/1234"
+    assert query_logger.count == 1
+
+
+def test_bill_detail_404(client):
+    response = client.get("/bills/oh/2021/HB 66")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "No such Bill."}
+
+
+def test_bill_detail_id_normalization(client):
+    response = client.get("/bills/oh/2021/HB1").json()
+    assert response["id"] == "ocd-bill/1234"
+    assert query_logger.count == 1
+
+    response = client.get("/bills/oh/2021/hb1").json()
+    assert response["id"] == "ocd-bill/1234"
+    assert query_logger.count == 1
+
+
+def test_bill_detail_includes(client):
+    response = client.get("/bills/oh/2021/HB 1?include=votes").json()
+    assert response["id"] == "ocd-bill/1234"
+    assert len(response["votes"]) == 2
+    assert query_logger.count == 6
+
+
+def test_bill_detail_by_internal_id(client):
+    response = client.get("/bills/ocd-bill/1234").json()
+    print(response)
+    assert response["id"] == "ocd-bill/1234"
+    assert response["identifier"] == "HB 1"
+    assert query_logger.count == 1
