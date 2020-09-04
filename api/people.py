@@ -32,7 +32,7 @@ router = APIRouter()
     response_model=PeoplePagination.response_model(),
     response_model_exclude_none=True,
 )
-async def people(
+async def people_search(
     jurisdiction: Optional[str] = None,
     name: Optional[str] = None,
     id: Optional[List[str]] = Query([]),

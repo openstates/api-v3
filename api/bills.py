@@ -55,7 +55,7 @@ def fix_bill_id(bill_id):
     response_model=BillPagination.response_model(),
     response_model_exclude_none=True,
 )
-async def bills(
+async def bills_search(
     jurisdiction: Optional[str] = None,
     session: Optional[str] = None,
     chamber: Optional[str] = None,
