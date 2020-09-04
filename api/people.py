@@ -52,7 +52,7 @@ async def people(
 
     if jurisdiction:
         query = query.filter(
-            jurisdiction_filter(jurisdiction, model=models.Person),
+            jurisdiction_filter(jurisdiction, jid_field=models.Person.jurisdiction_id),
             models.Person.current_role.isnot(None),  # current members only for now
         )
         filtered = True

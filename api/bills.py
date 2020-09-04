@@ -86,7 +86,9 @@ async def bills(
 
     if jurisdiction:
         query = query.filter(
-            jurisdiction_filter(jurisdiction, model=models.LegislativeSession)
+            jurisdiction_filter(
+                jurisdiction, jid_field=models.LegislativeSession.jurisdiction_id
+            )
         )
     if session:
         query = query.filter(models.LegislativeSession.identifier == session)

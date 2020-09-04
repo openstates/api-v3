@@ -5,6 +5,7 @@ from .db import SessionLocal, get_db, models
 from .schemas import Jurisdiction, JurisdictionClassification
 from .pagination import Pagination
 from .auth import apikey_auth
+from .utils import jurisdiction_filter
 
 
 class JurisdictionInclude(str, Enum):
@@ -51,30 +52,19 @@ async def jurisdiction_list(
     return resp
 
 
-# @router.get(
-#     "/jurisdictions/{jurisdiction_id}",
-#     response_model=Jurisdiction,
-#     response_model_exclude_none=True,
-# )
-# async def jurisdiction_detail(
-#     jurisdiction_id: str,
-#     include: List[JurisdictionInclude] = Query([]),
-#     db: SessionLocal = Depends(get_db),
-#     auth: str = Depends(apikey_auth),
-# ):
-#     query = db.query(models.Jurisdiction).filter(
-#         models.Jurisdiction.id == jurisdiction_id
-#     )
+@router.get(
+    "/jurisdictions/{jurisdiction_id}",
+    response_model=Jurisdiction,
+    response_model_exclude_none=True,
+)
+async def jurisdiction_detail(
+    jurisdiction_id: str,
+    include: List[JurisdictionInclude] = Query([]),
+    db: SessionLocal = Depends(get_db),
+    auth: str = Depends(apikey_auth),
+):
+    query = db.query(models.Jurisdiction).filter(
+        jurisdiction_filter(jurisdiction_id, jid_field=models.Jurisdiction.id)
+    )
 
-#     # handle parameters
-#     if classification:
-#         query = query.filter(models.Jurisdiction.classification == classification)
-
-#     resp = pagination.paginate(query, includes=include)
-
-#     # TODO: this should be removed too (see above note)
-#     for result in resp["results"]:
-#         if result.classification == "government":
-#             result.classification = "state"
-
-#     return resp
+    return JurisdictionPagination.detail(query, includes=include)

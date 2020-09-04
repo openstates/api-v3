@@ -14,19 +14,31 @@ class PaginationMeta(BaseModel):
 
 class Pagination:
     """
+    Base class that handles pagination and includes= behavior together.
+
     Must set the following properties on subclasses:
         - ObjCls - the Pydantic model to use for the objects
         - IncludeEnum - the valid include= parameters enumeration
         - include_map_overrides - mapping of what fields to select-in if included
                         (default to same name as IncludeEnum properties)
+
+    Once those are set all of the basic methods work as classmethods so they can be called by
+     PaginationSubclass.detail.
+
+    The only time the class is insantiated is when it is used as a dependency for actual
+    pagination.
     """
 
     def __init__(self, page: int = 1, per_page: int = 100):
         self.page = page
         self.per_page = per_page
 
-        self.include_map = {key: [key] for key in self.IncludeEnum}
-        self.include_map.update(self.include_map_overrides)
+    @classmethod
+    def include_map(cls):
+        if not hasattr(cls, "_include_map"):
+            cls._include_map = {key: [key] for key in cls.IncludeEnum}
+            cls._include_map.update(cls.include_map_overrides)
+        return cls._include_map
 
     @classmethod
     def response_model(cls):
@@ -80,18 +92,29 @@ class Pagination:
         results = [self.to_obj_with_includes(data, includes) for data in results]
         return {"pagination": meta, "results": results}
 
-    def to_obj_with_includes(self, data, includes):
-        # remove the non-included data from the response by setting the fields to
-        # None instead of [], and returning the Pydantic objects directly
-        newobj = self.ObjCls.from_orm(data)
-        for include in self.IncludeEnum:
+    @classmethod
+    def detail(cls, query, *, includes):
+        """ convert a single instance query to a model with the appropriate includes """
+        query = cls.select_or_noload(query, includes)
+        obj = query.one()
+        return cls.to_obj_with_includes(obj, includes)
+
+    @classmethod
+    def to_obj_with_includes(cls, data, includes):
+        """
+        remove the non-included data from the response by setting the fields to
+        None instead of [], and returning the Pydantic objects directly
+        """
+        newobj = cls.ObjCls.from_orm(data)
+        for include in cls.IncludeEnum:
             if include not in includes:
                 setattr(newobj, include, None)
         return newobj
 
-    def select_or_noload(self, query, includes):
+    @classmethod
+    def select_or_noload(cls, query, includes):
         """ either pre-join or no-load data based on whether it has been requested """
-        for fieldname in self.IncludeEnum:
+        for fieldname in cls.IncludeEnum:
             if fieldname in includes:
                 # selectinload seems like a strong default choice, but it is possible that
                 # some configurability might be desirable eventually for some types of data
@@ -100,6 +123,6 @@ class Pagination:
                 loader = noload
 
             # update the query with appropriate loader
-            for dbname in self.include_map[fieldname]:
+            for dbname in cls.include_map()[fieldname]:
                 query = query.options(loader(dbname))
         return query
