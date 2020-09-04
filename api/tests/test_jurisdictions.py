@@ -52,3 +52,38 @@ def test_jurisdiction_include_organizations_empty(client):
     # is included, but the field is empty
     assert len(response["results"][0]["organizations"]) == 0
     assert query_logger.count == 3
+
+
+NEBRASKA_RESPONSE = {
+    "id": "ocd-jurisdiction/country:us/state:ne/government",
+    "name": "Nebraska",
+    "classification": "state",
+    "division_id": "ocd-division/country:us/state:ne",
+    "url": "https://nebraska.gov",
+}
+
+
+def test_jurisdiction_detail_by_abbr(client):
+    response = client.get("/jurisdictions/ne").json()
+    assert response == NEBRASKA_RESPONSE
+    assert query_logger.count == 1
+
+
+def test_jurisdiction_detail_by_name(client):
+    response = client.get("/jurisdictions/Nebraska").json()
+    assert response == NEBRASKA_RESPONSE
+    assert query_logger.count == 1
+
+
+def test_jurisdiction_detail_by_jid(client):
+    response = client.get(
+        "/jurisdictions/ocd-jurisdiction/country:us/state:ne/government"
+    ).json()
+    assert response == NEBRASKA_RESPONSE
+    assert query_logger.count == 1
+
+
+# def test_jurisdiction_include(client)
+#     response = client.get("/jurisdictions/ne").json()
+#     assert response["organizations"] == [1]
+#     assert query_logger.count == 1

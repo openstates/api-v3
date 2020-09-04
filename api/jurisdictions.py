@@ -53,7 +53,8 @@ async def jurisdiction_list(
 
 
 @router.get(
-    "/jurisdictions/{jurisdiction_id}",
+    # we have to use the Starlette path type to allow slashes here
+    "/jurisdictions/{jurisdiction_id:path}",
     response_model=Jurisdiction,
     response_model_exclude_none=True,
 )
@@ -66,4 +67,8 @@ async def jurisdiction_detail(
     query = db.query(models.Jurisdiction).filter(
         jurisdiction_filter(jurisdiction_id, jid_field=models.Jurisdiction.id)
     )
-    return JurisdictionPagination.detail(query, includes=include)
+    result = JurisdictionPagination.detail(query, includes=include)
+    # TODO: this should be removed too (see above note)
+    if result.classification == "government":
+        result.classification = "state"
+    return result
