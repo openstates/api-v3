@@ -83,7 +83,7 @@ def test_jurisdiction_detail_by_jid(client):
     assert query_logger.count == 1
 
 
-# def test_jurisdiction_include(client)
-#     response = client.get("/jurisdictions/ne").json()
-#     assert response["organizations"] == [1]
-#     assert query_logger.count == 1
+def test_jurisdiction_include(client):
+    response = client.get("/jurisdictions/ne?include=organizations").json()
+    assert len(response["organizations"]) == 2
+    assert query_logger.count == 2
