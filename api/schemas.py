@@ -33,13 +33,6 @@ class Organization(BaseModel):
 
     class Config:
         orm_mode = True
-        schema_extra = {
-            # "example": {
-            #     "id": "ocd-organization/32aab083-d7a0-44e0-9b95-a7790c542605",
-            #     "name": "North Carolina General Assembly",
-            #     "classification": "legislature",
-            # }
-        }
 
 
 class Jurisdiction(BaseModel):
@@ -246,7 +239,7 @@ class PersonVote(BaseModel):
 class VoteEvent(BaseModel):
     id: str
     motion_text: str = Field(..., example="Shall the bill be passed?")
-    motion_classification: List[str] = Field(list, example=["passage"])
+    motion_classification: List[str] = Field([], example=["passage"])
     start_date: str = Field(..., example="2020-09-18")
     result: str = Field(..., example="pass")
     identifier: str = Field(..., example="HV #3312")
@@ -267,9 +260,9 @@ class Bill(BaseModel):
     jurisdiction: CompactJurisdiction
     identifier: str = Field(..., example="SB 113")
     title: str = Field(..., example="Adopting a State Scorpion")
-    classification: List[str] = Field(list, example=["resolution"])
-    subject: List[str] = Field(list, example=["SCORPIONS", "SYMBOLS"])
-    extras: dict = Field(dict, example={})
+    classification: List[str] = Field([], example=["resolution"])
+    subject: List[str] = Field([], example=["SCORPIONS", "SYMBOLS"])
+    extras: dict = Field({}, example={})
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
