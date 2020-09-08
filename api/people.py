@@ -1,5 +1,6 @@
 from typing import Optional, List
 from enum import Enum
+import requests
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import func, or_
 from sqlalchemy.orm import contains_eager
@@ -24,6 +25,15 @@ class PeoplePagination(Pagination):
     include_map_overrides = {PersonInclude.offices: ["contact_details"]}
 
 
+def people_query(db):
+    return (
+        db.query(models.Person)
+        .join(models.Person.jurisdiction)
+        .order_by(models.Person.name)
+        .options(contains_eager(models.Person.jurisdiction))
+    )
+
+
 router = APIRouter()
 
 
@@ -42,12 +52,7 @@ async def people_search(
     pagination: PeoplePagination = Depends(),
     auth: str = Depends(apikey_auth),
 ):
-    query = (
-        db.query(models.Person)
-        .join(models.Person.jurisdiction)
-        .order_by(models.Person.name)
-        .options(contains_eager(models.Person.jurisdiction))
-    )
+    query = people_query(db)
     filtered = False
 
     if jurisdiction:
@@ -77,6 +82,28 @@ async def people_search(
     if not filtered:
         raise HTTPException(400, "either 'jurisdiction', 'name', or 'id' is required")
 
-    resp = pagination.paginate(query, includes=include)
+    return pagination.paginate(query, includes=include)
 
-    return resp
+
+@router.get(
+    "/people.geo",
+    response_model=PeoplePagination.response_model(),
+    response_model_exclude_none=True,
+)
+async def people_geo(
+    lat: float,
+    lng: float,
+    include: List[PersonInclude] = Query([]),
+    db: SessionLocal = Depends(get_db),
+    auth: str = Depends(apikey_auth),
+):
+    url = f"https://v3.openstates.org/divisions.geo?lat={lat}&lng={lng}"
+    data = requests.get(url).json()
+    divisions = [d["id"] for d in data["divisions"]]
+
+    query = people_query(db).filter(
+        models.Person.current_role["division_id"].astext.in_(divisions)
+    )
+
+    pagination = PeoplePagination()
+    return pagination.paginate(query, includes=include)

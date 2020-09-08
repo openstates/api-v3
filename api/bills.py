@@ -79,6 +79,7 @@ async def bills_search(
     updated_since: Optional[str] = None,
     action_since: Optional[str] = None,
     # TODO: sponsor: Optional[str] = None,
+    # TODO: sponsor_classification
     q: Optional[str] = None,
     include: List[BillInclude] = Query([]),
     db: SessionLocal = Depends(get_db),
