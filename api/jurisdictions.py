@@ -25,6 +25,7 @@ router = APIRouter()
     "/jurisdictions",
     response_model=JurisdictionPagination.response_model(),
     response_model_exclude_none=True,
+    tags=["jurisdictions"],
 )
 async def jurisdiction_list(
     classification: Optional[JurisdictionClassification] = None,
@@ -57,6 +58,7 @@ async def jurisdiction_list(
     "/jurisdictions/{jurisdiction_id:path}",
     response_model=Jurisdiction,
     response_model_exclude_none=True,
+    tags=["jurisdictions"],
 )
 async def jurisdiction_detail(
     jurisdiction_id: str,

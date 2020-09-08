@@ -12,6 +12,11 @@ class PaginationMeta(BaseModel):
     max_page: int
     total_items: int
 
+    class Config:
+        schema_extra = {
+            "example": {"per_page": 20, "page": 1, "max_page": 3, "total_items": 52}
+        }
+
 
 class Pagination:
     """

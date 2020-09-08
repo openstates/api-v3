@@ -25,6 +25,10 @@ class PeoplePagination(Pagination):
     include_map_overrides = {PersonInclude.offices: ["contact_details"]}
 
 
+# have to save this here since generating it twice caused a FastAPI error
+PersonList = PeoplePagination.response_model()
+
+
 def people_query(db):
     return (
         db.query(models.Person)
@@ -39,8 +43,9 @@ router = APIRouter()
 
 @router.get(
     "/people",
-    response_model=PeoplePagination.response_model(),
+    response_model=PersonList,
     response_model_exclude_none=True,
+    tags=["people"],
 )
 async def people_search(
     jurisdiction: Optional[str] = None,
@@ -87,8 +92,9 @@ async def people_search(
 
 @router.get(
     "/people.geo",
-    response_model=PeoplePagination.response_model(),
+    response_model=PersonList,
     response_model_exclude_none=True,
+    tags=["people"],
 )
 async def people_geo(
     lat: float,

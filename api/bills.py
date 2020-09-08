@@ -69,6 +69,7 @@ def base_query(db):
     "/bills",
     response_model=BillPagination.response_model(),
     response_model_exclude_none=True,
+    tags=["bills"],
 )
 async def bills_search(
     jurisdiction: Optional[str] = None,
@@ -135,6 +136,7 @@ async def bills_search(
     "/bills/ocd-bill/{openstates_bill_id}",
     response_model=Bill,
     response_model_exclude_none=True,
+    tags=["bills"],
 )
 async def bill_detail_by_id(
     openstates_bill_id: str,
@@ -151,6 +153,7 @@ async def bill_detail_by_id(
     "/bills/{jurisdiction}/{session}/{bill_id}",
     response_model=Bill,
     response_model_exclude_none=True,
+    tags=["bills"],
 )
 async def bill_detail(
     jurisdiction: str,

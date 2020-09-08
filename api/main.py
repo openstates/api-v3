@@ -36,6 +36,7 @@ def custom_openapi():
         "get": {
             "summary": "Divisions Geo",
             "operationId": "divisions_geo_get",
+            "tags": ["divisions"],
             "parameters": [
                 {
                     "required": True,
