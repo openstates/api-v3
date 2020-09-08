@@ -106,4 +106,4 @@ async def people_geo(
     )
 
     pagination = PeoplePagination()
-    return pagination.paginate(query, includes=include)
+    return pagination.paginate(query, includes=include, skip_count=True)

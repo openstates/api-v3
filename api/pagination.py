@@ -50,13 +50,7 @@ class Pagination:
         )
 
     def paginate(
-        self,
-        results,
-        *,
-        max_per_page=100,
-        cls=None,
-        includes=None,
-        available_includes=None,
+        self, results, *, max_per_page=100, includes=None, skip_count=False,
     ):
         # shouldn't happen, but help log if it does
         if not results._order_by:
@@ -70,13 +64,29 @@ class Pagination:
                 detail=f"invalid per_page, must be in [1, {max_per_page}]",
             )
 
-        total_items = results.count()
-        num_pages = math.ceil(total_items / self.per_page) or 1
+        if not skip_count:
+            total_items = results.count()
+            num_pages = math.ceil(total_items / self.per_page) or 1
+        else:
+            # used for people.geo, always fits on one page
+            total_items = 0
+            num_pages = 1
 
         if self.page < 1 or self.page > num_pages:
             raise HTTPException(
                 status_code=404, detail=f"invalid page, must be in [1, {num_pages}]"
             )
+
+        # before the query, do the appropriate joins and noload operations
+        results = self.select_or_noload(results, includes)
+        results = (
+            results.limit(self.per_page).offset((self.page - 1) * self.per_page).all()
+        )
+        results = [self.to_obj_with_includes(data, includes) for data in results]
+
+        # make the data correct without the extra query
+        if skip_count:
+            total_items = len(results)
 
         meta = PaginationMeta(
             total_items=total_items,
@@ -85,12 +95,6 @@ class Pagination:
             max_page=num_pages,
         )
 
-        # before the query, do the appropriate joins and noload operations
-        results = self.select_or_noload(results, includes)
-        results = (
-            results.limit(self.per_page).offset((self.page - 1) * self.per_page).all()
-        )
-        results = [self.to_obj_with_includes(data, includes) for data in results]
         return {"pagination": meta, "results": results}
 
     @classmethod

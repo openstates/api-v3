@@ -126,6 +126,8 @@ def test_people_geo_basic(client):
         }
         response = client.get("/people.geo?lat=41.5&lng=-100").json()
     # 1 query b/c we bypass count() since pagination isn't really needed
-    # assert query_logger.count == 1
+    assert query_logger.count == 1
     assert len(response["results"]) == 1
     assert response["results"][0]["name"] == "Amy Adams"
+    # check this since skip_count=True was used
+    assert response["pagination"]["total_items"] == 1
