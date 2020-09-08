@@ -6,7 +6,7 @@ from sqlalchemy import func, or_
 from sqlalchemy.orm import contains_eager
 from .db import SessionLocal, get_db, models
 from .schemas import Person, OrgClassification
-from .pagination import Pagination
+from .pagination import Pagination, PaginationMeta
 from .auth import apikey_auth
 from .utils import jurisdiction_filter
 
@@ -99,11 +99,25 @@ async def people_geo(
 ):
     url = f"https://v3.openstates.org/divisions.geo?lat={lat}&lng={lng}"
     data = requests.get(url).json()
-    divisions = [d["id"] for d in data["divisions"]]
+    try:
+        divisions = [d["id"] for d in data["divisions"]]
+    except KeyError:
+        raise HTTPException(
+            500, "unexpected upstream response, try again in 60 seconds"
+        )
+
+    # skip the rest of the logic if there are no divisions
+    if not divisions:
+        return {
+            "pagination": PaginationMeta(
+                total_items=0, per_page=100, page=1, max_page=1
+            ),
+            "results": [],
+        }
 
     query = people_query(db).filter(
         models.Person.current_role["division_id"].astext.in_(divisions)
     )
-
+    # paginate without looking for page= params
     pagination = PeoplePagination()
     return pagination.paginate(query, includes=include, skip_count=True)

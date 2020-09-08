@@ -131,3 +131,44 @@ def test_people_geo_basic(client):
     assert response["results"][0]["name"] == "Amy Adams"
     # check this since skip_count=True was used
     assert response["pagination"]["total_items"] == 1
+
+
+def test_people_geo_bad_param(client):
+    # missing parameter
+    with mock.patch("api.people.requests.get") as mock_get:
+        response = client.get("/people.geo?lat=38")
+        assert response.status_code == 422
+        assert response.json()
+        assert query_logger.count == 0
+        assert mock_get.called is False
+
+    # non-float param
+    with mock.patch("api.people.requests.get") as mock_get:
+        response = client.get("/people.geo?lat=38&lng=abc")
+        assert response.status_code == 422
+        assert response.json()
+        assert query_logger.count == 0
+        assert mock_get.called is False
+
+
+def test_people_geo_bad_upstream(client):
+    # unexpected response from upstream
+    with mock.patch("api.people.requests.get") as mock_get:
+        mock_get.return_value.json.return_value = {"endpoint disabled": True}
+        response = client.get("/people.geo?lat=50&lng=50")
+        assert response.status_code == 500
+        assert response.json()
+        assert query_logger.count == 0
+        assert mock_get.called is True
+
+
+def test_people_geo_empty(client):
+    with mock.patch("api.people.requests.get") as mock_get:
+        mock_get.return_value.json.return_value = {"divisions": []}
+        response = client.get("/people.geo?lat=0&lng=0")
+        assert response.json() == {
+            "results": [],
+            "pagination": {"max_page": 1, "per_page": 100, "page": 1, "total_items": 0},
+        }
+        assert query_logger.count == 0
+        assert mock_get.called is True
