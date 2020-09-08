@@ -1,4 +1,5 @@
 from .conftest import query_logger
+from unittest import mock
 
 
 def test_by_jurisdiction_abbr(client):
@@ -109,3 +110,22 @@ def test_people_include_office(client):
     assert response["results"][0]["offices"] == [
         {"name": "Capitol Office", "email": "amy@example.com", "voice": "555-555-5555"}
     ]
+
+
+def test_people_geo_basic(client):
+    with mock.patch("api.people.requests.get") as mock_get:
+        mock_get.return_value.json.return_value = {
+            "divisions": [
+                {
+                    "id": "ocd-division/country:us/state:ne/sldu:1",
+                    "state": "ne",
+                    "name": "1",
+                    "division_set": "sldu",
+                },
+            ]
+        }
+        response = client.get("/people.geo?lat=41.5&lng=-100").json()
+    # 1 query b/c we bypass count() since pagination isn't really needed
+    # assert query_logger.count == 1
+    assert len(response["results"]) == 1
+    assert response["results"][0]["name"] == "Amy Adams"
