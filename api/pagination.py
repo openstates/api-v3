@@ -1,21 +1,16 @@
 import math
 from typing import List
-from pydantic import create_model, BaseModel
+from pydantic import create_model, BaseModel, Field
 from fastapi import HTTPException
 from sqlalchemy.orm import noload, selectinload
 from sqlalchemy.orm.exc import NoResultFound
 
 
 class PaginationMeta(BaseModel):
-    per_page: int
-    page: int
-    max_page: int
-    total_items: int
-
-    class Config:
-        schema_extra = {
-            "example": {"per_page": 20, "page": 1, "max_page": 3, "total_items": 52}
-        }
+    per_page: int = Field(..., example=20)
+    page: int = Field(..., example=1)
+    max_page: int = Field(..., example=3)
+    total_items: int = Field(..., example=52)
 
 
 class Pagination:

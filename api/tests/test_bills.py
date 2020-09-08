@@ -145,6 +145,7 @@ def test_bills_include_votes(client):
             "id": "ocd-vote/1",
             "identifier": "Vote on HB1",
             "motion_text": "Floor Vote",
+            "motion_classification": [],
             "start_date": "2021-01-01",
             "result": "passed",
             "organization": {
@@ -164,6 +165,7 @@ def test_bills_include_votes(client):
             "id": "ocd-vote/2",
             "identifier": "Vote on HB1",
             "motion_text": "Floor Vote",
+            "motion_classification": [],
             "start_date": "2021-02-01",
             "result": "passed",
             "organization": {
