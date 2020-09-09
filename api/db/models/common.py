@@ -32,4 +32,4 @@ class RelatedEntityBase(PrimaryUUID):
 
     @declared_attr
     def person(cls):
-        return relationship("Organization")
+        return relationship("Person")

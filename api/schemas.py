@@ -108,12 +108,18 @@ class CompactJurisdiction(BaseModel):
         orm_mode = True
 
 
-class Person(BaseModel):
+class CompactPerson(BaseModel):
     id: str = Field(..., example="ocd-person/adb58f21-f2fd-4830-85b6-f490b0867d14")
     name: str = Field(..., example="Angela Augusta")
-    jurisdiction: CompactJurisdiction
     party: str = Field(..., example="Democratic")
     current_role: Optional[CurrentRole]
+
+    class Config:
+        orm_mode = True
+
+
+class Person(CompactPerson):
+    jurisdiction: CompactJurisdiction
 
     # extra detail
     given_name: str = Field(..., example="Angela")
@@ -181,7 +187,7 @@ class BillSponsorship(BaseModel):
     name: str = Field(..., example="JONES")
     entity_type: str = Field(..., example="person")
     organization: Optional[Organization] = Field(None, example=None)
-    person: Optional[Person]
+    person: Optional[CompactPerson]
     primary: bool
     classification: str = Field(..., example="primary")
 
@@ -230,7 +236,7 @@ class VoteCount(BaseModel):
 class PersonVote(BaseModel):
     option: str = Field(..., example="no")
     voter_name: str = Field(..., example="Wu")
-    voter: Optional[Person]
+    voter: Optional[CompactPerson]
 
     class Config:
         orm_mode = True

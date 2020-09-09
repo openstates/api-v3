@@ -215,6 +215,25 @@ def ohio():
         updated_at=datetime.datetime.utcnow(),
         latest_action_date="2021-01-01",
     )
+    ruth = Person(
+        id="ocd-person/999",
+        name="Ruth",
+        party="Democratic",
+        current_role={
+            "org_classification": "upper",
+            "district": 9,
+            "title": "Senator",
+            "division_id": "ocd-division/country:us/state:oh/sldu:9",
+        },
+    )
+    sp = BillSponsorship(
+        bill=hb1,
+        primary=True,
+        classification="sponsor",
+        name="Ruth",
+        entity_type="person",
+        person=ruth,
+    )
     btext = SearchableBill(
         bill=hb1,
         search_vector=func.to_tsvector(
@@ -246,6 +265,8 @@ def ohio():
         lower,
         ls2021,
         hb1,
+        ruth,
+        sp,
         v1,
         v2,
         VoteCount(vote_event=v1, option="yes", value=2),

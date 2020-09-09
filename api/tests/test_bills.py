@@ -215,3 +215,28 @@ def test_bill_detail_by_internal_id(client):
     assert response["id"] == "ocd-bill/1234"
     assert response["identifier"] == "HB 1"
     assert query_logger.count == 1
+
+
+def test_bill_detail_sponsorship_resolution(client):
+    response = client.get("/bills/oh/2021/HB 1?include=sponsorships").json()
+    assert response["id"] == "ocd-bill/1234"
+    assert len(response["sponsorships"]) == 1
+    # uses the compact person representation, no more joins
+    assert response["sponsorships"][0] == {
+        "name": "Ruth",
+        "entity_type": "person",
+        "classification": "sponsor",
+        "primary": True,
+        "person": {
+            "id": "ocd-person/999",
+            "name": "Ruth",
+            "party": "Democratic",
+            "current_role": {
+                "title": "Senator",
+                "org_classification": "upper",
+                "district": "9",
+                "division_id": "ocd-division/country:us/state:oh/sldu:9",
+            },
+        },
+    }
+    assert query_logger.count == 3
