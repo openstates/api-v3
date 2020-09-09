@@ -30,7 +30,13 @@ class BillPagination(Pagination):
         BillInclude.sponsorships: ["sponsorships", "sponsorships.person"],
         BillInclude.versions: ["versions", "versions.links"],
         BillInclude.documents: ["documents", "documents.links"],
-        BillInclude.votes: ["votes", "votes.votes", "votes.counts", "votes.sources"],
+        BillInclude.votes: [
+            "votes",
+            "votes.votes",
+            "votes.counts",
+            "votes.sources",
+            "votes.votes.voter",
+        ],
     }
 
 
