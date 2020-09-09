@@ -28,7 +28,7 @@ def custom_openapi():
         return app.openapi_schema
     openapi_schema = get_openapi(
         title="Open States API v3",
-        version="0.5.0",
+        version="2020.09.09",
         # description="Open States' API",
         routes=app.routes,
     )
