@@ -72,21 +72,43 @@ def base_query(db):
     tags=["bills"],
 )
 async def bills_search(
-    jurisdiction: Optional[str] = None,
-    session: Optional[str] = None,
-    chamber: Optional[str] = None,
-    classification: Optional[str] = None,
-    subject: Optional[List[str]] = Query([]),
-    updated_since: Optional[str] = None,
-    action_since: Optional[str] = None,
+    jurisdiction: Optional[str] = Query(
+        None, description="Filter by jurisdiction name or ID."
+    ),
+    session: Optional[str] = Query(None, description="Filter by session identifier."),
+    chamber: Optional[str] = Query(
+        None, description="Filter by chamber of origination."
+    ),
+    classification: Optional[str] = Query(
+        None, description="Filter by classification, e.g. bill or resolution"
+    ),
+    subject: Optional[List[str]] = Query(
+        [], description="Filter by one or more subjects."
+    ),
+    updated_since: Optional[str] = Query(
+        None,
+        description="Filter to only include bills with updates since a given date.",
+    ),
+    action_since: Optional[str] = Query(
+        None,
+        description="Filter to only include bills with an action since a given date.",
+    ),
     # TODO: sponsor: Optional[str] = None,
     # TODO: sponsor_classification
-    q: Optional[str] = None,
-    include: List[BillInclude] = Query([]),
+    q: Optional[str] = Query(None, description="Filter by full text search term."),
+    include: List[BillInclude] = Query(
+        [], description="Additional information to include in response."
+    ),
     db: SessionLocal = Depends(get_db),
     pagination: BillPagination = Depends(),
     auth: str = Depends(apikey_auth),
 ):
+    """
+    Search for bills matching given criteria.
+
+    Must either specify a jurisdiction or a full text query (q).  Additional parameters will
+    futher restrict bills returned.
+    """
     query = base_query(db).order_by(
         models.LegislativeSession.identifier, models.Bill.identifier
     )
@@ -144,6 +166,7 @@ async def bill_detail_by_id(
     db: SessionLocal = Depends(get_db),
     auth: str = Depends(apikey_auth),
 ):
+    """ Obtain bill information by internal ID in the format ocd-bill/*uuid*. """
     query = base_query(db).filter(models.Bill.id == "ocd-bill/" + openstates_bill_id)
     return BillPagination.detail(query, includes=include)
 
@@ -163,6 +186,7 @@ async def bill_detail(
     db: SessionLocal = Depends(get_db),
     auth: str = Depends(apikey_auth),
 ):
+    """ Obtain bill information based on (state, session, bill_id)."""
     query = base_query(db).filter(
         models.Bill.identifier == fix_bill_id(bill_id).upper(),
         models.LegislativeSession.identifier == session,

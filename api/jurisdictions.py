@@ -28,12 +28,19 @@ router = APIRouter()
     tags=["jurisdictions"],
 )
 async def jurisdiction_list(
-    classification: Optional[JurisdictionClassification] = None,
-    include: List[JurisdictionInclude] = Query([]),
+    classification: Optional[JurisdictionClassification] = Query(
+        None, description="Filter returned jurisdictions by type."
+    ),
+    include: List[JurisdictionInclude] = Query(
+        [], description="Additional information to include in response."
+    ),
     db: SessionLocal = Depends(get_db),
     pagination: JurisdictionPagination = Depends(),
     auth: str = Depends(apikey_auth),
 ):
+    """
+    Get list of supported Jurisdictions, a Jurisdiction is a state or municipality.
+    """
     # TODO: remove this conversion once database is updated
     if classification == "state":
         classification = "government"
@@ -62,10 +69,13 @@ async def jurisdiction_list(
 )
 async def jurisdiction_detail(
     jurisdiction_id: str,
-    include: List[JurisdictionInclude] = Query([]),
+    include: List[JurisdictionInclude] = Query(
+        [], description="Additional includes for the Jurisdiction response."
+    ),
     db: SessionLocal = Depends(get_db),
     auth: str = Depends(apikey_auth),
 ):
+    """ Get details on a single Jurisdiction (e.g. state or municipality). """
     query = db.query(models.Jurisdiction).filter(
         jurisdiction_filter(jurisdiction_id, jid_field=models.Jurisdiction.id)
     )

@@ -11,7 +11,7 @@ app.include_router(bills.router)
 
 
 # @app.get("/debug")
-# def read_root(request: Request):
+# def debug(request: Request):
 #     print(request.scope)
 #     return {
 #         "headers": request.headers,
@@ -28,39 +28,40 @@ def custom_openapi():
         return app.openapi_schema
     openapi_schema = get_openapi(
         title="Open States API v3",
-        version="0.3.2",
+        version="0.5.0",
         # description="Open States' API",
         routes=app.routes,
     )
-    openapi_schema["paths"]["/divisions.geo"] = {
-        "get": {
-            "summary": "Divisions Geo",
-            "operationId": "divisions_geo_get",
-            "tags": ["divisions"],
-            "parameters": [
-                {
-                    "required": True,
-                    "schema": {"title": "Latitude", "type": "number"},
-                    "name": "lat",
-                    "in": "query",
-                },
-                {
-                    "required": True,
-                    "schema": {"title": "Longitude", "type": "number"},
-                    "name": "lng",
-                    "in": "query",
-                },
-            ],
-            "responses": {
-                "200": {"description": "Successful Response"},
-                "content": {
-                    "application/json": {
-                        "schema": "#/components/schemas/JurisdictionList"
-                    }
-                },
-            },
-        }
-    }
+    # if we want to publish divisions.geo we can like this
+    # openapi_schema["paths"]["/divisions.geo"] = {
+    #     "get": {
+    #         "summary": "Divisions Geo",
+    #         "operationId": "divisions_geo_get",
+    #         "tags": ["divisions"],
+    #         "parameters": [
+    #             {
+    #                 "required": True,
+    #                 "schema": {"title": "Latitude", "type": "number"},
+    #                 "name": "lat",
+    #                 "in": "query",
+    #             },
+    #             {
+    #                 "required": True,
+    #                 "schema": {"title": "Longitude", "type": "number"},
+    #                 "name": "lng",
+    #                 "in": "query",
+    #             },
+    #         ],
+    #         "responses": {
+    #             "200": {"description": "Successful Response"},
+    #             "content": {
+    #                 "application/json": {
+    #                     "schema": "#/components/schemas/JurisdictionList"
+    #                 }
+    #             },
+    #         },
+    #     }
+    # }
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 

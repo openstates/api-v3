@@ -48,15 +48,32 @@ router = APIRouter()
     tags=["people"],
 )
 async def people_search(
-    jurisdiction: Optional[str] = None,
-    name: Optional[str] = None,
-    id: Optional[List[str]] = Query([]),
-    org_classification: Optional[OrgClassification] = None,
-    include: List[PersonInclude] = Query([]),
+    jurisdiction: Optional[str] = Query(
+        None, description="Filter by jurisdiction name or id."
+    ),
+    name: Optional[str] = Query(
+        None, description="Filter by name, case-insensitive match."
+    ),
+    id: Optional[List[str]] = Query(
+        [],
+        description="Filter by id, can be specified multiple times for multiple people.",
+    ),
+    org_classification: Optional[OrgClassification] = Query(
+        None, description="Filter by current role."
+    ),
+    include: List[PersonInclude] = Query(
+        [], description="Additional information to include in response."
+    ),
     db: SessionLocal = Depends(get_db),
     pagination: PeoplePagination = Depends(),
     auth: str = Depends(apikey_auth),
 ):
+    """
+    Get list of people matching selected criteria.
+
+    Must provide either **jurisdiction**, **name**, or one or more **id** parameters.
+    """
+
     query = people_query(db)
     filtered = False
 
@@ -97,12 +114,19 @@ async def people_search(
     tags=["people"],
 )
 async def people_geo(
-    lat: float,
-    lng: float,
-    include: List[PersonInclude] = Query([]),
+    lat: float = Query(..., description="Latitude of point."),
+    lng: float = Query(..., description="Longitude of point."),
+    include: List[PersonInclude] = Query(
+        [], description="Additional information to include in the response."
+    ),
     db: SessionLocal = Depends(get_db),
     auth: str = Depends(apikey_auth),
 ):
+    """
+    Get list of people currently representing a given location.
+
+    **Note:** Currently limited to state legislators.  Governors & mayors are not included.
+    """
     url = f"https://v3.openstates.org/divisions.geo?lat={lat}&lng={lng}"
     data = requests.get(url).json()
     try:
