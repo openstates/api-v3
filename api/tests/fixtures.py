@@ -226,13 +226,32 @@ def ohio():
             "division_id": "ocd-division/country:us/state:oh/sldu:9",
         },
     )
-    sp = BillSponsorship(
+    marge = Person(
+        id="ocd-person/777",
+        name="Marge",
+        party="Democratic",
+        current_role={
+            "org_classification": "upper",
+            "district": 7,
+            "title": "Senator",
+            "division_id": "ocd-division/country:us/state:oh/sldu:7",
+        },
+    )
+    sp1 = BillSponsorship(
         bill=hb1,
         primary=True,
         classification="sponsor",
         name="Ruth",
         entity_type="person",
         person=ruth,
+    )
+    sp2 = BillSponsorship(
+        bill=hb1,
+        primary=True,
+        classification="sponsor",
+        name="Marge",
+        entity_type="person",
+        person=marge,
     )
     btext = SearchableBill(
         bill=hb1,
@@ -266,7 +285,9 @@ def ohio():
         ls2021,
         hb1,
         ruth,
-        sp,
+        marge,
+        sp1,
+        sp2,
         v1,
         v2,
         VoteCount(vote_event=v1, option="yes", value=2),

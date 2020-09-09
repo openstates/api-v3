@@ -27,6 +27,7 @@ class BillPagination(Pagination):
     ObjCls = Bill
     IncludeEnum = BillInclude
     include_map_overrides = {
+        BillInclude.sponsorships: ["sponsorships", "sponsorships.person"],
         BillInclude.versions: ["versions", "versions.links"],
         BillInclude.documents: ["documents", "documents.links"],
         BillInclude.votes: ["votes", "votes.votes", "votes.counts", "votes.sources"],

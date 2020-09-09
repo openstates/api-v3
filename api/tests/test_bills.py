@@ -220,7 +220,7 @@ def test_bill_detail_by_internal_id(client):
 def test_bill_detail_sponsorship_resolution(client):
     response = client.get("/bills/oh/2021/HB 1?include=sponsorships").json()
     assert response["id"] == "ocd-bill/1234"
-    assert len(response["sponsorships"]) == 1
+    assert len(response["sponsorships"]) == 2
     # uses the compact person representation, no more joins
     assert response["sponsorships"][0] == {
         "name": "Ruth",
