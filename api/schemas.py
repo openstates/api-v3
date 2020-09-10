@@ -35,6 +35,17 @@ class Organization(BaseModel):
         orm_mode = True
 
 
+class LegislativeSession(BaseModel):
+    identifier: str
+    name: str
+    classification: str
+    start_date: str
+    end_date: str
+
+    class Config:
+        orm_mode = True
+
+
 class Jurisdiction(BaseModel):
     id: str = Field(..., example="ocd-jurisdiction/country:us/state:nc/government")
     name: str = Field(..., example="North Carolina")
@@ -47,6 +58,7 @@ class Jurisdiction(BaseModel):
     # people_last_updated: Optional[datetime.datetime]
     # bills_last_updated: Optional[datetime.datetime]
     organizations: Optional[List[Organization]] = None
+    legislative_sessions: Optional[List[LegislativeSession]] = None
 
     class Config:
         orm_mode = True
@@ -138,18 +150,6 @@ class Person(CompactPerson):
     links: Optional[List[Link]]
     sources: Optional[List[Link]]
     offices: Optional[List[Office]]
-
-    class Config:
-        orm_mode = True
-
-
-class LegislativeSession(BaseModel):
-    # TODO: use this on Bill and Jurisdiction
-    identifier: str
-    name: str
-    classification: str
-    start_date: str
-    end_date: str
 
     class Config:
         orm_mode = True

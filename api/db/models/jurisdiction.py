@@ -20,6 +20,7 @@ class Jurisdiction(Base):
         Organization.classification.in_(('upper', 'lower', 'legislature', 'executive'))
         )""",
     )
+    legislative_sessions = relationship("LegislativeSession")
 
 
 class LegislativeSession(PrimaryUUID, Base):

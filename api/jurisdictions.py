@@ -10,6 +10,7 @@ from .utils import jurisdiction_filter
 
 class JurisdictionInclude(str, Enum):
     organizations = "organizations"
+    legislative_sessions = "legislative_sessions"
 
 
 class JurisdictionPagination(Pagination):
