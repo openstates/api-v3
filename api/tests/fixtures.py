@@ -94,8 +94,14 @@ def nebraska():
         classification="government",
         division_id="ocd-division/country:us/state:ne",
     )
-    ls2020 = LegislativeSession(jurisdiction=j, identifier="2020")
-    ls2021 = LegislativeSession(jurisdiction=j, identifier="2021")
+    ls2020 = LegislativeSession(
+        jurisdiction=j,
+        identifier="2020",
+        name="2020",
+        start_date="2020-01-01",
+        end_date="2020-12-31",
+    )
+    ls2021 = LegislativeSession(jurisdiction=j, identifier="2021", name="2020")
     leg = Organization(
         id="nel",
         name="Nebraska Legislature",
@@ -192,7 +198,7 @@ def ohio():
         classification="government",
         division_id="ocd-division/country:us/state:oh",
     )
-    ls2021 = LegislativeSession(jurisdiction=j, identifier="2021")
+    ls2021 = LegislativeSession(jurisdiction=j, identifier="2021", name="2021")
     leg = Organization(
         id="ohl", name="Ohio Legislature", classification="legislature", jurisdiction=j,
     )

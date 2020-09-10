@@ -28,9 +28,9 @@ class LegislativeSession(PrimaryUUID, Base):
 
     identifier = Column(String)
     name = Column(String)
-    classification = Column(String)
-    start_date = Column(String)
-    end_date = Column(String)
+    classification = Column(String, default="")
+    start_date = Column(String, default="")
+    end_date = Column(String, default="")
 
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")

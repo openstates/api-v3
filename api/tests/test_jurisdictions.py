@@ -54,6 +54,23 @@ def test_jurisdiction_include_organizations_empty(client):
     assert query_logger.count == 3
 
 
+def test_jurisdiction_include_sessions(client):
+    response = client.get(
+        "/jurisdictions?classification=state&per_page=1&include=legislative_sessions"
+    )
+    response = response.json()
+    # is included, legislative sessions are inline
+    assert query_logger.count == 3
+    assert len(response["results"][0]["legislative_sessions"]) == 2
+    assert response["results"][0]["legislative_sessions"][0] == {
+        "identifier": "2020",
+        "name": "2020",
+        "classification": "",
+        "start_date": "2020-01-01",
+        "end_date": "2020-12-31",
+    }
+
+
 NEBRASKA_RESPONSE = {
     "id": "ocd-jurisdiction/country:us/state:ne/government",
     "name": "Nebraska",
