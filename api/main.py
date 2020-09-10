@@ -28,8 +28,11 @@ def custom_openapi():
         return app.openapi_schema
     openapi_schema = get_openapi(
         title="Open States API v3",
-        version="2020.09.09",
-        # description="Open States' API",
+        version="2020.09.10",
+        description="""
+* [More documentation](https://docs.openstates.org/en/latest/api/v3/index.html)
+* [Register for an account](https://openstates.org/accounts/signup/)
+""",
         routes=app.routes,
     )
     # if we want to publish divisions.geo we can like this
