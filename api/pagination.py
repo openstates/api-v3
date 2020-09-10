@@ -30,7 +30,7 @@ class Pagination:
     pagination.
     """
 
-    def __init__(self, page: int = 1, per_page: int = 100):
+    def __init__(self, page: int = 1, per_page: int = 10):
         self.page = page
         self.per_page = per_page
 
@@ -50,7 +50,7 @@ class Pagination:
         )
 
     def paginate(
-        self, results, *, max_per_page=100, includes=None, skip_count=False,
+        self, results, *, includes=None, skip_count=False,
     ):
         # shouldn't happen, but help log if it does
         if not results._order_by:
@@ -58,10 +58,10 @@ class Pagination:
                 status_code=500, detail="ordering is required for pagination"
             )
 
-        if self.per_page < 1 or self.per_page > max_per_page:
+        if self.per_page < 1 or self.per_page > self.max_per_page:
             raise HTTPException(
                 status_code=400,
-                detail=f"invalid per_page, must be in [1, {max_per_page}]",
+                detail=f"invalid per_page, must be in [1, {self.max_per_page}]",
             )
 
         if not skip_count:

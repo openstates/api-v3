@@ -38,6 +38,7 @@ class BillPagination(Pagination):
             "votes.votes.voter",
         ],
     }
+    max_per_page = 20
 
 
 router = APIRouter()

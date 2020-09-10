@@ -23,6 +23,7 @@ class PeoplePagination(Pagination):
     ObjCls = Person
     IncludeEnum = PersonInclude
     include_map_overrides = {PersonInclude.offices: ["contact_details"]}
+    max_per_page = 50
 
 
 # have to save this here since generating it twice caused a FastAPI error
