@@ -157,8 +157,6 @@ class Person(CompactPerson):
 class BillAbstract(BaseModel):
     abstract: str = Field(..., example="This bill designates a new state arachnid.")
     note: str = Field(..., example="house abstract")
-    # TODO: remove these?
-    # date: str = Field(..., example="2020-07-04")
 
     class Config:
         orm_mode = True
@@ -174,9 +172,6 @@ class BillTitle(BaseModel):
 
 class BillIdentifier(BaseModel):
     identifier: str = Field(..., example="HB 74")
-    # TODO: remove these?
-    # scheme: str = Field(..., "")
-    # note: str = Field(..., "")
 
     class Config:
         orm_mode = True
@@ -201,7 +196,6 @@ class BillAction(BaseModel):
     # TODO: enumerate billaction classifiers
     classification: List[str] = Field(..., example=["passed"])
     order: int
-    extras: dict
 
     class Config:
         orm_mode = True

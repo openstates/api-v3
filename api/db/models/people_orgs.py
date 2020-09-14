@@ -107,7 +107,6 @@ class PersonContactDetail(PrimaryUUID, Base):
     type = Column(String)
     value = Column(String)
     note = Column(String)
-    # TODO: label?
 
 
 # TODO: organization_link, organization_source, membership, post

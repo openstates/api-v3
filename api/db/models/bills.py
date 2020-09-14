@@ -68,7 +68,6 @@ class BillAbstract(BillRelatedBase, Base):
 
     abstract = Column(String)
     note = Column(String)
-    date = Column(String)
 
 
 class BillTitle(BillRelatedBase, Base):
@@ -82,8 +81,6 @@ class BillIdentifier(BillRelatedBase, Base):
     __tablename__ = "opencivicdata_billidentifier"
 
     identifier = Column(String)
-    scheme = Column(String)
-    note = Column(String)
 
 
 class BillAction(BillRelatedBase, Base):
@@ -95,7 +92,6 @@ class BillAction(BillRelatedBase, Base):
     date = Column(String)
     classification = Column(ARRAY(Text), default=list)
     order = Column(Integer)
-    extras = Column(JSONB, default=dict)
 
 
 class BillActionRelatedEntity(RelatedEntityBase, Base):
