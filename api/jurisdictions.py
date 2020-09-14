@@ -47,23 +47,13 @@ async def jurisdiction_list(
     """
     Get list of supported Jurisdictions, a Jurisdiction is a state or municipality.
     """
-    # TODO: remove this conversion once database is updated
-    if classification == "state":
-        classification = "government"
     query = db.query(models.Jurisdiction).order_by(models.Jurisdiction.name)
 
     # handle parameters
     if classification:
         query = query.filter(models.Jurisdiction.classification == classification)
 
-    resp = pagination.paginate(query, includes=include)
-
-    # TODO: this should be removed too (see above note)
-    for result in resp["results"]:
-        if result.classification == "government":
-            result.classification = "state"
-
-    return resp
+    return pagination.paginate(query, includes=include)
 
 
 @router.get(
@@ -85,8 +75,4 @@ async def jurisdiction_detail(
     query = db.query(models.Jurisdiction).filter(
         jurisdiction_filter(jurisdiction_id, jid_field=models.Jurisdiction.id)
     )
-    result = JurisdictionPagination.detail(query, includes=include)
-    # TODO: this should be removed too (see above note)
-    if result.classification == "government":
-        result.classification = "state"
-    return result
+    return JurisdictionPagination.detail(query, includes=include)

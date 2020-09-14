@@ -7,7 +7,6 @@ from pydantic import BaseModel, Field
 class JurisdictionClassification(str, Enum):
     state = "state"
     municipality = "municipality"
-    government = "government"  # TODO: remove this before release
 
 
 class OrgClassification(str, Enum):

@@ -91,7 +91,7 @@ def nebraska():
         id="ocd-jurisdiction/country:us/state:ne/government",
         name="Nebraska",
         url="https://nebraska.gov",
-        classification="government",
+        classification="state",
         division_id="ocd-division/country:us/state:ne",
     )
     ls2020 = LegislativeSession(
@@ -195,7 +195,7 @@ def ohio():
         id="ocd-jurisdiction/country:us/state:oh/government",
         name="Ohio",
         url="https://ohio.gov",
-        classification="government",
+        classification="state",
         division_id="ocd-division/country:us/state:oh",
     )
     ls2021 = LegislativeSession(jurisdiction=j, identifier="2021", name="2021")
