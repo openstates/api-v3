@@ -1,5 +1,5 @@
 from .db import models
-from openstates_metadata import lookup
+from openstates.metadata import lookup
 
 
 def jurisdiction_filter(j: str, *, jid_field):
