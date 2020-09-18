@@ -136,7 +136,6 @@ class DocVerBase(BillRelatedBase):
 class DocumentLinkBase(PrimaryUUID):
     media_type = Column(String)
     url = Column(String)
-    text = Column(String)
 
 
 class BillDocument(DocVerBase, Base):
