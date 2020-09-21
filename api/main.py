@@ -2,6 +2,7 @@ import os
 import sentry_sdk
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
+from fastapi.middleware.cors import CORSMiddleware
 from uvicorn.workers import UvicornWorker
 from . import jurisdictions, people, bills
 
@@ -12,6 +13,9 @@ app = FastAPI()
 app.include_router(jurisdictions.router)
 app.include_router(people.router)
 app.include_router(bills.router)
+app.add_middleware(
+    CORSMiddleware, allow_origins=["*"], allow_headers=["*"],
+)
 
 
 # @app.get("/debug")
