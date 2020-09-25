@@ -142,6 +142,10 @@ class Person(CompactPerson):
     extras: dict = Field(..., example={"profession": "Doctor"})
     created_at: datetime.datetime
     updated_at: datetime.datetime
+    openstates_url: str = Field(
+        ...,
+        example="https://openstates.org/person/amos-l-quick-iii-28NRPPfJA6FGVl9RrjpKjl/",
+    )
 
     # joins
     other_identifiers: Optional[List[AltIdentifier]]

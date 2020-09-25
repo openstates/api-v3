@@ -1,3 +1,6 @@
+import uuid
+import base62
+from slugify import slugify
 from collections import defaultdict
 from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import JSONB
@@ -5,6 +8,12 @@ from sqlalchemy.orm import relationship
 from .. import Base
 from .common import PrimaryUUID, LinkBase
 from .jurisdiction import Jurisdiction
+
+
+def encode_uuid(id):
+    uuid_portion = str(id).split("/")[1]
+    as_int = uuid.UUID(uuid_portion).int
+    return base62.encode(as_int)
 
 
 class Organization(Base):
@@ -45,6 +54,11 @@ class Person(Base):
     links = relationship("PersonLink")
     sources = relationship("PersonSource")
     contact_details = relationship("PersonContactDetail")
+
+    @property
+    def openstates_url(self):
+        """ get canonical URL for openstates.org """
+        return f"https://openstates.org/person/{slugify(self.name)}-{encode_uuid(self.id)}/"
 
     @property
     def offices(self):
