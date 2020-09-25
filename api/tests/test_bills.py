@@ -228,7 +228,7 @@ def test_bill_detail_sponsorship_resolution(client):
         "classification": "sponsor",
         "primary": True,
         "person": {
-            "id": "ocd-person/999",
+            "id": "ocd-person/99999999-9999-9999-9999-999999999999",
             "name": "Ruth",
             "party": "Democratic",
             "current_role": {

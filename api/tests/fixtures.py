@@ -26,6 +26,10 @@ from api.db.models import (
 )
 
 
+def dummy_person_id(n):
+    return f"ocd-person/{n*8}-{n*4}-{n*4}-{n*4}-{n*12}"
+
+
 def create_test_bill(
     session,
     chamber,
@@ -142,7 +146,7 @@ def nebraska():
             jurisdiction=j,
         ),
         Person(
-            id="1",
+            id=dummy_person_id("1"),
             name="Amy Adams",
             family_name="Amy",
             given_name="Adams",
@@ -159,17 +163,29 @@ def nebraska():
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow(),
         ),
-        PersonName(person_id="1", name="Amy 'Aardvark' Adams", note="nickname"),
-        PersonLink(person_id="1", url="https://example.com/amy", note=""),
-        PersonSource(person_id="1", url="https://example.com/amy", note=""),
-        PersonContactDetail(
-            person_id="1", type="voice", value="555-555-5555", note="Capitol Office"
+        PersonName(
+            person_id=dummy_person_id("1"), name="Amy 'Aardvark' Adams", note="nickname"
+        ),
+        PersonLink(
+            person_id=dummy_person_id("1"), url="https://example.com/amy", note=""
+        ),
+        PersonSource(
+            person_id=dummy_person_id("1"), url="https://example.com/amy", note=""
         ),
         PersonContactDetail(
-            person_id="1", type="email", value="amy@example.com", note="Capitol Office"
+            person_id=dummy_person_id("1"),
+            type="voice",
+            value="555-555-5555",
+            note="Capitol Office",
+        ),
+        PersonContactDetail(
+            person_id=dummy_person_id("1"),
+            type="email",
+            value="amy@example.com",
+            note="Capitol Office",
         ),
         Person(
-            id="2",
+            id=dummy_person_id("2"),
             name="Boo Berri",
             birth_date="1973-12-25",
             party="Libertarian",
@@ -179,7 +195,7 @@ def nebraska():
             updated_at=datetime.datetime.utcnow(),
         ),
         Person(
-            id="3",
+            id=dummy_person_id("3"),
             name="Rita Red",  # retired
             birth_date="1973-12-25",
             party="Republican",
@@ -222,7 +238,7 @@ def ohio():
         latest_action_date="2021-01-01",
     )
     ruth = Person(
-        id="ocd-person/999",
+        id=dummy_person_id("9"),
         name="Ruth",
         party="Democratic",
         current_role={
@@ -233,7 +249,7 @@ def ohio():
         },
     )
     marge = Person(
-        id="ocd-person/777",
+        id=dummy_person_id("7"),
         name="Marge",
         party="Democratic",
         current_role={

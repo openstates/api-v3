@@ -68,7 +68,9 @@ def test_by_name_other_name(client):
 
 
 def test_by_id(client):
-    response = client.get("/people?id=1&id=3").json()
+    response = client.get(
+        "/people?id=ocd-person/11111111-1111-1111-1111-111111111111&id=ocd-person/33333333-3333-3333-3333-333333333333"
+    ).json()
     assert query_logger.count == 2
     assert len(response["results"]) == 2
     assert response["results"][0]["name"] == "Amy Adams"
@@ -89,7 +91,8 @@ def test_no_filter(client):
 
 def test_people_includes_normal(client):
     response = client.get(
-        "/people?id=1&include=other_names&include=other_identifiers&include=links&include=sources"
+        "/people?id=ocd-person/11111111-1111-1111-1111-111111111111"
+        "&include=other_names&include=other_identifiers&include=links&include=sources"
     ).json()
     assert query_logger.count == 6  # 4 extra queries
     assert response["results"][0]["other_names"] == [
@@ -105,7 +108,9 @@ def test_people_includes_normal(client):
 
 
 def test_people_include_office(client):
-    response = client.get("/people?id=1&include=offices").json()
+    response = client.get(
+        "/people?id=ocd-person/11111111-1111-1111-1111-111111111111" "&include=offices"
+    ).json()
     assert query_logger.count == 3  # 1 extra query
     assert response["results"][0]["offices"] == [
         {"name": "Capitol Office", "email": "amy@example.com", "voice": "555-555-5555"}
