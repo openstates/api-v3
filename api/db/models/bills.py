@@ -1,3 +1,4 @@
+from functools import lru_cache
 from sqlalchemy import Column, String, ForeignKey, DateTime, Integer, Boolean, Text
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY, TSVECTOR
@@ -6,6 +7,11 @@ from .. import Base
 from .common import PrimaryUUID, LinkBase, RelatedEntityBase
 from .jurisdiction import LegislativeSession
 from .people_orgs import Organization
+
+
+@lru_cache(100)
+def _jid_to_abbr(jid):
+    return jid.split(":")[-1].split("/")[0]
 
 
 class Bill(Base):
@@ -45,6 +51,12 @@ class Bill(Base):
     @property
     def session(self):
         return self.legislative_session.identifier
+
+    @property
+    def openstates_url(self):
+        abbr = _jid_to_abbr(self.legislative_session.jurisdiction_id)
+        identifier = self.identifier.replace(" ", "")
+        return f"https://openstates.org/{abbr}/bills/{self.session}/{identifier}/"
 
     # computed fields
     first_action_date = Column(String)

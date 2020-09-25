@@ -264,6 +264,9 @@ class Bill(BaseModel):
     extras: dict = Field({}, example={})
     created_at: datetime.datetime
     updated_at: datetime.datetime
+    openstates_url: str = Field(
+        ..., example="https://openstates.org/nc/bills/2019/HB1105/"
+    )
 
     abstracts: Optional[List[BillAbstract]]
     other_titles: Optional[List[BillTitle]]
