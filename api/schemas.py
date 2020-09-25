@@ -261,6 +261,7 @@ class Bill(BaseModel):
     id: str = Field(..., example="ocd-bill/f0049138-1ad8-4506-a2a4-f4dd1251bbba")
     session: str = Field(..., example="2020")
     jurisdiction: CompactJurisdiction
+    from_organization: Organization
     identifier: str = Field(..., example="SB 113")
     title: str = Field(..., example="Adopting a State Scorpion")
     classification: List[str] = Field([], example=["resolution"])
