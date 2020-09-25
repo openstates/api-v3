@@ -202,6 +202,12 @@ def test_bill_detail_id_normalization(client):
     assert query_logger.count == 1
 
 
+def test_bill_openstates_url(client):
+    response = client.get("/bills/oh/2021/HB1").json()
+    assert response["openstates_url"] == "https://openstates.org/oh/bills/2021/HB1/"
+    assert query_logger.count == 1
+
+
 def test_bill_detail_includes(client):
     response = client.get("/bills/oh/2021/HB 1?include=votes").json()
     assert response["id"] == "ocd-bill/1234"
@@ -211,7 +217,6 @@ def test_bill_detail_includes(client):
 
 def test_bill_detail_by_internal_id(client):
     response = client.get("/bills/ocd-bill/1234").json()
-    print(response)
     assert response["id"] == "ocd-bill/1234"
     assert response["identifier"] == "HB 1"
     assert query_logger.count == 1

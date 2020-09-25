@@ -77,6 +77,19 @@ def test_by_id(client):
     assert response["results"][1]["name"] == "Rita Red"
 
 
+def test_openstates_url(client):
+    response = client.get(
+        "/people?id=ocd-person/11111111-1111-1111-1111-111111111111"
+    ).json()
+    assert query_logger.count == 2
+    assert len(response["results"]) == 1
+    assert response["results"][0]["name"] == "Amy Adams"
+    assert (
+        response["results"][0]["openstates_url"]
+        == "https://openstates.org/person/amy-adams-WCfTognxqNqfz8qrH12uH/"
+    )
+
+
 def test_no_filter(client):
     response = client.get("/people")
     assert query_logger.count == 0
