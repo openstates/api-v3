@@ -3,6 +3,7 @@ import sentry_sdk
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from uvicorn.workers import UvicornWorker
 from . import jurisdictions, people, bills
 
@@ -16,6 +17,11 @@ app.include_router(bills.router)
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_headers=["*"],
 )
+
+
+@app.get("/")
+async def read_typer():
+    return RedirectResponse("/docs")
 
 
 # @app.get("/debug")
