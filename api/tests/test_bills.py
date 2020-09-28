@@ -33,6 +33,14 @@ def test_bills_filter_by_jurisdiction_jid(client):
     assert len(response["results"]) == 7
 
 
+def test_bills_filter_by_session_no_jurisdiction(client):
+    # 5 bills are in 2020
+    response = client.get("/bills?session=2020")
+    assert query_logger.count == 0
+    assert response.status_code == 400
+    assert "jurisdiction" in response.json()["detail"]
+
+
 def test_bills_filter_by_session(client):
     # 5 bills are in 2020
     response = client.get("/bills?jurisdiction=ne&session=2020")

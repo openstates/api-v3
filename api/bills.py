@@ -131,6 +131,10 @@ async def bills_search(
             )
         )
     if session:
+        if not jurisdiction:
+            raise HTTPException(
+                400, "filtering by session requires a jurisdiction parameter as well"
+            )
         query = query.filter(models.LegislativeSession.identifier == session)
     if chamber:
         query = query.filter(models.Organization.classification == chamber)
