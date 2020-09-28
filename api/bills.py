@@ -4,6 +4,7 @@ from enum import Enum
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import func, cast, String, desc, nullslast
 from sqlalchemy.orm import contains_eager
+from openstates.utils.transformers import fix_bill_id
 from .db import SessionLocal, get_db, models
 from .schemas import Bill
 from .pagination import Pagination
@@ -52,18 +53,7 @@ class BillPagination(Pagination):
 router = APIRouter()
 
 
-# This code has to match openstates.transformers (TODO: combine into a package?)
-
-_bill_id_re = re.compile(r"([A-Z]*)\s*0*([-\d]+)")
-_mi_bill_id_re = re.compile(r"(SJR|HJR)\s*([A-Z]+)")
 _likely_bill_id = re.compile(r"\w{1,3}\s*\d{1,5}")
-
-
-def fix_bill_id(bill_id):
-    # special case for MI Joint Resolutions
-    if _mi_bill_id_re.match(bill_id):
-        return _mi_bill_id_re.sub(r"\1 \2", bill_id, 1).strip()
-    return _bill_id_re.sub(r"\1 \2", bill_id, 1).strip()
 
 
 def base_query(db):

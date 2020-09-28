@@ -121,6 +121,3 @@ class PersonContactDetail(PrimaryUUID, Base):
     type = Column(String)
     value = Column(String)
     note = Column(String)
-
-
-# TODO: organization_link, organization_source, membership, post

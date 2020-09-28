@@ -60,4 +60,4 @@ class PersonVote(PrimaryUUID, Base):
     voter_name = Column(String)
     voter_id = Column(String, ForeignKey(Person.id))
     voter = relationship(Person)
-    note = Column(String)  # TODO: check this field
+    note = Column(String)
