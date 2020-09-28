@@ -69,6 +69,13 @@ def test_bills_filter_by_updated_since(client):
     assert len(response.json()["results"]) == 0
 
 
+def test_bills_filter_by_created_since(client):
+    response = client.get("/bills?jurisdiction=ne&created_since=2020")
+    assert len(response.json()["results"]) == 7
+    response = client.get("/bills?jurisdiction=ne&created_since=2022")
+    assert len(response.json()["results"]) == 0
+
+
 def test_bills_filter_by_action_since(client):
     response = client.get("/bills?jurisdiction=ne&action_since=2020")
     assert len(response.json()["results"]) == 7
