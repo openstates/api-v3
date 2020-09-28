@@ -115,7 +115,10 @@ async def bills_search(
     sort: Optional[BillSortOption] = Query(
         BillSortOption.updated_desc, description="Desired sort order for bill results."
     ),
-    # TODO: sponsor: Optional[str] = None,
+    sponsor: Optional[str] = Query(
+        None,
+        description="Filter to only include bills sponsored by a given name or person ID.",
+    ),
     # TODO: sponsor_classification
     q: Optional[str] = Query(None, description="Filter by full text search term."),
     include: List[BillInclude] = Query(
@@ -164,6 +167,13 @@ async def bills_search(
         query = query.filter(models.Bill.classification.any(classification))
     if subject:
         query = query.filter(models.Bill.subject.contains(subject))
+    if sponsor:
+        # need to join this way, or sqlalchemy will try to join via from_organization
+        query = query.join(models.Bill.sponsorships)
+        if sponsor.startswith("ocd-person/"):
+            query = query.filter(models.BillSponsorship.person_id == sponsor)
+        else:
+            query = query.filter(models.BillSponsorship.name == sponsor)
     if updated_since:
         query = query.filter(cast(models.Bill.updated_at, String) >= updated_since)
     if created_since:

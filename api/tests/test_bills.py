@@ -110,6 +110,26 @@ def test_bills_filter_by_query_bill_id(client):
     assert len(response.json()["results"]) == 0
 
 
+def test_bills_filter_by_sponsor_name(client):
+    response = client.get("/bills?jurisdiction=oh&sponsor=Ruth")
+    assert len(response.json()["results"]) == 1
+    # non-used name
+    response = client.get("/bills?jurisdiction=oh&sponsor=Willis")
+    assert len(response.json()["results"]) == 0
+
+
+def test_bills_filter_by_sponsor_id(client):
+    response = client.get(
+        "/bills?jurisdiction=oh&sponsor=ocd-person/99999999-9999-9999-9999-999999999999"
+    )
+    assert len(response.json()["results"]) == 1
+    # bad ID
+    response = client.get(
+        "/bills?jurisdiction=oh&sponsor=ocd-person/99999999-9999-9999-9999-000000000000"
+    )
+    assert len(response.json()["results"]) == 0
+
+
 def test_bills_no_filter(client):
     response = client.get("/bills")
     assert query_logger.count == 0
