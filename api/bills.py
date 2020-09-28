@@ -97,6 +97,9 @@ async def bills_search(
         None,
         description="Filter to only include bills with updates since a given date.",
     ),
+    created_since: Optional[str] = Query(
+        None, description="Filter to only include bills created since a given date."
+    ),
     action_since: Optional[str] = Query(
         None,
         description="Filter to only include bills with an action since a given date.",
@@ -137,6 +140,8 @@ async def bills_search(
         query = query.filter(models.Bill.subject.contains(subject))
     if updated_since:
         query = query.filter(cast(models.Bill.updated_at, String) >= updated_since)
+    if created_since:
+        query = query.filter(cast(models.Bill.created_at, String) >= created_since)
     if action_since:
         query = query.filter(models.Bill.latest_action_date >= action_since)
     if q:
