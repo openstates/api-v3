@@ -271,7 +271,7 @@ def ohio():
     sp2 = BillSponsorship(
         bill=hb1,
         primary=True,
-        classification="sponsor",
+        classification="cosponsor",
         name="Marge",
         entity_type="person",
         person=marge,

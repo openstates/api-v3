@@ -130,6 +130,21 @@ def test_bills_filter_by_sponsor_id(client):
     assert len(response.json()["results"]) == 0
 
 
+def test_bills_filter_by_sponsor_classification(client):
+    response = client.get(
+        "/bills?jurisdiction=oh&sponsor=Ruth&sponsor_classification=sponsor"
+    )
+    assert len(response.json()["results"]) == 1
+    response = client.get(
+        "/bills?jurisdiction=oh&sponsor=Ruth&sponsor_classification=cosponsor"
+    )
+    assert len(response.json()["results"]) == 0
+    response = client.get(
+        "/bills?jurisdiction=oh&sponsor=Marge&sponsor_classification=cosponsor"
+    )
+    assert len(response.json()["results"]) == 1
+
+
 def test_bills_no_filter(client):
     response = client.get("/bills")
     assert query_logger.count == 0

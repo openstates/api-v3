@@ -119,7 +119,10 @@ async def bills_search(
         None,
         description="Filter to only include bills sponsored by a given name or person ID.",
     ),
-    # TODO: sponsor_classification
+    sponsor_classification: Optional[str] = Query(
+        None,
+        description="Filter matched sponsors to only include particular types of sponsorships.",
+    ),
     q: Optional[str] = Query(None, description="Filter by full text search term."),
     include: List[BillInclude] = Query(
         [], description="Additional information to include in response."
@@ -174,6 +177,15 @@ async def bills_search(
             query = query.filter(models.BillSponsorship.person_id == sponsor)
         else:
             query = query.filter(models.BillSponsorship.name == sponsor)
+    if sponsor_classification:
+        if not sponsor:
+            raise HTTPException(
+                400,
+                "filtering by sponsor_classification requires sponsor parameter as well",
+            )
+        query = query.filter(
+            models.BillSponsorship.classification == sponsor_classification
+        )
     if updated_since:
         query = query.filter(cast(models.Bill.updated_at, String) >= updated_since)
     if created_since:
