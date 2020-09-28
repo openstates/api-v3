@@ -2,7 +2,7 @@ import re
 from typing import Optional, List
 from enum import Enum
 from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy import func, cast, String
+from sqlalchemy import func, cast, String, desc, nullslast
 from sqlalchemy.orm import contains_eager
 from .db import SessionLocal, get_db, models
 from .schemas import Bill
@@ -21,6 +21,14 @@ class BillInclude(str, Enum):
     documents = "documents"
     versions = "versions"
     votes = "votes"
+
+
+class BillSortOption(str, Enum):
+    updated_desc = "updated_desc"
+    first_action_asc = "first_action_asc"
+    first_action_desc = "first_action_desc"
+    latest_action_asc = "latest_action_asc"
+    latest_action_desc = "latest_action_desc"
 
 
 class BillPagination(Pagination):
@@ -104,6 +112,9 @@ async def bills_search(
         None,
         description="Filter to only include bills with an action since a given date.",
     ),
+    sort: Optional[BillSortOption] = Query(
+        BillSortOption.updated_desc, description="Desired sort order for bill results."
+    ),
     # TODO: sponsor: Optional[str] = None,
     # TODO: sponsor_classification
     q: Optional[str] = Query(None, description="Filter by full text search term."),
@@ -120,9 +131,20 @@ async def bills_search(
     Must either specify a jurisdiction or a full text query (q).  Additional parameters will
     futher restrict bills returned.
     """
-    query = base_query(db).order_by(
-        models.LegislativeSession.identifier, models.Bill.identifier
-    )
+    query = base_query(db)
+
+    if sort == BillSortOption.updated_desc:
+        query = query.order_by(desc(models.Bill.updated_at))
+    elif sort == BillSortOption.first_action_asc:
+        query = query.order_by(nullslast(models.Bill.first_action_date))
+    elif sort == BillSortOption.first_action_desc:
+        query = query.order_by(nullslast(desc(models.Bill.first_action_date)))
+    elif sort == BillSortOption.latest_action_asc:
+        query = query.order_by(nullslast(models.Bill.latest_action_date))
+    elif sort == BillSortOption.latest_action_desc:
+        query = query.order_by(nullslast(desc(models.Bill.latest_action_date)))
+    else:
+        raise HTTPException(500, "Unknown sort option, this shouldn't happen!")
 
     if jurisdiction:
         query = query.filter(

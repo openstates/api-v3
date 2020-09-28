@@ -55,7 +55,8 @@ def create_test_bill(
         extras={},
         created_at=datetime.datetime.utcnow(),
         updated_at=datetime.datetime.utcnow(),
-        latest_action_date=session.identifier,  # have the actions take place the same year as session
+        latest_action_date=f"{session.identifier}-02-{random.randint(10,30)}",
+        first_action_date=f"{session.identifier}-01-{random.randint(10,30)}",
     )
     yield b
     for n in range(sponsors):

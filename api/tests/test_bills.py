@@ -1,4 +1,5 @@
 from .conftest import query_logger
+from api.bills import BillSortOption
 
 
 def test_bills_filter_by_jurisdiction_abbr(client):
@@ -193,6 +194,54 @@ def test_bills_include_votes(client):
             "sources": [],
         },
     ]
+
+
+def test_bills_all_sort_options_valid(client):
+    for sort_param in BillSortOption:
+        response = client.get(f"/bills/?jurisdiction=ne&sort={sort_param}")
+        print(response.json())
+        assert response.status_code == 200
+
+
+def test_bills_sort_ordering_correct(client):
+    bills = client.get("/bills/?jurisdiction=ne&sort=updated_desc").json()["results"]
+    assert bills[0]["updated_at"] > bills[1]["updated_at"] > bills[2]["updated_at"]
+
+    bills = client.get("/bills/?jurisdiction=ne&sort=first_action_asc").json()[
+        "results"
+    ]
+    assert (
+        bills[0]["first_action_date"]
+        <= bills[1]["first_action_date"]
+        <= bills[2]["first_action_date"]
+    )
+
+    bills = client.get("/bills/?jurisdiction=ne&sort=first_action_desc").json()[
+        "results"
+    ]
+    assert (
+        bills[0]["first_action_date"]
+        >= bills[1]["first_action_date"]
+        >= bills[2]["first_action_date"]
+    )
+
+    bills = client.get("/bills/?jurisdiction=ne&sort=latest_action_asc").json()[
+        "results"
+    ]
+    assert (
+        bills[0]["latest_action_date"]
+        <= bills[1]["latest_action_date"]
+        <= bills[2]["latest_action_date"]
+    )
+
+    bills = client.get("/bills/?jurisdiction=ne&sort=latest_action_desc").json()[
+        "results"
+    ]
+    assert (
+        bills[0]["latest_action_date"]
+        >= bills[1]["latest_action_date"]
+        >= bills[2]["latest_action_date"]
+    )
 
 
 def test_bill_detail_basic(client):
