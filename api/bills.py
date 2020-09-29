@@ -25,6 +25,7 @@ class BillInclude(str, Enum):
 
 
 class BillSortOption(str, Enum):
+    updated_asc = "updated_asc"
     updated_desc = "updated_desc"
     first_action_asc = "first_action_asc"
     first_action_desc = "first_action_desc"
@@ -129,7 +130,9 @@ async def bills_search(
     """
     query = base_query(db)
 
-    if sort == BillSortOption.updated_desc:
+    if sort == BillSortOption.updated_asc:
+        query = query.order_by(models.Bill.updated_at)
+    elif sort == BillSortOption.updated_desc:
         query = query.order_by(desc(models.Bill.updated_at))
     elif sort == BillSortOption.first_action_asc:
         query = query.order_by(nullslast(models.Bill.first_action_date))

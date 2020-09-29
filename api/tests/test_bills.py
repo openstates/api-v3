@@ -242,6 +242,9 @@ def test_bills_sort_ordering_correct(client):
     bills = client.get("/bills/?jurisdiction=ne&sort=updated_desc").json()["results"]
     assert bills[0]["updated_at"] > bills[1]["updated_at"] > bills[2]["updated_at"]
 
+    bills = client.get("/bills/?jurisdiction=ne&sort=updated_asc").json()["results"]
+    assert bills[0]["updated_at"] < bills[1]["updated_at"] < bills[2]["updated_at"]
+
     bills = client.get("/bills/?jurisdiction=ne&sort=first_action_asc").json()[
         "results"
     ]
