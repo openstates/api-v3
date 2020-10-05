@@ -1,3 +1,4 @@
+from sqlalchemy import and_
 from .db import models
 from openstates.metadata import lookup
 
@@ -8,8 +9,13 @@ def jurisdiction_filter(j: str, *, jid_field):
         try:
             return jid_field == lookup(abbr=j).jurisdiction_id
         except KeyError:
-            return models.Jurisdiction.name == j
+            return and_(
+                models.Jurisdiction.name == j,
+                models.Jurisdiction.classification == "state",
+            )
     elif j.startswith("ocd-jurisdiction"):
         return jid_field == j
     else:
-        return models.Jurisdiction.name == j
+        return and_(
+            models.Jurisdiction.name == j, models.Jurisdiction.classification == "state"
+        )
