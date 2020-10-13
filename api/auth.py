@@ -12,6 +12,8 @@ limiter = RateLimiter(
         Tier("silver", 80, 0, 50000),
         Tier("unlimited", 240, 0, 1_000_000_000),
     ],
+    use_redis_time=False,
+    track_daily_usage=True,
 )
 
 

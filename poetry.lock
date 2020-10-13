@@ -702,11 +702,11 @@ socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
 
 [[package]]
 category = "main"
-description = ""
+description = "simple redis rate limiting"
 name = "rrl"
 optional = false
 python-versions = ">=3.7,<4.0"
-version = "0.2.1"
+version = "0.2.2"
 
 [package.dependencies]
 redis = ">=3.5.3,<4.0.0"
@@ -1286,8 +1286,8 @@ requests = [
     {file = "requests-2.24.0.tar.gz", hash = "sha256:b3559a131db72c33ee969480840fff4bb6dd111de7dd27c8ee1f820f4f00231b"},
 ]
 rrl = [
-    {file = "rrl-0.2.1-py3-none-any.whl", hash = "sha256:65b5fb5f79724e156df63b7c093e3e5c3ad6fbe0df68648b0959c913c17809bd"},
-    {file = "rrl-0.2.1.tar.gz", hash = "sha256:22a7ddd5366b3a1bd6a4e79ac3c892ff22fa4686b36d06007db5e1eee63218d5"},
+    {file = "rrl-0.2.2-py3-none-any.whl", hash = "sha256:0e4671accf564c588b6e3744bf42ffef9c160ed33e6e5f7a27185663ecbc01a1"},
+    {file = "rrl-0.2.2.tar.gz", hash = "sha256:079cdebead4c9537ab9aedee72ef85cf7949d3b307c9774c8fe15a71c164f856"},
 ]
 rx = [
     {file = "Rx-1.6.1-py2.py3-none-any.whl", hash = "sha256:7357592bc7e881a95e0c2013b73326f704953301ab551fbc8133a6fadab84105"},
