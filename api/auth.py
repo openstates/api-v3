@@ -1,24 +1,21 @@
-from collections import namedtuple
 from typing import Optional
 from fastapi import Header, HTTPException, Depends
 from sqlalchemy.orm.exc import NoResultFound
+from rrl import RateLimiter, Tier, RateLimitExceeded
 from .db import SessionLocal, get_db, models
 
-
-Limit = namedtuple("Limit", "daily_requests requests_per_second burst_size")
-KEY_LIMITS = {
-    # "inactive": None,
-    # "suspended": None,
-    "default": 500,
-    "bronze": 5_000,
-    "silver": 25_000,
-    "gold": 50_000,
-    "unlimited": 1_000_000_000,
-}
-_cache = {}
+limiter = RateLimiter(
+    prefix="v3",
+    tiers=[
+        Tier("default", 10, 0, 500),
+        Tier("bronze", 40, 0, 5000),
+        Tier("silver", 80, 0, 50000),
+        Tier("unlimited", 240, 0, 1_000_000_000),
+    ],
+)
 
 
-async def apikey_auth(
+def apikey_auth(
     apikey: Optional[str] = None,
     x_api_key: Optional[str] = Header(None),
     db: SessionLocal = Depends(get_db),
@@ -37,17 +34,19 @@ async def apikey_auth(
             .filter(models.Profile.api_key == provided_apikey)
             .one()
         )
-        allowed_requests = KEY_LIMITS.get(key.api_tier)
-        invalid = not allowed_requests
+        try:
+            limiter.check_limit("v3", provided_apikey, key.api_tier)
+        except RateLimitExceeded as e:
+            raise HTTPException(429, detail=str(e))
+        except ValueError:
+            raise HTTPException(
+                401,
+                detail="Inactive API Key. "
+                "Login and visit https://openstates.org/account/profile/ for details.",
+            )
     except NoResultFound:
-        invalid = True
-
-    if invalid:
         raise HTTPException(
             401,
             detail="Invalid API Key. "
             "Login and visit https://openstates.org/account/profile/ for your API key.",
         )
-
-    yield
-    # TODO: do API usage update here
