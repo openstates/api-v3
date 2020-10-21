@@ -45,7 +45,7 @@ class Organization(BaseModel):
 
 
 class Chamber(Organization):
-    posts: Optional[List[Post]] = None
+    districts: Optional[List[Post]] = None
 
 
 class LegislativeSession(BaseModel):

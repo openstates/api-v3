@@ -41,7 +41,7 @@ def test_jurisdiction_include_organizations(client):
         "id": "nel",
         "classification": "legislature",
         "name": "Nebraska Legislature",
-        "posts": [
+        "districts": [
             {
                 "label": "1",
                 "division_id": "ocd-division/country:us/state:ne/sldu:1",

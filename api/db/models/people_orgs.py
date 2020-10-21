@@ -28,6 +28,10 @@ class Organization(Base):
 
     posts = relationship("Post")
 
+    @property
+    def districts(self):
+        return self.posts
+
 
 class Post(Base):
     __tablename__ = "opencivicdata_post"
