@@ -2,6 +2,7 @@
 from .jurisdiction import Jurisdiction, LegislativeSession
 from .people_orgs import (
     Organization,
+    Post,
     Person,
     PersonName,
     PersonLink,

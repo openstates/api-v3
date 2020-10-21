@@ -6,6 +6,7 @@ from api.db.models import (
     LegislativeSession,
     Jurisdiction,
     Organization,
+    Post,
     Person,
     PersonName,
     PersonLink,
@@ -145,6 +146,14 @@ def nebraska():
             name="Nebraska Executive",
             classification="executive",
             jurisdiction=j,
+        ),
+        Post(
+            id="a",
+            organization=leg,
+            label="1",
+            role="Senator",
+            maximum_memberships=1,
+            division_id="ocd-division/country:us/state:ne/sldu:1",
         ),
         Person(
             id=dummy_person_id("1"),
