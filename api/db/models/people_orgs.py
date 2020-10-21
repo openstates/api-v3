@@ -2,7 +2,7 @@ import uuid
 import base62
 from slugify import slugify
 from collections import defaultdict
-from sqlalchemy import Column, String, ForeignKey, DateTime
+from sqlalchemy import Column, String, ForeignKey, DateTime, Integer
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from .. import Base
@@ -25,6 +25,21 @@ class Organization(Base):
 
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")
+
+    posts = relationship("Post")
+
+
+class Post(Base):
+    __tablename__ = "opencivicdata_post"
+
+    id = Column(String, primary_key=True, index=True)
+    label = Column(String)
+    role = Column(String)
+    division_id = Column(String)
+    maximum_memberships = Column(Integer)
+
+    organization_id = Column(String, ForeignKey(Organization.id))
+    organization = relationship("Organization")
 
 
 class Person(Base):

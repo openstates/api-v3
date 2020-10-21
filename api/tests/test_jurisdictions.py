@@ -35,12 +35,13 @@ def test_jurisdiction_include_organizations(client):
     )
     response = response.json()
     # is included, organizations are inline
-    assert query_logger.count == 3
+    assert query_logger.count == 4
     assert len(response["results"][0]["organizations"]) == 2
     assert response["results"][0]["organizations"][0] == {
         "id": "nel",
         "classification": "legislature",
         "name": "Nebraska Legislature",
+        "posts": [],
     }
 
 
@@ -109,4 +110,4 @@ def test_jurisdiction_detail_404(client):
 def test_jurisdiction_include(client):
     response = client.get("/jurisdictions/ne?include=organizations").json()
     assert len(response["organizations"]) == 2
-    assert query_logger.count == 2
+    assert query_logger.count == 3

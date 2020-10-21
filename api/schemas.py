@@ -23,6 +23,16 @@ class OrgClassification(str, Enum):
 #     unset = ""
 
 
+class Post(BaseModel):
+    label: str = Field(..., example="2")
+    role: str = Field(..., example="Senator")
+    division_id: str = Field(..., example="ocd-division/country:us/state:mn/sldu:4")
+    maximum_memberships: int = Field(..., example=1)
+
+    class Config:
+        orm_mode = True
+
+
 class Organization(BaseModel):
     id: str = Field(
         ..., example="ocd-organization/32aab083-d7a0-44e0-9b95-a7790c542605"
@@ -32,6 +42,10 @@ class Organization(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class Chamber(Organization):
+    posts: Optional[List[Post]] = None
 
 
 class LegislativeSession(BaseModel):
@@ -56,7 +70,7 @@ class Jurisdiction(BaseModel):
     # TODO: add these
     # people_last_updated: Optional[datetime.datetime]
     # bills_last_updated: Optional[datetime.datetime]
-    organizations: Optional[List[Organization]] = None
+    organizations: Optional[List[Chamber]] = None
     legislative_sessions: Optional[List[LegislativeSession]] = None
 
     class Config:

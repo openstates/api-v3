@@ -16,7 +16,9 @@ class JurisdictionInclude(str, Enum):
 class JurisdictionPagination(Pagination):
     ObjCls = Jurisdiction
     IncludeEnum = JurisdictionInclude
-    include_map_overrides = {}  # no overrides
+    include_map_overrides = {
+        JurisdictionInclude.organizations: ["organizations", "organizations.posts"]
+    }
     max_per_page = 52
 
     def __init__(self, page: int = 1, per_page: int = 52):
