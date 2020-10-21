@@ -1,8 +1,9 @@
 import re
+import datetime
 from typing import Optional, List
 from enum import Enum
 from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy import func, cast, String, desc, nullslast
+from sqlalchemy import func, desc, nullslast
 from sqlalchemy.orm import contains_eager
 from openstates.utils.transformers import fix_bill_id
 from .db import SessionLocal, get_db, models
@@ -179,10 +180,21 @@ async def bills_search(
         query = query.filter(
             models.BillSponsorship.classification == sponsor_classification
         )
-    if updated_since:
-        query = query.filter(cast(models.Bill.updated_at, String) >= updated_since)
-    if created_since:
-        query = query.filter(cast(models.Bill.created_at, String) >= created_since)
+    try:
+        if updated_since:
+            query = query.filter(
+                models.Bill.updated_at >= datetime.datetime.fromisoformat(updated_since)
+            )
+        if created_since:
+            query = query.filter(
+                models.Bill.created_at >= datetime.datetime.fromisoformat(created_since)
+            )
+    except ValueError:
+        raise HTTPException(
+            400,
+            "datetime must be in ISO-8601 format, try YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS",
+        )
+
     if action_since:
         query = query.filter(models.Bill.latest_action_date >= action_since)
     if q:

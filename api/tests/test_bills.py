@@ -72,17 +72,23 @@ def test_bills_filter_by_subject(client):
 
 
 def test_bills_filter_by_updated_since(client):
-    response = client.get("/bills?jurisdiction=ne&updated_since=2020")
+    response = client.get("/bills?jurisdiction=ne&updated_since=2020-01-01")
     assert len(response.json()["results"]) == 7
-    response = client.get("/bills?jurisdiction=ne&updated_since=2022")
+    response = client.get("/bills?jurisdiction=ne&updated_since=2022-01-01T00:00:00")
     assert len(response.json()["results"]) == 0
 
 
 def test_bills_filter_by_created_since(client):
-    response = client.get("/bills?jurisdiction=ne&created_since=2020")
+    response = client.get("/bills?jurisdiction=ne&created_since=2020-01-01T00:00")
     assert len(response.json()["results"]) == 7
-    response = client.get("/bills?jurisdiction=ne&created_since=2022")
+    response = client.get("/bills?jurisdiction=ne&created_since=2022-01-01")
     assert len(response.json()["results"]) == 0
+
+
+def test_bills_filter_by_bad_datetime(client):
+    response = client.get("/bills?jurisdiction=ne&created_since=2022")
+    assert response.status_code == 400
+    assert "ISO-8601" in response.json()["detail"]
 
 
 def test_bills_filter_by_action_since(client):
