@@ -26,7 +26,7 @@ class Organization(Base):
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")
 
-    posts = relationship("Post")
+    posts = relationship("Post", order_by="Post.label")
 
     @property
     def districts(self):
