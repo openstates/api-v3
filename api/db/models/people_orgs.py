@@ -55,6 +55,7 @@ class Person(Base):
     given_name = Column(String, default="")
     image = Column(String, default="")
     gender = Column(String, default="")
+    email = Column(String, default="")
     biography = Column(String, default="")
     birth_date = Column(String, default="")
     death_date = Column(String, default="")
@@ -92,7 +93,6 @@ class Person(Base):
                     "name": office,
                     "fax": None,
                     "voice": None,
-                    "email": None,
                     "address": None,
                     **details,
                 }

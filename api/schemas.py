@@ -117,7 +117,6 @@ class Office(BaseModel):
     name: str = Field(..., example="District Office")
     fax: Optional[str] = Field(None, example="919-555-1234")
     voice: Optional[str] = Field(None, example="919-555-0064")
-    email: Optional[str] = Field(None, example="aperson@example.com")
     address: Optional[str] = Field(None, example="212 Maple Lane; Raleigh NC; 27526")
 
     class Config:
@@ -150,6 +149,7 @@ class Person(CompactPerson):
     given_name: str = Field(..., example="Angela")
     family_name: str = Field(..., example="Augusta")
     image: str = Field(..., example="https://example.com/ncimg/3.png")
+    email: str = Field(..., example="aperson@example.com")
     gender: str = Field(..., example="female")
     birth_date: str = Field(..., example="1960-05-04")
     death_date: str = Field(..., example="2019-04-10")

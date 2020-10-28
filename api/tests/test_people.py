@@ -52,6 +52,8 @@ def test_by_name(client):
     assert query_logger.count == 2
     assert len(response["results"]) == 1
     assert response["results"][0]["name"] == "Amy Adams"
+    assert response["results"][0]["gender"] == "female"
+    assert response["results"][0]["email"] == "aa@example.com"
 
     # lower case (also retired)
     response = client.get("/people?name=rita red").json()
@@ -126,7 +128,7 @@ def test_people_include_office(client):
     ).json()
     assert query_logger.count == 3  # 1 extra query
     assert response["results"][0]["offices"] == [
-        {"name": "Capitol Office", "email": "amy@example.com", "voice": "555-555-5555"}
+        {"name": "Capitol Office", "address": "123 Main St", "voice": "555-555-5555"}
     ]
 
 

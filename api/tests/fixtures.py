@@ -161,6 +161,7 @@ def nebraska():
             family_name="Amy",
             given_name="Adams",
             gender="female",
+            email="aa@example.com",
             birth_date="2000-01-01",
             party="Democratic",
             current_role={
@@ -190,8 +191,8 @@ def nebraska():
         ),
         PersonContactDetail(
             person_id=dummy_person_id("1"),
-            type="email",
-            value="amy@example.com",
+            type="address",
+            value="123 Main St",
             note="Capitol Office",
         ),
         Person(
