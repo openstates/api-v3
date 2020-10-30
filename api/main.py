@@ -42,7 +42,7 @@ def custom_openapi():
         return app.openapi_schema
     openapi_schema = get_openapi(
         title="Open States API v3",
-        version="2020.10.21",
+        version="2020.10.30",
         description="""
 * [More documentation](https://docs.openstates.org/en/latest/api/v3/index.html)
 * [Register for an account](https://openstates.org/accounts/signup/)
