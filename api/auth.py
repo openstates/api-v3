@@ -37,7 +37,7 @@ def apikey_auth(
             .one()
         )
         try:
-            limiter.check_limit("v3", provided_apikey, key.api_tier)
+            limiter.check_limit(provided_apikey, key.api_tier)
         except RateLimitExceeded as e:
             raise HTTPException(429, detail=str(e))
         except ValueError:
