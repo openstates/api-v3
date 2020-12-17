@@ -8,6 +8,7 @@ limiter = RateLimiter(
     prefix="v3",
     tiers=[
         Tier("default", 10, 0, 500),
+        Tier("legacy", 40, 0, 5000),  # legacy v1 tier -- same as bronze for us
         Tier("bronze", 40, 0, 5000),
         Tier("silver", 80, 0, 50000),
         Tier("unlimited", 240, 0, 1_000_000_000),
