@@ -85,11 +85,11 @@ async def people_search(
         )
         filtered = True
     if name:
-        lname = name.lower()
+        lname = f"%{name.lower()}%"
         query = query.filter(
             or_(
-                func.lower(models.Person.name) == lname,
-                func.lower(models.PersonName.name) == lname,
+                func.lower(models.Person.name).like(lname),
+                func.lower(models.PersonName.name).like(lname),
             )
         ).outerjoin(models.PersonName)
         filtered = True
