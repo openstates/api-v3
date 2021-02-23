@@ -108,7 +108,7 @@ async def people_search(
     if district:
         if not jurisdiction:
             raise HTTPException(400, "cannot specify 'district' without 'jurisdiction'")
-        query = query.filter(models.Person.current_role["district"] == district)
+        query = query.filter(models.Person.current_role["district"].astext == district)
 
     if not filtered:
         raise HTTPException(400, "either 'jurisdiction', 'name', or 'id' is required")

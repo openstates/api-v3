@@ -40,6 +40,14 @@ def test_by_district(client):
     assert response["results"][0]["name"] == "Amy Adams"
 
 
+def test_by_district_text(client):
+    response = client.get(
+        "/people?jurisdiction=ocd-jurisdiction/country:us/state:ne/government&district=1A"
+    ).json()
+    assert query_logger.count == 2
+    assert len(response["results"]) == 0
+
+
 def test_err_district_without_jursidiction(client):
     response = client.get("/people?district=1")
     assert response.status_code == 400
