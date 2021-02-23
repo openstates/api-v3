@@ -62,6 +62,10 @@ async def people_search(
     org_classification: Optional[OrgClassification] = Query(
         None, description="Filter by current role."
     ),
+    district: Optional[str] = Query(
+        None,
+        description="Filter by district name.",
+    ),
     include: List[PersonInclude] = Query(
         [], description="Additional information to include in response."
     ),
@@ -101,6 +105,10 @@ async def people_search(
             models.Person.current_role["org_classification"].astext
             == org_classification
         )
+    if district:
+        if not jurisdiction:
+            raise HTTPException(400, "cannot specify 'district' without 'jurisdiction'")
+        query = query.filter(models.Person.current_role["district"] == district)
 
     if not filtered:
         raise HTTPException(400, "either 'jurisdiction', 'name', or 'id' is required")
