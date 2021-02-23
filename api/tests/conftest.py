@@ -1,3 +1,4 @@
+import os
 import pytest
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
@@ -9,7 +10,9 @@ from api.auth import apikey_auth
 from api.db import Base, get_db
 from . import fixtures
 
-TEST_DATABASE_URL = "postgresql://v3test:v3test@localhost/v3test"
+TEST_DATABASE_URL = os.environ.get(
+    "TEST_DATABASE_URL", "postgresql://v3test:v3test@localhost/v3test"
+)
 engine = create_engine(TEST_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
