@@ -15,7 +15,9 @@ app.include_router(jurisdictions.router)
 app.include_router(people.router)
 app.include_router(bills.router)
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_headers=["*"],
 )
 
 

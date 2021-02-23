@@ -50,7 +50,11 @@ class Pagination:
         )
 
     def paginate(
-        self, results, *, includes=None, skip_count=False,
+        self,
+        results,
+        *,
+        includes=None,
+        skip_count=False,
     ):
         # shouldn't happen, but help log if it does
         if not results._order_by:

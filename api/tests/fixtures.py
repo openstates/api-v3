@@ -131,7 +131,10 @@ def nebraska():
     for n in range(2):
         bills.extend(
             create_test_bill(
-                ls2021, leg, subjects=["futurism"], classification=["resolution"],
+                ls2021,
+                leg,
+                subjects=["futurism"],
+                classification=["resolution"],
             )
         )
 
@@ -227,13 +230,22 @@ def ohio():
     )
     ls2021 = LegislativeSession(jurisdiction=j, identifier="2021", name="2021")
     leg = Organization(
-        id="ohl", name="Ohio Legislature", classification="legislature", jurisdiction=j,
+        id="ohl",
+        name="Ohio Legislature",
+        classification="legislature",
+        jurisdiction=j,
     )
     upper = Organization(
-        id="ohs", name="Ohio Senate", classification="upper", jurisdiction=j,
+        id="ohs",
+        name="Ohio Senate",
+        classification="upper",
+        jurisdiction=j,
     )
     lower = Organization(
-        id="ohh", name="Ohio House", classification="lower", jurisdiction=j,
+        id="ohh",
+        name="Ohio House",
+        classification="lower",
+        jurisdiction=j,
     )
     hb1 = Bill(
         id="ocd-bill/1234",
