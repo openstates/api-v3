@@ -31,6 +31,15 @@ def test_by_jurisdiction_jid(client):
     assert response["results"][1]["name"] == "Boo Berri"
 
 
+def test_by_district(client):
+    response = client.get(
+        "/people?jurisdiction=ocd-jurisdiction/country:us/state:ne/government&district=1"
+    ).json()
+    assert query_logger.count == 2
+    assert len(response["results"]) == 1
+    assert response["results"][0]["name"] == "Amy Adams"
+
+
 def test_by_jurisdiction_and_org_classification(client):
     response = client.get(
         "/people?jurisdiction=ne&org_classification=legislature"
