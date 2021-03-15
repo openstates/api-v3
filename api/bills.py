@@ -205,7 +205,7 @@ async def bills_search(
         else:
             query = query.join(models.SearchableBill).filter(
                 models.SearchableBill.search_vector.op("@@")(
-                    func.websearch_to_tsquery(q, config="english")
+                    func.websearch_to_tsquery("english", q)
                 )
             )
 
