@@ -1,5 +1,5 @@
 from .. import Base
-from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from .common import PrimaryUUID
 
@@ -21,6 +21,7 @@ class Jurisdiction(Base):
         )""",
     )
     legislative_sessions = relationship("LegislativeSession")
+    latest_runs = relationship("RunPlan")
 
 
 class LegislativeSession(PrimaryUUID, Base):
@@ -31,6 +32,18 @@ class LegislativeSession(PrimaryUUID, Base):
     classification = Column(String, default="")
     start_date = Column(String, default="")
     end_date = Column(String, default="")
+
+    jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
+    jurisdiction = relationship("Jurisdiction")
+
+
+class RunPlan(Base):
+    __tablename__ = "pupa_runplan"
+
+    id = Column(Integer, primary_key=True, index=True)
+    success = Column(Boolean)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
 
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")

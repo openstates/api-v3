@@ -60,6 +60,15 @@ class LegislativeSession(BaseModel):
         orm_mode = True
 
 
+class RunPlan(BaseModel):
+    success: bool
+    start_time: datetime.datetime
+    end_time: datetime.datetime
+
+    class Config:
+        orm_mode = True
+
+
 class Jurisdiction(BaseModel):
     id: str = Field(..., example="ocd-jurisdiction/country:us/state:nc/government")
     name: str = Field(..., example="North Carolina")
@@ -73,6 +82,7 @@ class Jurisdiction(BaseModel):
     # bills_last_updated: Optional[datetime.datetime]
     organizations: Optional[List[Chamber]] = None
     legislative_sessions: Optional[List[LegislativeSession]] = None
+    latest_runs: Optional[List[RunPlan]] = None
 
     class Config:
         orm_mode = True
