@@ -62,6 +62,27 @@ def test_jurisdiction_include_organizations_empty(client):
     assert query_logger.count == 3
 
 
+def test_jurisdictions_include_runs(client):
+    response = client.get(
+        "/jurisdictions?classification=state&per_page=5&include=latest_runs"
+    )
+    response = response.json()
+    # is included, but the field is empty
+    assert len(response["results"][0]["latest_runs"]) == 20
+    # this necessarily does N+1 queries, might need to restrict
+    assert query_logger.count == 4
+
+
+def test_jurisdictions_include_runs_empty(client):
+    response = client.get(
+        "/jurisdictions?classification=municipality&per_page=1&include=latest_runs"
+    )
+    response = response.json()
+    # is included, but the field is empty
+    assert len(response["results"][0]["latest_runs"]) == 0
+    assert query_logger.count == 3
+
+
 def test_jurisdiction_include_sessions(client):
     response = client.get(
         "/jurisdictions?classification=state&per_page=1&include=legislative_sessions"
@@ -114,7 +135,13 @@ def test_jurisdiction_detail_404(client):
     assert response.json() == {"detail": "No such Jurisdiction."}
 
 
-def test_jurisdiction_include(client):
+def test_jurisdiction_include_orgs(client):
     response = client.get("/jurisdictions/ne?include=organizations").json()
     assert len(response["organizations"]) == 2
     assert query_logger.count == 3
+
+
+def test_jurisdiction_include_latest_runs(client):
+    response = client.get("/jurisdictions/ne?include=latest_runs").json()
+    assert len(response["latest_runs"]) == 20
+    assert query_logger.count == 2

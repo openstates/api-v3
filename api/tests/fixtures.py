@@ -24,6 +24,7 @@ from api.db.models import (
     VoteEvent,
     VoteCount,
     PersonVote,
+    RunPlan,
 )
 
 
@@ -100,6 +101,17 @@ def nebraska():
         classification="state",
         division_id="ocd-division/country:us/state:ne",
     )
+    runs = []
+    runs_from = datetime.datetime(2020, 1, 1)
+    for n in range(100):
+        runs.append(
+            RunPlan(
+                jurisdiction=j,
+                start_time=runs_from + datetime.timedelta(days=n),
+                end_time=runs_from + datetime.timedelta(days=n, hours=3),
+                success=n % 2 == 0,
+            )
+        )
     ls2020 = LegislativeSession(
         jurisdiction=j,
         identifier="2020",
@@ -143,6 +155,7 @@ def nebraska():
         ls2020,
         ls2021,
         leg,
+        *runs,
         *bills,
         Organization(
             id="nee",
