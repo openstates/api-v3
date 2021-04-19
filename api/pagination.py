@@ -22,6 +22,7 @@ class Pagination:
         - IncludeEnum - the valid include= parameters enumeration
         - include_map_overrides - mapping of what fields to select-in if included
                         (default to same name as IncludeEnum properties)
+        - postprocess_includes - function to call on each object to set includes
 
     Once those are set all of the basic methods work as classmethods so they can be called by
      PaginationSubclass.detail.
@@ -114,6 +115,10 @@ class Pagination:
         return cls.to_obj_with_includes(obj, includes)
 
     @classmethod
+    def postprocess_includes(cls, obj, data, includes):
+        pass
+
+    @classmethod
     def to_obj_with_includes(cls, data, includes):
         """
         remove the non-included data from the response by setting the fields to
@@ -123,6 +128,7 @@ class Pagination:
         for include in cls.IncludeEnum:
             if include not in includes:
                 setattr(newobj, include, None)
+        cls.postprocess_includes(newobj, data, includes)
         return newobj
 
     @classmethod

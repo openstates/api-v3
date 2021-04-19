@@ -19,9 +19,16 @@ class JurisdictionPagination(Pagination):
     IncludeEnum = JurisdictionInclude
     include_map_overrides = {
         JurisdictionInclude.organizations: ["organizations", "organizations.posts"],
-        JurisdictionInclude.latest_runs: ["run_plans"],
+        JurisdictionInclude.latest_runs: [],  # no preloading for this one, needs to be dynamic
     }
     max_per_page = 52
+
+    @classmethod
+    def postprocess_includes(cls, obj, data, includes):
+        # latest runs needs to be set on each object individually, the 20-item
+        # limit makes a subquery approach not work
+        if JurisdictionInclude.latest_runs in includes:
+            obj.latest_runs = data.get_latest_runs()
 
     def __init__(self, page: int = 1, per_page: int = 52):
         self.page = page

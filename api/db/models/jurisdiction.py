@@ -1,6 +1,6 @@
 from .. import Base
 from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, object_session
 from .common import PrimaryUUID
 
 
@@ -23,10 +23,8 @@ class Jurisdiction(Base):
     legislative_sessions = relationship("LegislativeSession")
     run_plans = relationship("RunPlan", order_by="desc(RunPlan.end_time)")
 
-    @property
-    def latest_runs(self):
-        """ limit run_plans """
-        return self.run_plans[:20]
+    def get_latest_runs(self):
+        return object_session(self).query(RunPlan).with_parent(self)[:20]
 
 
 class LegislativeSession(PrimaryUUID, Base):
