@@ -21,7 +21,12 @@ class Jurisdiction(Base):
         )""",
     )
     legislative_sessions = relationship("LegislativeSession")
-    latest_runs = relationship("RunPlan")
+    run_plans = relationship("RunPlan", order_by="desc(RunPlan.end_time)")
+
+    @property
+    def latest_runs(self):
+        """ limit run_plans """
+        return self.run_plans[:20]
 
 
 class LegislativeSession(PrimaryUUID, Base):

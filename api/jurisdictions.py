@@ -11,13 +11,15 @@ from .utils import jurisdiction_filter
 class JurisdictionInclude(str, Enum):
     organizations = "organizations"
     legislative_sessions = "legislative_sessions"
+    latest_runs = "latest_runs"
 
 
 class JurisdictionPagination(Pagination):
     ObjCls = Jurisdiction
     IncludeEnum = JurisdictionInclude
     include_map_overrides = {
-        JurisdictionInclude.organizations: ["organizations", "organizations.posts"]
+        JurisdictionInclude.organizations: ["organizations", "organizations.posts"],
+        JurisdictionInclude.latest_runs: ["run_plans"],
     }
     max_per_page = 52
 
