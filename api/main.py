@@ -8,7 +8,7 @@ from uvicorn.workers import UvicornWorker
 from . import jurisdictions, people, bills
 
 if "SENTRY_URL" in os.environ:
-    sentry_sdk.init(os.environ["SENTRY_URL"], traces_sample_rate=1.0)
+    sentry_sdk.init(os.environ["SENTRY_URL"], traces_sample_rate=0.05)
 
 app = FastAPI()
 app.include_router(jurisdictions.router)
