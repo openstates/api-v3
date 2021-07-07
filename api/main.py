@@ -21,7 +21,7 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 async def read_typer():
     return RedirectResponse("/docs")
 
