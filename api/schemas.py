@@ -348,7 +348,7 @@ class Committee(BaseModel):
     )
 
     # joins
-    members: Optional[List[CommitteeMembership]]
+    memberships: Optional[List[CommitteeMembership]]
     other_names: Optional[List[AltName]]
     links: Optional[List[Link]]
     sources: Optional[List[Link]]

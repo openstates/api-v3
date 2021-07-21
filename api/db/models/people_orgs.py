@@ -22,6 +22,7 @@ class Organization(Base):
     id = Column(String, primary_key=True, index=True)
     name = Column(String)
     classification = Column(String)
+    parent_id = Column(String, index=True)
 
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")
