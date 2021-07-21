@@ -327,7 +327,7 @@ class CommitteeMembership(BaseModel):
     person_id: str = Field(
         ..., example="ocd-person/adb58f21-f2fd-4830-85b6-f490b0867d14"
     )
-    name: str
+    person_name: str
     role: str
 
     # TODO: decide if we want to allow this

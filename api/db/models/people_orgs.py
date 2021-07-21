@@ -24,10 +24,13 @@ class Organization(Base):
     classification = Column(String)
     parent_id = Column(String, index=True)
 
+    links = Column(JSONB)
+
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")
 
     posts = relationship("Post", order_by="Post.label")
+    memberships = relationship("Membership")
 
     @property
     def districts(self):
@@ -78,12 +81,12 @@ class Person(Base):
 
     @property
     def openstates_url(self):
-        """ get canonical URL for openstates.org """
+        """get canonical URL for openstates.org"""
         return f"https://openstates.org/person/{slugify(self.name)}-{encode_uuid(self.id)}/"
 
     @property
     def offices(self):
-        """ transform contact details to something more usable """
+        """transform contact details to something more usable"""
         contact_details = []
         offices = defaultdict(dict)
         for cd in self.contact_details:
@@ -141,3 +144,16 @@ class PersonContactDetail(PrimaryUUID, Base):
     type = Column(String)
     value = Column(String)
     note = Column(String)
+
+
+class Membership(PrimaryUUID, Base):
+    __tablename__ = "opencivicdata_membership"
+
+    organization_id = Column(String, ForeignKey(Organization.id))
+    organization = relationship("Organization")
+
+    person_name = Column(String)
+    person_id = Column(String, ForeignKey(Person.id))
+    person = relationship("Person")
+
+    role = Column(String)
