@@ -34,3 +34,19 @@ def test_committee_detail_include_memberships(client):
     assert query_logger.count == 2
     response = response.json()
     assert response == dict(memberships=SENATE_MEMBERSHIPS, **SENATE_COM_RESPONSE)
+
+
+def test_committee_list(client):
+    response = client.get("/committees?jurisdiction=oh")
+    assert query_logger.count == 2
+    response = response.json()
+    assert len(response["results"]) == 2
+    assert "House Committee on Education" == response["results"][0]["name"]
+    assert "Senate Committee on Education" == response["results"][1]["name"]
+
+
+def test_committee_list_empty(client):
+    response = client.get("/committees?jurisdiction=nh")
+    assert query_logger.count == 2
+    response = response.json()
+    assert len(response["results"]) == 0
