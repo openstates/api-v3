@@ -50,3 +50,14 @@ def test_committee_list_empty(client):
     assert query_logger.count == 2
     response = response.json()
     assert len(response["results"]) == 0
+
+
+def test_committee_list_with_members(client):
+    response = client.get("/committees?jurisdiction=oh&include=memberships")
+    assert query_logger.count == 3
+    response = response.json()
+    assert len(response["results"]) == 2
+    assert "House Committee on Education" == response["results"][0]["name"]
+    assert response["results"][0]["memberships"] == []
+    assert "Senate Committee on Education" == response["results"][1]["name"]
+    assert response["results"][1]["memberships"] == SENATE_MEMBERSHIPS
