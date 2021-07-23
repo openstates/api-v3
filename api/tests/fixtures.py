@@ -6,6 +6,7 @@ from api.db.models import (
     LegislativeSession,
     Jurisdiction,
     Organization,
+    Membership,
     Post,
     Person,
     PersonName,
@@ -260,6 +261,20 @@ def ohio():
         classification="lower",
         jurisdiction=j,
     )
+    house_education = Organization(
+        id="ocd-organization/11112222-3333-4444-5555-666677778888",
+        jurisdiction=j,
+        parent_id="ohs",
+        name="House Committee on Education",
+        classification="committee",
+    )
+    senate_education = Organization(
+        id="ocd-organization/11112222-3333-4444-5555-666677779999",
+        jurisdiction=j,
+        parent_id="oss",
+        name="Senate Committee on Education",
+        classification="committee",
+    )
     hb1 = Bill(
         id="ocd-bill/1234",
         identifier="HB 1",
@@ -335,6 +350,18 @@ def ohio():
         result="passed",
         organization=upper,
     )
+    com_mem1 = Membership(
+        organization_id=senate_education.id,
+        person_id=ruth.id,
+        role="Chair",
+        person_name="Ruth",
+    )
+    com_mem2 = Membership(
+        organization_id=senate_education.id,
+        person_id=marge.id,
+        role="Member",
+        person_name="Marge",
+    )
     return [
         j,
         leg,
@@ -359,6 +386,10 @@ def ohio():
         Organization(
             id="ohe", name="Ohio Executive", classification="executive", jurisdiction=j
         ),
+        house_education,
+        senate_education,
+        com_mem1,
+        com_mem2,
     ]
 
 

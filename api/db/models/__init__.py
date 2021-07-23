@@ -8,6 +8,7 @@ from .people_orgs import (
     PersonLink,
     PersonSource,
     PersonContactDetail,
+    Membership,
 )
 from .bills import (
     Bill,
