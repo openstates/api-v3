@@ -69,3 +69,11 @@ def test_committee_list_by_chamber(client):
     response = response.json()
     assert len(response["results"]) == 1
     assert "Senate Committee on Education" == response["results"][0]["name"]
+
+
+def test_committee_list_by_parent(client):
+    response = client.get("/committees?jurisdiction=oh&parent=ohs")
+    assert query_logger.count == 2
+    response = response.json()
+    assert len(response["results"]) == 1
+    assert "Senate Committee on Education" == response["results"][0]["name"]
