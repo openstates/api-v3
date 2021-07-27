@@ -316,3 +316,37 @@ class Bill(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class CommitteeClassification(str, Enum):
+    committee = "committee"
+    subcommittee = "subcommittee"
+
+
+class CommitteeMembership(BaseModel):
+    person_name: str
+    role: str
+    person: Optional[CompactPerson]
+
+    class Config:
+        orm_mode = True
+
+
+class Committee(BaseModel):
+    id: str = Field(
+        ..., example="ocd-organization/aabbbbcc-dddd-eeee-ffff-0123456789ab"
+    )
+    name: str = Field(..., example="Health & Public Services")
+    classification: CommitteeClassification
+    parent_id: str = Field(
+        ..., example="ocd-organization/aabbbbcc-dddd-eeee-ffff-999988887777"
+    )
+
+    # joins
+    memberships: Optional[List[CommitteeMembership]]
+    other_names: Optional[List[AltName]]
+    links: Optional[List[Link]]
+    sources: Optional[List[Link]]
+
+    class Config:
+        orm_mode = True
