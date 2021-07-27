@@ -40,9 +40,10 @@ def test_committee_list(client):
     response = client.get("/committees?jurisdiction=oh")
     assert query_logger.count == 2
     response = response.json()
-    assert len(response["results"]) == 2
+    assert len(response["results"]) == 3
     assert "House Committee on Education" == response["results"][0]["name"]
-    assert "Senate Committee on Education" == response["results"][1]["name"]
+    assert "K-5 Education Subcommittee" == response["results"][1]["name"]
+    assert "Senate Committee on Education" == response["results"][2]["name"]
 
 
 def test_committee_list_empty(client):
@@ -56,11 +57,11 @@ def test_committee_list_with_members(client):
     response = client.get("/committees?jurisdiction=oh&include=memberships")
     assert query_logger.count == 3
     response = response.json()
-    assert len(response["results"]) == 2
-    assert "House Committee on Education" == response["results"][0]["name"]
+    assert len(response["results"]) == 3
     assert response["results"][0]["memberships"] == []
-    assert "Senate Committee on Education" == response["results"][1]["name"]
-    assert response["results"][1]["memberships"] == SENATE_MEMBERSHIPS
+    assert response["results"][1]["memberships"] == []
+    assert "Senate Committee on Education" == response["results"][2]["name"]
+    assert response["results"][2]["memberships"] == SENATE_MEMBERSHIPS
 
 
 def test_committee_list_by_chamber(client):
@@ -77,3 +78,11 @@ def test_committee_list_by_parent(client):
     response = response.json()
     assert len(response["results"]) == 1
     assert "Senate Committee on Education" == response["results"][0]["name"]
+
+
+def test_committee_list_by_classification(client):
+    response = client.get("/committees?jurisdiction=oh&classification=subcommittee")
+    assert query_logger.count == 2
+    response = response.json()
+    assert len(response["results"]) == 1
+    assert "K-5 Education Subcommittee" == response["results"][0]["name"]
