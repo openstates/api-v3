@@ -346,6 +346,7 @@ class Committee(BaseModel):
     parent_id: str = Field(
         ..., example="ocd-organization/aabbbbcc-dddd-eeee-ffff-999988887777"
     )
+    extras: dict = Field(..., example={"profession": "Doctor"})
 
     # joins
     memberships: Optional[List[CommitteeMembership]]
