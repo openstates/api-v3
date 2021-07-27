@@ -20,13 +20,10 @@ class CommitteePagination(Pagination):
     ObjCls = Committee
     IncludeEnum = CommitteeInclude
     include_map_overrides = {
+        CommitteeInclude.memberships: ["memberships", "memberships.person"],
         CommitteeInclude.links: [],
     }
     max_per_page = 20
-
-    # @classmethod
-    # def postprocess_includes(cls, obj, data, includes):
-    #     pass
 
     def __init__(self, page: int = 1, per_page: int = 20):
         self.page = page
