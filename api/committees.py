@@ -40,13 +40,13 @@ class CommitteePagination(Pagination):
     tags=["committees"],
 )
 async def committee_list(
-    jurisdiction: str = Query(None, "Filter by jurisdiction name or ID."),
+    jurisdiction: str = Query(None, description="Filter by jurisdiction name or ID."),
     classification: Optional[CommitteeClassification] = None,
     parent: Optional[str] = Query(
-        ..., description="ocd-organization ID of parent committee."
+        None, description="ocd-organization ID of parent committee."
     ),
     chamber: Optional[OrgClassification] = Query(
-        ..., description="Chamber of committee, generally upper or lower."
+        None, description="Chamber of committee, generally upper or lower."
     ),
     include: List[CommitteeInclude] = Query(
         [], description="Additional includes for the Committee response."
