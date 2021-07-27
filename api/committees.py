@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List, Optional
 from fastapi import APIRouter, Depends, Query
 from .db import SessionLocal, get_db, models
-from .schemas import Committee, OrgClassification
+from .schemas import Committee, OrgClassification, CommitteeClassification
 from .pagination import Pagination
 from .auth import apikey_auth
 from .utils import jurisdiction_filter
@@ -40,10 +40,14 @@ class CommitteePagination(Pagination):
     tags=["committees"],
 )
 async def committee_list(
-    jurisdiction: str,
-    classification: Optional[str] = None,
-    parent: Optional[str] = None,
-    chamber: Optional[OrgClassification] = None,
+    jurisdiction: str = Query(None, "Filter by jurisdiction name or ID."),
+    classification: Optional[CommitteeClassification] = None,
+    parent: Optional[str] = Query(
+        ..., description="ocd-organization ID of parent committee."
+    ),
+    chamber: Optional[OrgClassification] = Query(
+        ..., description="Chamber of committee, generally upper or lower."
+    ),
     include: List[CommitteeInclude] = Query(
         [], description="Additional includes for the Committee response."
     ),
