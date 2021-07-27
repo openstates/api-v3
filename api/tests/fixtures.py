@@ -264,14 +264,14 @@ def ohio():
     house_education = Organization(
         id="ocd-organization/11112222-3333-4444-5555-666677778888",
         jurisdiction=j,
-        parent_id="ohs",
+        parent_id="ohh",
         name="House Committee on Education",
         classification="committee",
     )
     senate_education = Organization(
         id="ocd-organization/11112222-3333-4444-5555-666677779999",
         jurisdiction=j,
-        parent_id="oss",
+        parent_id="ohs",
         name="Senate Committee on Education",
         classification="committee",
     )

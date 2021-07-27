@@ -6,7 +6,7 @@ SENATE_COM_RESPONSE = {
     "id": SENATE_COM_ID,
     "name": "Senate Committee on Education",
     "classification": "committee",
-    "parent_id": "oss",
+    "parent_id": "ohs",
 }
 SENATE_MEMBERSHIPS = [
     {
@@ -61,3 +61,11 @@ def test_committee_list_with_members(client):
     assert response["results"][0]["memberships"] == []
     assert "Senate Committee on Education" == response["results"][1]["name"]
     assert response["results"][1]["memberships"] == SENATE_MEMBERSHIPS
+
+
+def test_committee_list_by_chamber(client):
+    response = client.get("/committees?jurisdiction=oh&chamber=upper")
+    assert query_logger.count == 2
+    response = response.json()
+    assert len(response["results"]) == 1
+    assert "Senate Committee on Education" == response["results"][0]["name"]
