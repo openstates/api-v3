@@ -1,3 +1,8 @@
+import pytest
+from api.db import get_db, models
+from api.pagination import Pagination
+
+
 def test_pagination_basic(client):
     response = client.get("/jurisdictions")
     response = response.json()
@@ -65,3 +70,12 @@ def test_pagination_invalid_page(client):
     assert response.status_code == 404
     response = response.json()
     assert "invalid page" in response["detail"]
+
+
+def test_pagination_no_order_by():
+    db = list(get_db())[0]
+    query = db.query(models.Jurisdiction)
+    p = Pagination()
+    with pytest.raises(Exception) as e:
+        p.paginate(query)
+    assert "ordering is required for pagination" in str(e)

@@ -58,7 +58,7 @@ class Pagination:
         skip_count=False,
     ):
         # shouldn't happen, but help log if it does
-        if not results._order_by:
+        if not results._order_by_clauses:
             raise HTTPException(
                 status_code=500, detail="ordering is required for pagination"
             )
