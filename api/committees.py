@@ -1,8 +1,8 @@
 from enum import Enum
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, Query
 from .db import SessionLocal, get_db, models
-from .schemas import Committee
+from .schemas import Committee, OrgClassification, CommitteeClassification
 from .pagination import Pagination
 from .auth import apikey_auth
 from .utils import jurisdiction_filter
@@ -21,14 +21,11 @@ class CommitteePagination(Pagination):
     ObjCls = Committee
     IncludeEnum = CommitteeInclude
     include_map_overrides = {
+        CommitteeInclude.memberships: ["memberships", "memberships.person"],
         CommitteeInclude.links: [],
         CommitteeInclude.sources: [],
     }
     max_per_page = 20
-
-    # @classmethod
-    # def postprocess_includes(cls, obj, data, includes):
-    #     pass
 
     def __init__(self, page: int = 1, per_page: int = 20):
         self.page = page
@@ -42,7 +39,14 @@ class CommitteePagination(Pagination):
     tags=["committees"],
 )
 async def committee_list(
-    jurisdiction: str,
+    jurisdiction: str = Query(None, description="Filter by jurisdiction name or ID."),
+    classification: Optional[CommitteeClassification] = None,
+    parent: Optional[str] = Query(
+        None, description="ocd-organization ID of parent committee."
+    ),
+    chamber: Optional[OrgClassification] = Query(
+        None, description="Chamber of committee, generally upper or lower."
+    ),
     include: List[CommitteeInclude] = Query(
         [], description="Additional includes for the Committee response."
     ),
@@ -54,14 +58,30 @@ async def committee_list(
         db.query(models.Organization)
         .filter(
             models.Organization.classification.in_(("committee", "subcommittee")),
-            jurisdiction_filter(jurisdiction, jid_field=models.Jurisdiction.id),
+            jurisdiction_filter(
+                jurisdiction, jid_field=models.Organization.jurisdiction_id
+            ),
         )
         .order_by(models.Organization.name)
     )
 
     # handle parameters
-    # if classification:
-    #     query = query.filter(models.Jurisdiction.classification == classification)
+    if classification:
+        query = query.filter(models.Organization.classification == classification)
+    if parent:
+        query = query.filter(models.Organization.parent_id == parent)
+    if chamber:
+        subquery = (
+            db.query(models.Organization.id)
+            .filter(
+                models.Organization.classification == chamber,
+                jurisdiction_filter(
+                    jurisdiction, jid_field=models.Organization.jurisdiction_id
+                ),
+            )
+            .subquery()
+        )
+        query = query.filter(models.Organization.parent_id == subquery)
 
     return pagination.paginate(query, includes=include)
 

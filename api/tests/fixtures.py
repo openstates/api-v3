@@ -264,16 +264,23 @@ def ohio():
     house_education = Organization(
         id="ocd-organization/11112222-3333-4444-5555-666677778888",
         jurisdiction=j,
-        parent_id="ohs",
+        parent_id="ohh",
         name="House Committee on Education",
         classification="committee",
     )
     senate_education = Organization(
         id="ocd-organization/11112222-3333-4444-5555-666677779999",
         jurisdiction=j,
-        parent_id="oss",
+        parent_id="ohs",
         name="Senate Committee on Education",
         classification="committee",
+    )
+    k5_sub = Organization(
+        id="ocd-organization/11112222-3333-4444-5555-000000000000",
+        jurisdiction=j,
+        parent_id=house_education.id,
+        name="K-5 Education Subcommittee",
+        classification="subcommittee",
     )
     hb1 = Bill(
         id="ocd-bill/1234",
@@ -388,6 +395,7 @@ def ohio():
         ),
         house_education,
         senate_education,
+        k5_sub,
         com_mem1,
         com_mem2,
     ]
