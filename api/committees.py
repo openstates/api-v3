@@ -52,7 +52,9 @@ async def committee_list(
         db.query(models.Organization)
         .filter(
             models.Organization.classification.in_(("committee", "subcommittee")),
-            jurisdiction_filter(jurisdiction, jid_field=models.Jurisdiction.id),
+            jurisdiction_filter(
+                jurisdiction, jid_field=models.Organization.jurisdiction_id
+            ),
         )
         .order_by(models.Organization.name)
     )
