@@ -14,6 +14,7 @@ router = APIRouter()
 class CommitteeInclude(str, Enum):
     memberships = "memberships"
     links = "links"
+    sources = "sources"
 
 
 class CommitteePagination(Pagination):
@@ -22,6 +23,7 @@ class CommitteePagination(Pagination):
     include_map_overrides = {
         CommitteeInclude.memberships: ["memberships", "memberships.person"],
         CommitteeInclude.links: [],
+        CommitteeInclude.sources: [],
     }
     max_per_page = 20
 

@@ -25,6 +25,8 @@ class Organization(Base):
     parent_id = Column(String, index=True)
 
     links = Column(JSONB)
+    sources = Column(JSONB)
+    extras = Column(JSONB, default=dict)
 
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")
