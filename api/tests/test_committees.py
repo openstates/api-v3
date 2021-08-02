@@ -7,7 +7,7 @@ SENATE_COM_RESPONSE = {
     "name": "Senate Committee on Education",
     "classification": "committee",
     "parent_id": "ohs",
-    "extras": {}
+    "extras": {},
 }
 SENATE_MEMBERSHIPS = [
     {
@@ -84,14 +84,18 @@ def test_committee_list_with_members(client):
     assert "Senate Committee on Education" == response["results"][2]["name"]
     assert response["results"][2]["memberships"] == SENATE_MEMBERSHIPS
 
+
 def test_committee_list_with_links_sources_extras(client):
     response = client.get("/committees?jurisdiction=oh&include=links&include=sources")
     assert query_logger.count == 2
     response = response.json()
-    assert response["results"][0]["links"] == [{"url":"https://example.com/education-link", "note":""}]
-    assert response["results"][0]["sources"] == [{"url":"https://example.com/education-source", "note":""}]
-    assert response["results"][0]["extras"] == {"example-room":"Room 84"}
-
+    assert response["results"][0]["links"] == [
+        {"url": "https://example.com/education-link", "note": ""}
+    ]
+    assert response["results"][0]["sources"] == [
+        {"url": "https://example.com/education-source", "note": ""}
+    ]
+    assert response["results"][0]["extras"] == {"example-room": "Room 84"}
 
 
 def test_committee_list_by_chamber(client):

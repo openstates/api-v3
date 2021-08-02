@@ -267,9 +267,9 @@ def ohio():
         parent_id="ohh",
         name="House Committee on Education",
         classification="committee",
-        links=[{"url":"https://example.com/education-link", "note":""}],
-        sources=[{"url":"https://example.com/education-source", "note":""}],
-        extras={"example-room":"Room 84"}
+        links=[{"url": "https://example.com/education-link", "note": ""}],
+        sources=[{"url": "https://example.com/education-source", "note": ""}],
+        extras={"example-room": "Room 84"},
     )
     senate_education = Organization(
         id="ocd-organization/11112222-3333-4444-5555-666677779999",
