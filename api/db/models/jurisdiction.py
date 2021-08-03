@@ -22,8 +22,12 @@ class Jurisdiction(Base):
         Organization.classification.in_(('upper', 'lower', 'legislature', 'executive'))
         )""",
     )
-    legislative_sessions = relationship("LegislativeSession")
-    run_plans = relationship("RunPlan", order_by="desc(RunPlan.end_time)")
+    legislative_sessions = relationship(
+        "LegislativeSession", back_populates="jurisdiction"
+    )
+    run_plans = relationship(
+        "RunPlan", order_by="desc(RunPlan.end_time)", back_populates="jurisdiction"
+    )
 
     def get_latest_runs(self):
         return object_session(self).query(RunPlan).with_parent(self)[:20]

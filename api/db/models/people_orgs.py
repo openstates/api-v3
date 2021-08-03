@@ -29,10 +29,10 @@ class Organization(Base):
     extras = Column(JSONB, default=dict)
 
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
-    jurisdiction = relationship("Jurisdiction")
+    jurisdiction = relationship("Jurisdiction", back_populates="organizations")
 
-    posts = relationship("Post", order_by="Post.label")
-    memberships = relationship("Membership")
+    posts = relationship("Post", order_by="Post.label", back_populates="organization")
+    memberships = relationship("Membership", back_populates="organization")
 
     @property
     def districts(self):
@@ -75,11 +75,11 @@ class Person(Base):
     )
     jurisdiction = relationship("Jurisdiction")
 
-    other_identifiers = relationship("PersonIdentifier")
-    other_names = relationship("PersonName")
-    links = relationship("PersonLink")
-    sources = relationship("PersonSource")
-    contact_details = relationship("PersonContactDetail")
+    other_identifiers = relationship("PersonIdentifier", back_populates="person")
+    other_names = relationship("PersonName", back_populates="person")
+    links = relationship("PersonLink", back_populates="person")
+    sources = relationship("PersonSource", back_populates="person")
+    contact_details = relationship("PersonContactDetail", back_populates="person")
 
     @property
     def openstates_url(self):
