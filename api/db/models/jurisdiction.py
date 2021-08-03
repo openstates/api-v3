@@ -12,6 +12,8 @@ class Jurisdiction(Base):
     url = Column(String)
     classification = Column(String, index=True)
     division_id = Column(String)
+    latest_bill_update = Column(DateTime)
+    latest_people_update = Column(DateTime)
 
     organizations = relationship(
         "Organization",
