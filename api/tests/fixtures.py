@@ -101,6 +101,8 @@ def nebraska():
         url="https://nebraska.gov",
         classification="state",
         division_id="ocd-division/country:us/state:ne",
+        latest_bill_update=datetime.datetime(2021, 8, 1),
+        latest_people_update=datetime.datetime(2021, 8, 2),
     )
     runs = []
     runs_from = datetime.datetime(2020, 1, 1)
@@ -241,6 +243,8 @@ def ohio():
         url="https://ohio.gov",
         classification="state",
         division_id="ocd-division/country:us/state:oh",
+        latest_bill_update=datetime.datetime(2021, 8, 4),
+        latest_people_update=datetime.datetime(2021, 8, 5),
     )
     ls2021 = LegislativeSession(jurisdiction=j, identifier="2021", name="2021")
     leg = Organization(
@@ -267,6 +271,9 @@ def ohio():
         parent_id="ohh",
         name="House Committee on Education",
         classification="committee",
+        links=[{"url": "https://example.com/education-link", "note": ""}],
+        sources=[{"url": "https://example.com/education-source", "note": ""}],
+        extras={"example-room": "Room 84"},
     )
     senate_education = Organization(
         id="ocd-organization/11112222-3333-4444-5555-666677779999",
@@ -408,5 +415,7 @@ def mentor():
         url="https://mentoroh.gov",
         classification="municipality",
         division_id="ocd-division/country:us/state:oh/place:mentor",
+        latest_bill_update=datetime.datetime(2021, 8, 1),
+        latest_people_update=datetime.datetime(2021, 8, 2),
     )
     return [j]

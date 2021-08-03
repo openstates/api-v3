@@ -14,6 +14,8 @@ def test_jurisdictions_simplest(client):
         "url": "https://ohio.gov",
         "division_id": "ocd-division/country:us/state:oh",
         "classification": "state",
+        "latest_bill_update": "2021-08-04T00:00:00",
+        "latest_people_update": "2021-08-05T00:00:00",
         # note that organizations are not included here as a key
     }
 
@@ -106,6 +108,8 @@ NEBRASKA_RESPONSE = {
     "classification": "state",
     "division_id": "ocd-division/country:us/state:ne",
     "url": "https://nebraska.gov",
+    "latest_bill_update": "2021-08-01T00:00:00",
+    "latest_people_update": "2021-08-02T00:00:00",
 }
 
 

@@ -77,9 +77,8 @@ class Jurisdiction(BaseModel):
         "", example="ocd-division/country:us/state:nc"
     )  # never exclude
     url: str = Field(..., example="https://nc.gov")
-    # TODO: add these
-    # people_last_updated: Optional[datetime.datetime]
-    # bills_last_updated: Optional[datetime.datetime]
+    latest_bill_update: datetime.datetime
+    latest_people_update: datetime.datetime
     organizations: Optional[List[Chamber]] = None
     legislative_sessions: Optional[List[LegislativeSession]] = None
     latest_runs: Optional[List[RunPlan]] = None
@@ -341,6 +340,7 @@ class Committee(BaseModel):
     parent_id: str = Field(
         ..., example="ocd-organization/aabbbbcc-dddd-eeee-ffff-999988887777"
     )
+    extras: dict = Field(..., example={"room": "Room 4B"})
 
     # joins
     memberships: Optional[List[CommitteeMembership]]

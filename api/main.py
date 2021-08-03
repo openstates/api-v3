@@ -10,6 +10,7 @@ from . import jurisdictions, people, bills, committees
 if "SENTRY_URL" in os.environ:
     sentry_sdk.init(os.environ["SENTRY_URL"], traces_sample_rate=0.05)
 
+
 app = FastAPI()
 app.include_router(jurisdictions.router)
 app.include_router(people.router)
@@ -45,13 +46,23 @@ def custom_openapi():
         return app.openapi_schema
     openapi_schema = get_openapi(
         title="Open States API v3",
-        version="2021.04.19",
+        version="2021.08.03",
         description="""
 * [More documentation](https://docs.openstates.org/en/latest/api/v3/index.html)
 * [Register for an account](https://openstates.org/accounts/signup/)
+
+
+**As of August 2021 we are working to restore experimental support for committees.**
+
+During this period please note that data is not yet available for all states
+and the exact format of the committees endpoints may change slightly depending on user feedback.
+
+If you have any issues or questions use our
+[GitHub Issues](https://github.com/openstates/issues/issues) to give feedback.
 """,
         routes=app.routes,
     )
+
     # if we want to publish divisions.geo we can like this
     # openapi_schema["paths"]["/divisions.geo"] = {
     #     "get": {
