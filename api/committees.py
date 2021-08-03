@@ -79,7 +79,7 @@ async def committee_list(
                     jurisdiction, jid_field=models.Organization.jurisdiction_id
                 ),
             )
-            .subquery()
+            .scalar_subquery()
         )
         query = query.filter(models.Organization.parent_id == subquery)
 

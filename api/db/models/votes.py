@@ -28,9 +28,9 @@ class VoteEvent(Base):
     bill_action_id = Column(UUID, ForeignKey(BillAction.id))
     bill_action = relationship(BillAction)
 
-    votes = relationship("PersonVote")
-    counts = relationship("VoteCount")
-    sources = relationship("VoteSource")
+    votes = relationship("PersonVote", back_populates="vote_event")
+    counts = relationship("VoteCount", back_populates="vote_event")
+    sources = relationship("VoteSource", back_populates="vote_event")
 
 
 class VoteCount(PrimaryUUID, Base):

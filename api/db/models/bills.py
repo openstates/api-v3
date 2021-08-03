@@ -34,15 +34,15 @@ class Bill(Base):
     )
     legislative_session = relationship("LegislativeSession")
 
-    abstracts = relationship("BillAbstract")
-    other_titles = relationship("BillTitle")
-    other_identifiers = relationship("BillIdentifier")
-    sponsorships = relationship("BillSponsorship")
-    actions = relationship("BillAction")
-    sources = relationship("BillSource")
-    documents = relationship("BillDocument")
-    versions = relationship("BillVersion")
-    votes = relationship("VoteEvent")
+    abstracts = relationship("BillAbstract", back_populates="bill")
+    other_titles = relationship("BillTitle", back_populates="bill")
+    other_identifiers = relationship("BillIdentifier", back_populates="bill")
+    sponsorships = relationship("BillSponsorship", back_populates="bill")
+    actions = relationship("BillAction", back_populates="bill")
+    sources = relationship("BillSource", back_populates="bill")
+    documents = relationship("BillDocument", back_populates="bill")
+    versions = relationship("BillVersion", back_populates="bill")
+    votes = relationship("VoteEvent", back_populates="bill")
 
     @property
     def jurisdiction(self):
@@ -153,13 +153,13 @@ class DocumentLinkBase(PrimaryUUID):
 class BillDocument(DocVerBase, Base):
     __tablename__ = "opencivicdata_billdocument"
 
-    links = relationship("BillDocumentLink")
+    links = relationship("BillDocumentLink", back_populates="document")
 
 
 class BillVersion(DocVerBase, Base):
     __tablename__ = "opencivicdata_billversion"
 
-    links = relationship("BillVersionLink")
+    links = relationship("BillVersionLink", back_populates="version")
 
 
 class BillDocumentLink(DocumentLinkBase, Base):
