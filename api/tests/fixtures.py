@@ -150,6 +150,7 @@ def nebraska():
                 leg,
                 subjects=["futurism"],
                 classification=["resolution"],
+                identifier=f"SB {n+1}",
             )
         )
 

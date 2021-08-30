@@ -49,6 +49,23 @@ def test_bills_filter_by_session(client):
     assert len(response.json()["results"]) == 5
 
 
+def test_bills_filter_by_identifier(client):
+    # spaces corrected
+    response = client.get("/bills?jurisdiction=oh&identifier=HB1")
+    assert query_logger.count == 2
+    assert len(response.json()["results"]) == 1
+    # case insensitive
+    response = client.get("/bills?jurisdiction=oh&identifier=hb 1")
+    assert query_logger.count == 2
+    assert len(response.json()["results"]) == 1
+
+
+def test_bills_filter_by_identifier_multi(client):
+    response = client.get("/bills?jurisdiction=ne&identifier=sb1&identifier=SB 2")
+    assert query_logger.count == 2
+    assert len(response.json()["results"]) == 2
+
+
 def test_bills_filter_by_chamber(client):
     response = client.get("/bills?jurisdiction=ne&chamber=legislature")
     assert len(response.json()["results"]) == 7
