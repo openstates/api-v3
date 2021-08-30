@@ -87,6 +87,10 @@ async def bills_search(
     chamber: Optional[str] = Query(
         None, description="Filter by chamber of origination."
     ),
+    identifier: Optional[List[str]] = Query(
+        [],
+        description="Filter to only include bills with this identifier.",
+    ),
     classification: Optional[str] = Query(
         None, description="Filter by classification, e.g. bill or resolution"
     ),
@@ -160,6 +164,9 @@ async def bills_search(
         query = query.filter(models.LegislativeSession.identifier == session)
     if chamber:
         query = query.filter(models.Organization.classification == chamber)
+    if identifier:
+        identifiers = [fix_bill_id(bill_id).upper() for bill_id in identifier]
+        query = query.filter(models.Bill.identifier.in_(identifiers))
     if classification:
         query = query.filter(models.Bill.classification.any(classification))
     if subject:
