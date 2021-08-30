@@ -165,6 +165,11 @@ async def bills_search(
     if chamber:
         query = query.filter(models.Organization.classification == chamber)
     if identifier:
+        if len(identifier) > 20:
+            raise HTTPException(
+                400,
+                "can only provide up to 20 identifiers in one request",
+            )
         identifiers = [fix_bill_id(bill_id).upper() for bill_id in identifier]
         query = query.filter(models.Bill.identifier.in_(identifiers))
     if classification:
