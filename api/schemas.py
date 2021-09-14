@@ -4,6 +4,9 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 
+# class EventClassification(str, Enum):
+
+
 class JurisdictionClassification(str, Enum):
     state = "state"
     municipality = "municipality"
@@ -350,3 +353,15 @@ class Committee(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class Event(BaseModel):
+    id: str
+    name: str
+    jurisdiction: str
+    description: str
+    classification: str
+    start_date: datetime.datetime
+    end_date: datetime.datetime
+    all_day: bool
+    status: str
