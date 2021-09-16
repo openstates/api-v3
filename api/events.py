@@ -103,6 +103,5 @@ async def event_detail(
     """Get details on a single event by ID."""
     query = db.query(models.Organization).filter(
         models.Organization.id == event_id,
-        models.Organization.classification.in_("event"),
     )
     return EventPagination.detail(query, includes=include)
