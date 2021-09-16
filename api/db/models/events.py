@@ -26,6 +26,8 @@ class Event(Base):
     eventlink = relationship("EventLink")
     eventdocument = relationship("EventDocument", back_populates="eventdocumentlink")
     eventmedia = relationship("EventMedia", back_populates="eventmedialink")
+    # can this have multiple back_populates?
+    # should back_populate eventrelatedentity and eventagendamedia?
     eventagendaitem = relationship("EventAgendaItem", back_populates="eventrelatedentity")
 
 
