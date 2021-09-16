@@ -1,8 +1,7 @@
 from .. import Base
 from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime, Text, ARRAY, JSON
 from sqlalchemy.orm import relationship
-from sqlalchemy_utils import URLType # is this a thing?
-from .common import LinkBase, RelatedEntityBase # what is is MimetypeLinkBase?
+from .common import LinkBase, RelatedEntityBase, MimetypeLinkBase
 from .jurisdiction import Jurisdiction
 from .bills import Bill
 from .votes import VoteEvent
@@ -24,11 +23,11 @@ class Event(Base):
     eventparticipant = relationship("EventParticipant")
     eventsource = relationship("EventSource")
     eventlink = relationship("EventLink")
-    eventdocument = relationship("EventDocument", back_populates="eventdocumentlink")
-    eventmedia = relationship("EventMedia", back_populates="eventmedialink")
+    eventdocument = relationship("EventDocument") # , back_populates="eventdocumentlink")
+    eventmedia = relationship("EventMedia") # , back_populates="eventmedialink")
     # can this have multiple back_populates?
     # should back_populate eventrelatedentity and eventagendamedia?
-    eventagendaitem = relationship("EventAgendaItem", back_populates="eventrelatedentity")
+    eventagendaitem = relationship("EventAgendaItem") # , back_populates="eventrelatedentity")
 
 
 class EventMediaBase(Base):
@@ -43,7 +42,7 @@ class EventLocation(Base):
     __tablename__ = "opencivicdata_eventlocation"
 
     name = Column(String)
-    url = Column(URLType) # is this the correct type?
+    url = Column(String)
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")
 
@@ -107,7 +106,7 @@ class EventAgendaItem(Base):
     notes = Column(ARRAY)
     event = relationship("Event")
     extras = Column(JSON)
-    eventagendamedia = relationship("EventAgendaMedia", back_populates="eventagendamedialink")
+    eventagendamedia = relationship("EventAgendaMedia") # , back_populates="eventagendamedialink")
     eventrelatedentity = relationship("EventRelatedEntity")
 
 
