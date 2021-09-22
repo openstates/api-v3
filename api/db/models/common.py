@@ -33,9 +33,3 @@ class RelatedEntityBase(PrimaryUUID):
     @declared_attr
     def person(cls):
         return relationship("Person")
-
-
-
-class MimetypeLinkBase(PrimaryUUID):
-    media_type = Column(String)
-    url = Column(String)

@@ -1,7 +1,16 @@
 from .. import Base
-from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime, Text, ARRAY, JSON
+from sqlalchemy import (
+    Column,
+    String,
+    ForeignKey,
+    Integer,
+    Boolean,
+    Text,
+    ARRAY,
+)
 from sqlalchemy.orm import relationship
-from .common import LinkBase, RelatedEntityBase, MimetypeLinkBase
+from sqlalchemy.dialects.postgresql import JSONB
+from .common import RelatedEntityBase
 from .jurisdiction import Jurisdiction
 from .bills import Bill
 from .votes import VoteEvent
@@ -12,29 +21,34 @@ class Event(Base):
 
     id = Column(String, primary_key=True, index=True)
     name = Column(String)
-    jurisdiction = Column(String)
     description = Column(Text)
     classification = Column(String)
-    start_date = Column(DateTime)
-    end_date = Column(DateTime)
+    start_date = Column(String)
+    end_date = Column(String)
     all_day = Column(Boolean)
     status = Column(String)
+    upstream_id = Column(String)
+    deleted = Column(Boolean)
 
-    eventparticipant = relationship("EventParticipant")
-    eventsource = relationship("EventSource")
-    eventlink = relationship("EventLink")
-    eventdocument = relationship("EventDocument") # , back_populates="eventdocumentlink")
-    eventmedia = relationship("EventMedia") # , back_populates="eventmedialink")
-    # can this have multiple back_populates?
-    # should back_populate eventrelatedentity and eventagendamedia?
-    eventagendaitem = relationship("EventAgendaItem") # , back_populates="eventrelatedentity")
+    sources = Column(JSONB)
+    links = Column(JSONB)
+
+    jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
+    jurisdiction = relationship(Jurisdiction)
+    location_id = Column(String, ForeignKey("EventLocation.id"))
+    location = relationship("Location")
+
+    participants = relationship("EventParticipant")
+    documents = relationship("EventDocument")
+    media = relationship("EventMedia")
+    agenda = relationship("EventAgendaItem")
 
 
 class EventMediaBase(Base):
     __tablename__ = "opencivicdata_eventmediabase"
 
     note = Column(String)
-    date = Column(DateTime)
+    date = Column(String)
     offset = Column(Integer)
 
 
@@ -43,6 +57,7 @@ class EventLocation(Base):
 
     name = Column(String)
     url = Column(String)
+
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")
 
@@ -52,13 +67,7 @@ class EventMedia(EventMediaBase):
 
     event = relationship("Event")
     classification = Column(String)
-    eventmedialink = relationship("EventMediaLink")
-
-
-class EventMediaLink(MimetypeLinkBase):
-    __tablename__ = "opencivicdata_eventmedialink"
-
-    media = relationship("EventMedia")
+    links = Column(JSONB)
 
 
 class EventDocument(Base):
@@ -66,27 +75,9 @@ class EventDocument(Base):
 
     event = relationship("Event")
     note = Column(String)
-    date = Column(DateTime)
+    date = Column(String)
     classification = Column(String)
-    eventdocumentlink = relationship("EventDocumentLink")
-
-
-class EventDocumentLink(MimetypeLinkBase):
-    __tablename__ = "opencivicdata_eventdocumentlink"
-
-    document = relationship("EventDocument")
-
-
-class EventLink(LinkBase):
-    __tablename__ = "opencivicdata_eventlink"
-
-    event = relationship("Event")
-
-
-class EventSource(LinkBase):
-    __tablename__ = "opencivicdata_eventsource"
-
-    event = relationship("Event")
+    links = Column(JSONB)
 
 
 class EventParticipant(RelatedEntityBase):
@@ -105,16 +96,17 @@ class EventAgendaItem(Base):
     subjects = Column(ARRAY)
     notes = Column(ARRAY)
     event = relationship("Event")
-    extras = Column(JSON)
-    eventagendamedia = relationship("EventAgendaMedia") # , back_populates="eventagendamedialink")
-    eventrelatedentity = relationship("EventRelatedEntity")
+    extras = Column(JSONB)
+
+    media = relationship("EventAgendaMedia")  # , back_populates="eventagendamedialink")
 
 
 class EventRelatedEntity(RelatedEntityBase):
     __tablename__ = "opencivicdata_eventrelatedentity"
 
+    agenda_item_id = Column(String, ForeignKey(EventAgendaItem.id))
     agenda_item = relationship("EventAgendaItem")
-    # will just unresolve if needed
+
     bill_id = Column(String, ForeignKey(Bill.id))
     bill = relationship("Bill")
     vote_event_id = Column(String, ForeignKey(VoteEvent.id))
@@ -125,12 +117,8 @@ class EventRelatedEntity(RelatedEntityBase):
 class EventAgendaMedia(EventMediaBase):
     __tablename__ = "opencivicdata_eventagendamedia"
 
+    agenda_item_id = Column(String, ForeignKey(EventAgendaItem.id))
+    agenda_item = relationship("EventAgendaItem")
+
     classification = Column(String)
-    eventagendaitem = relationship("EventAgendaItem")
-    eventagendamedialink = relationship("EventAgendaMediaLink")
-
-
-class EventAgendaMediaLink(MimetypeLinkBase):
-    __tablename__ = "opencivicdata_eventagendamedialink"
-
-    media = relationship("EventAgendaMedia")
+    links = Column(JSONB)
