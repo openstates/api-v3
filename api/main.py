@@ -5,7 +5,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from uvicorn.workers import UvicornWorker
-from . import jurisdictions, people, bills, committees
+from . import jurisdictions, people, bills, committees, events
 
 if "SENTRY_URL" in os.environ:
     sentry_sdk.init(os.environ["SENTRY_URL"], traces_sample_rate=0.05)
@@ -16,6 +16,7 @@ app.include_router(jurisdictions.router)
 app.include_router(people.router)
 app.include_router(bills.router)
 app.include_router(committees.router)
+app.include_router(events.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

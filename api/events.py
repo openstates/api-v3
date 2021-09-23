@@ -1,8 +1,8 @@
 from enum import Enum
-from typing import List, Optional
-from fastapi import APIRouter, Depends, Query
+from typing import List  # , Optional
+from fastapi import APIRouter, Depends, Query, HTTPException
 from .db import SessionLocal, get_db, models
-from .schemas import Event, OrgClassification # , EventClassification
+from .schemas import Event
 from .pagination import Pagination
 from .auth import apikey_auth
 from .utils import jurisdiction_filter
@@ -11,7 +11,6 @@ router = APIRouter()
 
 
 class EventInclude(str, Enum):
-    # memberships = "memberships"
     links = "links"
     sources = "sources"
 
@@ -20,7 +19,6 @@ class EventPagination(Pagination):
     ObjCls = Event
     IncludeEnum = EventInclude
     include_map_overrides = {
-        # EventInclude.memberships: ["memberships", "memberships.person"],
         EventInclude.links: [],
         EventInclude.sources: [],
     }
@@ -39,13 +37,6 @@ class EventPagination(Pagination):
 )
 async def event_list(
     jurisdiction: str = Query(None, description="Filter by jurisdiction name or ID."),
-    classification: Optional[EventClassification] = None,
-    # parent: Optional[str] = Query(
-    #     None, description="ocd-organization ID of parent event."
-    # ),
-    # chamber: Optional[OrgClassification] = Query(
-    #     None, description="Chamber of event, generally upper or lower."
-    # ),
     include: List[EventInclude] = Query(
         [], description="Additional includes for the Event response."
     ),
@@ -53,34 +44,24 @@ async def event_list(
     auth: str = Depends(apikey_auth),
     pagination: EventPagination = Depends(),
 ):
-    query = (
-        db.query(models.Organization)
-        .filter(
-            models.Organization.classification.in_("event"),
-            jurisdiction_filter(
-                jurisdiction, jid_field=models.Organization.jurisdiction_id
-            ),
+    if not jurisdiction:
+        raise HTTPException(
+            400,
+            "must provide 'jurisdiction' parameter",
         )
-        .order_by(models.Organization.name)
+    query = (
+        db.query(models.Event)
+        .filter(
+            jurisdiction_filter(jurisdiction, jid_field=models.Event.jurisdiction_id),
+        )
+        .order_by(models.Event.start_date)
     )
 
+    print(query)
+
     # handle parameters
-    if classification:
-        query = query.filter(models.Organization.classification == classification)
-    # if parent:
-    #     query = query.filter(models.Organization.parent_id == parent)
-    # if chamber:
-    #     subquery = (
-    #         db.query(models.Organization.id)
-    #         .filter(
-    #             models.Organization.classification == chamber,
-    #             jurisdiction_filter(
-    #                 jurisdiction, jid_field=models.Organization.jurisdiction_id
-    #             ),
-    #         )
-    #         .scalar_subquery()
-    #     )
-    #     query = query.filter(models.Organization.parent_id == subquery)
+    # if classification:
+    #     query = query.filter(models.Organization.classification == classification)
 
     return pagination.paginate(query, includes=include)
 
@@ -101,7 +82,5 @@ async def event_detail(
     auth: str = Depends(apikey_auth),
 ):
     """Get details on a single event by ID."""
-    query = db.query(models.Organization).filter(
-        models.Organization.id == event_id,
-    )
+    query = db.query(models.Event).filter(models.Event.id == event_id)
     return EventPagination.detail(query, includes=include)
