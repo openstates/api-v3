@@ -72,7 +72,7 @@ async def event_list(
         ),
     )
 
-    # handle parameters
+    # TODO: handle parameters
     # if classification:
     #     query = query.filter(models.Organization.classification == classification)
 
@@ -95,5 +95,19 @@ async def event_detail(
     auth: str = Depends(apikey_auth),
 ):
     """Get details on a single event by ID."""
-    query = db.query(models.Event).filter(models.Event.id == event_id)
+    print(event_id)
+    query = (
+        db.query(models.Event)
+        .filter(models.Event.id == event_id)
+        .join(models.Event.jurisdiction)
+        .outerjoin(models.Event.location)
+        .options(
+            contains_eager(
+                models.Event.jurisdiction,
+            ),
+            contains_eager(
+                models.Event.location,
+            ),
+        )
+    )
     return EventPagination.detail(query, includes=include)

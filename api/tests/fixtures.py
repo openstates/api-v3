@@ -104,11 +104,11 @@ def create_test_bill(
 
 def create_test_event(jid, n, *, start_date, deleted=False):
     loc = EventLocation(
-        id=str(uuid.uuid4()), name="Location #{n}", jurisdiction_id=jid, url=""
+        id=str(uuid.uuid4()), name=f"Location #{n}", jurisdiction_id=jid, url=""
     )
     e = Event(
         jurisdiction_id=jid,
-        id=f"ocd-event/000000000-0000-0000-0000-{n:012d}",
+        id=f"ocd-event/00000000-0000-0000-0000-{n:012d}",
         name=f"Event #{n}",
         description="",
         classification="",

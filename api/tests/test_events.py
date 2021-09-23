@@ -49,3 +49,31 @@ def test_events_list_join_agenda(client):
         {"note": "", "name": "HB 1", "entity_type": "bill"}
     ]
     assert response["results"][0]["agenda"][1]["description"] == "Agenda Item 2"
+
+
+BASIC_EVENT = {
+    "all_day": False,
+    "classification": "",
+    "deleted": False,
+    "description": "",
+    "end_date": "",
+    "id": "ocd-event/00000000-0000-0000-0000-000000000000",
+    "jurisdiction": {
+        "classification": "state",
+        "id": "ocd-jurisdiction/country:us/state:ne/government",
+        "name": "Nebraska",
+    },
+    "location": {"name": "Location #0", "url": ""},
+    "name": "Event #0",
+    "start_date": "2021-01-01",
+    "status": "normal",
+    "upstream_id": "",
+}
+
+
+def test_event_by_id(client):
+    response = client.get(
+        "/events/ocd-event/00000000-0000-0000-0000-000000000000"
+    ).json()
+    assert query_logger.count == 1
+    assert response == BASIC_EVENT
