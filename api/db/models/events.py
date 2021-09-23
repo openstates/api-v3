@@ -3,18 +3,17 @@ from sqlalchemy import (
     Column,
     String,
     ForeignKey,
-    #     Integer,
+    Integer,
     Boolean,
     Text,
-    # ARRAY,
+    ARRAY,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB
-from .common import PrimaryUUID  # , RelatedEntityBase
+from .common import PrimaryUUID, RelatedEntityBase
 from .jurisdiction import Jurisdiction
-
-# from .bills import Bill
-# from .votes import VoteEvent
+from .bills import Bill
+from .votes import VoteEvent
 
 
 class EventLocation(PrimaryUUID, Base):
@@ -49,77 +48,80 @@ class Event(Base):
     location_id = Column(String, ForeignKey(EventLocation.id))
     location = relationship(EventLocation)
 
-    # participants = relationship("EventParticipant")
-    # documents = relationship("EventDocument")
-    # media = relationship("EventMedia")
-    # agenda = relationship("EventAgendaItem")
+    media = relationship("EventMedia", back_populates="event")
+    documents = relationship("EventDocument", back_populates="event")
+    participants = relationship("EventParticipant", back_populates="event")
+    agenda = relationship("EventAgendaItem", back_populates="event")
 
 
-# class EventMediaBase(Base):
-#     __tablename__ = "opencivicdata_eventmediabase"
-
-#     note = Column(String)
-#     date = Column(String)
-#     offset = Column(Integer)
-
-
-# class EventMedia(EventMediaBase):
-#     __tablename__ = "opencivicdata_eventmedia"
-
-#     event = relationship("Event")
-#     classification = Column(String)
-#     links = Column(JSONB)
+class EventMediaBase(PrimaryUUID):
+    note = Column(String)
+    date = Column(String)
+    offset = Column(Integer)
+    classification = Column(String)
+    links = Column(JSONB)
 
 
-# class EventDocument(Base):
-#     __tablename__ = "opencivicdata_eventdocument"
+class EventMedia(EventMediaBase, Base):
+    __tablename__ = "opencivicdata_eventmedia"
 
-#     event = relationship("Event")
-#     note = Column(String)
-#     date = Column(String)
-#     classification = Column(String)
-#     links = Column(JSONB)
+    event_id = Column(String, ForeignKey(Event.id))
+    event = relationship(Event, back_populates="media")
 
 
-# class EventParticipant(RelatedEntityBase):
-#     __tablename__ = "opencivicdata_eventparticipant"
+class EventDocument(PrimaryUUID, Base):
+    __tablename__ = "opencivicdata_eventdocument"
 
-#     event = relationship("Event")
-#     note = Column(Text)
+    event_id = Column(String, ForeignKey(Event.id))
+    event = relationship("Event", back_populates="documents")
 
-
-# class EventAgendaItem(Base):
-#     __tablename__ = "opencivicdata_eventagendaitem"
-
-#     description = Column(Text)
-#     classification = Column(ARRAY)
-#     order = Column(Integer)
-#     subjects = Column(ARRAY)
-#     notes = Column(ARRAY)
-#     event = relationship("Event")
-#     extras = Column(JSONB)
-
-#     media = relationship("EventAgendaMedia")  # , back_populates="eventagendamedialink")
+    note = Column(String)
+    date = Column(String)
+    classification = Column(String)
+    links = Column(JSONB)
 
 
-# class EventRelatedEntity(RelatedEntityBase):
-#     __tablename__ = "opencivicdata_eventrelatedentity"
+class EventParticipant(RelatedEntityBase, Base):
+    __tablename__ = "opencivicdata_eventparticipant"
 
-#     agenda_item_id = Column(String, ForeignKey(EventAgendaItem.id))
-#     agenda_item = relationship("EventAgendaItem")
+    event_id = Column(String, ForeignKey(Event.id))
+    event = relationship("Event", back_populates="participants")
 
-#     bill_id = Column(String, ForeignKey(Bill.id))
-#     bill = relationship("Bill")
-#     vote_event_id = Column(String, ForeignKey(VoteEvent.id))
-#     vote_event = relationship("VoteEvent")
-#     note = Column(Text)
+    note = Column(Text)
 
 
-# class EventAgendaMedia(EventMediaBase):
-#     __tablename__ = "opencivicdata_eventagendamedia"
+class EventAgendaItem(PrimaryUUID, Base):
+    __tablename__ = "opencivicdata_eventagendaitem"
 
-#     agenda_item_id = Column(String, ForeignKey(EventAgendaItem.id))
-#     agenda_item = relationship("EventAgendaItem")
+    event_id = Column(String, ForeignKey(Event.id))
+    event = relationship("Event", back_populates="agenda")
 
-#     classification = Column(String)
-#     links = Column(JSONB)
+    description = Column(Text)
+    classification = Column(ARRAY(Text))
+    order = Column(Integer)
+    subjects = Column(ARRAY(Text))
+    notes = Column(ARRAY(Text))
+    extras = Column(JSONB)
+
+    # related_entities = relationship("EventRelatedEntity", back_populates="agenda_item")
+    # media = relationship("EventAgendaMedia", back_populates="agenda_item")
+
+
+class EventRelatedEntity(RelatedEntityBase):
+    __tablename__ = "opencivicdata_eventrelatedentity"
+
+    agenda_item_id = Column(String, ForeignKey(EventAgendaItem.id))
+    agenda_item = relationship(EventAgendaItem)
+
+    bill_id = Column(String, ForeignKey(Bill.id))
+    bill = relationship(Bill)
+    vote_event_id = Column(String, ForeignKey(VoteEvent.id))
+    vote_event = relationship(VoteEvent)
+    note = Column(Text)
+
+
+class EventAgendaMedia(EventMediaBase):
+    __tablename__ = "opencivicdata_eventagendamedia"
+
+    agenda_item_id = Column(String, ForeignKey(EventAgendaItem.id))
+    agenda_item = relationship(EventAgendaItem)

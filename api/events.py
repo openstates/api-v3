@@ -13,6 +13,10 @@ router = APIRouter()
 class EventInclude(str, Enum):
     links = "links"
     sources = "sources"
+    media = "media"
+    documents = "documents"
+    participants = "participants"
+    agenda = "agenda"
 
 
 class EventPagination(Pagination):

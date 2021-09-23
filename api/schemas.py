@@ -4,9 +4,6 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 
-# class EventClassification(str, Enum):
-
-
 class JurisdictionClassification(str, Enum):
     state = "state"
     municipality = "municipality"
@@ -273,7 +270,7 @@ class VoteEvent(BaseModel):
     start_date: str = Field(..., example="2020-09-18")
     result: str = Field(..., example="pass")
     identifier: str = Field(..., example="HV #3312")
-    extras: dict = dict
+    extras: dict
 
     organization: Organization
     votes: List[PersonVote]
@@ -363,6 +360,65 @@ class EventLocation(BaseModel):
         orm_mode = True
 
 
+class EventMedia(BaseModel):
+    note: str
+    date: str
+    offset: int
+    classification: str
+    links: list[Link]
+
+    class Config:
+        orm_mode = True
+
+
+class EventDocument(BaseModel):
+    note: str
+    date: str
+    classification: str
+    links: list[Link]
+
+    class Config:
+        orm_mode = True
+
+
+class EventParticipant(BaseModel):
+    note: str
+    name: str = Field(..., example="JONES")
+    entity_type: str = Field(..., example="person")
+    organization: Optional[Organization] = Field(None, example=None)
+    person: Optional[CompactPerson]
+
+    class Config:
+        orm_mode = True
+
+
+class EventRelatedEntity(BaseModel):
+    note: str
+    name: str = Field(..., example="JONES")
+    entity_type: str = Field(..., example="person")
+    organization: Optional[Organization] = Field(None, example=None)
+    person: Optional[CompactPerson]
+    bill: Optional[Bill]
+    vote: Optional[VoteEvent]
+
+    class Config:
+        orm_mode = True
+
+
+class EventAgendaItem(BaseModel):
+    description: str
+    classification: List[str]
+    order: int
+    subjects: List[str]
+    notes: List[str]
+    extras: dict
+
+    # related_entities: List[EventRelatedEntity]
+    # media: List[EventMedia]
+    class Config:
+        orm_mode = True
+
+
 class Event(BaseModel):
     id: str
     name: str
@@ -380,6 +436,10 @@ class Event(BaseModel):
     # related fields
     links: Optional[List[Link]]
     sources: Optional[List[Link]]
+    media: Optional[List[EventMedia]]
+    documents: Optional[List[EventDocument]]
+    participants: Optional[List[EventParticipant]]
+    agenda: Optional[List[EventAgendaItem]]
 
     class Config:
         orm_mode = True
