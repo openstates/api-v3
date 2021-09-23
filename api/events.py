@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List  # , Optional
 from fastapi import APIRouter, Depends, Query, HTTPException
+from sqlalchemy.orm import contains_eager
 from .db import SessionLocal, get_db, models
 from .schemas import Event
 from .pagination import Pagination
@@ -25,6 +26,7 @@ class EventPagination(Pagination):
     include_map_overrides = {
         EventInclude.links: [],
         EventInclude.sources: [],
+        EventInclude.agenda: ["agenda", "agenda.related_entities", "agenda.media"],
     }
     max_per_page = 20
 
@@ -55,13 +57,20 @@ async def event_list(
         )
     query = (
         db.query(models.Event)
+        .join(models.Event.jurisdiction)
+        .outerjoin(models.Event.location)
         .filter(
             jurisdiction_filter(jurisdiction, jid_field=models.Event.jurisdiction_id),
         )
         .order_by(models.Event.start_date)
+    ).options(
+        contains_eager(
+            models.Event.jurisdiction,
+        ),
+        contains_eager(
+            models.Event.location,
+        ),
     )
-
-    print(query)
 
     # handle parameters
     # if classification:

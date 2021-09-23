@@ -450,7 +450,7 @@ class Event(BaseModel):
     status: str
     upstream_id: str
     deleted: bool
-    location: EventLocation
+    location: Optional[EventLocation]
 
     # related fields
     links: Optional[List[Link]]
