@@ -234,6 +234,7 @@ def test_bills_include_votes(client):
             ],
             "counts": [{"option": "yes", "value": 2}, {"option": "no", "value": 1}],
             "sources": [],
+            "extras": {},
         },
         {
             "id": "ocd-vote/2",
@@ -250,6 +251,7 @@ def test_bills_include_votes(client):
             "votes": [],
             "counts": [{"option": "yes", "value": 42}, {"option": "no", "value": 0}],
             "sources": [],
+            "extras": {},
         },
     ]
 
