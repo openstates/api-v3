@@ -355,13 +355,31 @@ class Committee(BaseModel):
         orm_mode = True
 
 
+class EventLocation(BaseModel):
+    name: str
+    url: str
+
+    class Config:
+        orm_mode = True
+
+
 class Event(BaseModel):
     id: str
     name: str
-    jurisdiction: str
+    jurisdiction: CompactJurisdiction
     description: str
     classification: str
-    start_date: datetime.datetime
-    end_date: datetime.datetime
+    start_date: str
+    end_date: str
     all_day: bool
     status: str
+    upstream_id: str
+    deleted: bool
+    location: EventLocation
+
+    # related fields
+    links: Optional[List[Link]]
+    sources: Optional[List[Link]]
+
+    class Config:
+        orm_mode = True

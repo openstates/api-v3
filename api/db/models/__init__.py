@@ -28,3 +28,4 @@ from .bills import (
 )
 from .votes import VoteEvent, PersonVote, VoteCount, VoteSource
 from .auth import Profile
+from .events import Event
