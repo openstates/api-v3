@@ -44,4 +44,8 @@ def test_events_list_join_agenda(client):
     assert len(response["results"][0]["agenda"]) == 2
     assert response["results"][0]["agenda"][0]["description"] == "Agenda Item 1"
     assert response["results"][0]["agenda"][0]["order"] == 1
+    assert response["results"][0]["agenda"][0]["media"][0]["date"] == "2021-01-01"
+    assert response["results"][0]["agenda"][0]["related_entities"] == [
+        {"note": "", "name": "HB 1", "entity_type": "bill"}
+    ]
     assert response["results"][0]["agenda"][1]["description"] == "Agenda Item 2"
