@@ -70,6 +70,53 @@ BASIC_EVENT = {
     "upstream_id": "",
 }
 
+FULL_EVENT = BASIC_EVENT.copy()
+FULL_EVENT["sources"] = FULL_EVENT["links"] = [
+    {"note": "source", "url": "https://example.com/0"}
+]
+FULL_EVENT["media"] = [
+    {"classification": "", "date": "2021-01-01", "links": [], "note": "", "offset": 0}
+]
+FULL_EVENT["participants"] = [
+    {"entity_type": "person", "note": "", "name": "John"},
+    {"entity_type": "person", "note": "", "name": "Jane"},
+    {"entity_type": "person", "note": "", "name": "Javier"},
+]
+FULL_EVENT["documents"] = [
+    {"classification": "", "date": "2021-01-01", "note": "document 1", "links": []},
+    {"classification": "", "date": "2021-01-01", "note": "document 2", "links": []},
+]
+FULL_EVENT["agenda"] = [
+    {
+        "classification": [],
+        "description": "Agenda Item 1",
+        "media": [
+            {
+                "classification": "",
+                "date": "2021-01-01",
+                "links": [],
+                "note": "",
+                "offset": 0,
+            }
+        ],
+        "notes": [],
+        "subjects": [],
+        "order": 1,
+        "extras": {},
+        "related_entities": [{"entity_type": "bill", "name": "HB 1", "note": ""}],
+    },
+    {
+        "classification": [],
+        "description": "Agenda Item 2",
+        "media": [],
+        "notes": [],
+        "subjects": [],
+        "order": 2,
+        "extras": {},
+        "related_entities": [],
+    },
+]
+
 
 def test_event_by_id(client):
     response = client.get(
@@ -77,3 +124,13 @@ def test_event_by_id(client):
     ).json()
     assert query_logger.count == 1
     assert response == BASIC_EVENT
+
+
+def test_event_by_id_all_includes(client):
+    response = client.get(
+        "/events/ocd-event/00000000-0000-0000-0000-000000000000?"
+        "include=links&include=sources&include=media&include=documents&include=participants&include=agenda"
+    ).json()
+    # 3 joins for media, documents, participants, and 3 more for agenda
+    assert query_logger.count == 7
+    assert response == FULL_EVENT
