@@ -9,7 +9,7 @@ from sqlalchemy import (
     ARRAY,
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from .common import PrimaryUUID, RelatedEntityBase
 from .jurisdiction import Jurisdiction
 from .bills import Bill
@@ -45,7 +45,7 @@ class Event(Base):
 
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship(Jurisdiction)
-    location_id = Column(String, ForeignKey(EventLocation.id))
+    location_id = Column(UUID, ForeignKey(EventLocation.id))
     location = relationship(EventLocation)
 
     media = relationship("EventMedia", back_populates="event")
@@ -110,7 +110,7 @@ class EventAgendaItem(PrimaryUUID, Base):
 class EventRelatedEntity(RelatedEntityBase, Base):
     __tablename__ = "opencivicdata_eventrelatedentity"
 
-    agenda_item_id = Column(String, ForeignKey(EventAgendaItem.id))
+    agenda_item_id = Column(UUID, ForeignKey(EventAgendaItem.id))
     agenda_item = relationship(EventAgendaItem)
 
     bill_id = Column(String, ForeignKey(Bill.id))
@@ -123,5 +123,5 @@ class EventRelatedEntity(RelatedEntityBase, Base):
 class EventAgendaMedia(EventMediaBase, Base):
     __tablename__ = "opencivicdata_eventagendamedia"
 
-    agenda_item_id = Column(String, ForeignKey(EventAgendaItem.id))
+    agenda_item_id = Column(UUID, ForeignKey(EventAgendaItem.id))
     agenda_item = relationship(EventAgendaItem)
