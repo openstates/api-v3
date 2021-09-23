@@ -103,11 +103,11 @@ class EventAgendaItem(PrimaryUUID, Base):
     notes = Column(ARRAY(Text))
     extras = Column(JSONB)
 
-    # related_entities = relationship("EventRelatedEntity", back_populates="agenda_item")
-    # media = relationship("EventAgendaMedia", back_populates="agenda_item")
+    related_entities = relationship("EventRelatedEntity", back_populates="agenda_item")
+    media = relationship("EventAgendaMedia", back_populates="agenda_item")
 
 
-class EventRelatedEntity(RelatedEntityBase):
+class EventRelatedEntity(RelatedEntityBase, Base):
     __tablename__ = "opencivicdata_eventrelatedentity"
 
     agenda_item_id = Column(String, ForeignKey(EventAgendaItem.id))
@@ -120,7 +120,7 @@ class EventRelatedEntity(RelatedEntityBase):
     note = Column(Text)
 
 
-class EventAgendaMedia(EventMediaBase):
+class EventAgendaMedia(EventMediaBase, Base):
     __tablename__ = "opencivicdata_eventagendamedia"
 
     agenda_item_id = Column(String, ForeignKey(EventAgendaItem.id))

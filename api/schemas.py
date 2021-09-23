@@ -152,6 +152,24 @@ class CompactPerson(BaseModel):
         orm_mode = True
 
 
+class CompactBill(BaseModel):
+    id: str = Field(..., example="ocd-bill/12345678-0000-1111-2222-333344445555")
+    session: str
+    identifier: str
+    title: str
+
+    class Config:
+        orm_mode = True
+
+
+class CompactVoteEvent(BaseModel):
+    id: str = Field(..., example="ocd-vote/12345678-0000-1111-2222-333344445555")
+    motion_text: str = Field(..., example="Shall the bill be passed?")
+
+    class Config:
+        orm_mode = True
+
+
 class Person(CompactPerson):
     jurisdiction: CompactJurisdiction
 
@@ -398,8 +416,8 @@ class EventRelatedEntity(BaseModel):
     entity_type: str = Field(..., example="person")
     organization: Optional[Organization] = Field(None, example=None)
     person: Optional[CompactPerson]
-    bill: Optional[Bill]
-    vote: Optional[VoteEvent]
+    bill: Optional[CompactBill]
+    vote: Optional[CompactVoteEvent]
 
     class Config:
         orm_mode = True
@@ -413,8 +431,9 @@ class EventAgendaItem(BaseModel):
     notes: List[str]
     extras: dict
 
-    # related_entities: List[EventRelatedEntity]
-    # media: List[EventMedia]
+    related_entities: List[EventRelatedEntity]
+    media: List[EventMedia]
+
     class Config:
         orm_mode = True
 
