@@ -102,7 +102,7 @@ def create_test_bill(
         )
 
 
-def create_test_event(jid, n, *, start_date, deleted=False):
+def create_test_event(jid, n, *, start_date, deleted=False, related_bill=False):
     loc = EventLocation(
         id=str(uuid.uuid4()), name=f"Location #{n}", jurisdiction_id=jid, url=""
     )
@@ -122,7 +122,9 @@ def create_test_event(jid, n, *, start_date, deleted=False):
         links=[{"note": "source", "url": f"https://example.com/{n}"}],
         sources=[{"note": "source", "url": f"https://example.com/{n}"}],
     )
-    media = EventMedia(
+    yield loc
+    yield e
+    yield EventMedia(
         event=e,
         note="",
         date=start_date,
@@ -130,33 +132,33 @@ def create_test_event(jid, n, *, start_date, deleted=False):
         classification="",
         links=[],
     )
-    doc1 = EventDocument(
+    yield EventDocument(
         event=e,
         date=start_date,
         note="document 1",
         classification="",
         links=[],
     )
-    doc2 = EventDocument(
+    yield EventDocument(
         event=e,
         date=start_date,
         note="document 2",
         classification="",
         links=[],
     )
-    p1 = EventParticipant(
+    yield EventParticipant(
         event=e,
         note="",
         name="John",
         entity_type="person",
     )
-    p2 = EventParticipant(
+    yield EventParticipant(
         event=e,
         note="",
         name="Jane",
         entity_type="person",
     )
-    p3 = EventParticipant(
+    yield EventParticipant(
         event=e,
         note="",
         name="Javier",
@@ -172,7 +174,8 @@ def create_test_event(jid, n, *, start_date, deleted=False):
         extras={},
         order=1,
     )
-    am = EventAgendaMedia(
+    yield a1
+    yield EventAgendaMedia(
         agenda_item=a1,
         note="",
         date=start_date,
@@ -180,13 +183,7 @@ def create_test_event(jid, n, *, start_date, deleted=False):
         classification="",
         links=[],
     )
-    related = EventRelatedEntity(
-        agenda_item=a1,
-        note="",
-        name="HB 1",
-        entity_type="bill",
-    )
-    a2 = EventAgendaItem(
+    yield EventAgendaItem(
         id=str(uuid.uuid4()),
         event=e,
         description="Agenda Item 2",
@@ -196,7 +193,13 @@ def create_test_event(jid, n, *, start_date, deleted=False):
         extras={},
         order=2,
     )
-    return loc, e, media, doc1, doc2, p1, p2, p3, a1, a2, am, related
+    if related_bill:
+        yield EventRelatedEntity(
+            agenda_item=a1,
+            note="",
+            name="HB 1",
+            entity_type="bill",
+        )
 
 
 def nebraska():
@@ -260,7 +263,11 @@ def nebraska():
         )
     events = []
     for n in range(3):
-        events.extend(create_test_event(j.id, n, start_date=f"2021-01-0{n+1}"))
+        events.extend(
+            create_test_event(
+                j.id, n, start_date=f"2021-01-0{n+1}", related_bill=(n == 0)
+            )
+        )
     events.extend(create_test_event(j.id, 4, start_date="2021-01-04", deleted=True))
 
     return [

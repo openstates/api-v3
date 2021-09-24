@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List  # , Optional
 from fastapi import APIRouter, Depends, Query, HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import contains_eager
 from .db import SessionLocal, get_db, models
 from .schemas import Event
@@ -50,6 +51,10 @@ async def event_list(
     after: str = Query(
         None, description="Limit results to those starting before a given datetime."
     ),
+    require_bills: bool = Query(
+        False,
+        description="Limit results to events with associated bills.",
+    ),
     include: List[EventInclude] = Query(
         [], description="Additional includes for the Event response."
     ),
@@ -80,13 +85,19 @@ async def event_list(
     )
 
     # handle parameters
-    print(deleted)
     query = query.filter(models.Event.deleted.is_(deleted))
 
     if before:
         query = query.filter(models.Event.start_date < before)
     if after:
         query = query.filter(models.Event.start_date > after)
+    if require_bills:
+        query = (
+            query.outerjoin(models.Event.agenda)
+            .outerjoin(models.EventAgendaItem.related_entities)
+            .group_by(models.Event, models.Jurisdiction, models.EventLocation)
+            .having(func.count_(models.EventRelatedEntity.id) > 0)
+        )
 
     return pagination.paginate(query, includes=include)
 

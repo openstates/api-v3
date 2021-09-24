@@ -82,6 +82,14 @@ def test_events_list_before_and_after(client):
     assert response["results"][0]["start_date"] == "2021-01-02"
 
 
+def test_events_list_require_bills(client):
+    response = client.get("/events?jurisdiction=ne&require_bills=true").json()
+    assert query_logger.count == 2
+    print(response["results"])
+    assert len(response["results"]) == 1
+    assert response["results"][0]["name"] == "Event #0"
+
+
 BASIC_EVENT = {
     "all_day": False,
     "classification": "",
