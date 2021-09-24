@@ -46,7 +46,7 @@ def test_events_list_join_agenda(client):
     assert response["results"][0]["agenda"][0]["order"] == 1
     assert response["results"][0]["agenda"][0]["media"][0]["date"] == "2021-01-01"
     assert response["results"][0]["agenda"][0]["related_entities"] == [
-        {"note": "", "name": "HB 1", "entity_type": "bill"}
+        {"note": "", "name": "SB 1", "entity_type": "bill"}
     ]
     assert response["results"][0]["agenda"][1]["description"] == "Agenda Item 2"
 
@@ -85,7 +85,6 @@ def test_events_list_before_and_after(client):
 def test_events_list_require_bills(client):
     response = client.get("/events?jurisdiction=ne&require_bills=true").json()
     assert query_logger.count == 2
-    print(response["results"])
     assert len(response["results"]) == 1
     assert response["results"][0]["name"] == "Event #0"
 
@@ -142,7 +141,7 @@ FULL_EVENT["agenda"] = [
         "subjects": [],
         "order": 1,
         "extras": {},
-        "related_entities": [{"entity_type": "bill", "name": "HB 1", "note": ""}],
+        "related_entities": [{"entity_type": "bill", "name": "SB 1", "note": ""}],
     },
     {
         "classification": [],

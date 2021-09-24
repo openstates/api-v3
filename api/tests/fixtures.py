@@ -102,7 +102,9 @@ def create_test_bill(
         )
 
 
-def create_test_event(jid, n, *, start_date, deleted=False, related_bill=False):
+def create_test_event(
+    jid, n, *, start_date, deleted=False, related_bill=False, related_committee=False
+):
     loc = EventLocation(
         id=str(uuid.uuid4()), name=f"Location #{n}", jurisdiction_id=jid, url=""
     )
@@ -197,8 +199,12 @@ def create_test_event(jid, n, *, start_date, deleted=False, related_bill=False):
         yield EventRelatedEntity(
             agenda_item=a1,
             note="",
-            name="HB 1",
+            name="SB 1",
             entity_type="bill",
+        )
+    if related_committee:
+        yield EventRelatedEntity(
+            agenda_item=a1, note="", name="Finance", entity_type="organization"
         )
 
 
@@ -265,7 +271,11 @@ def nebraska():
     for n in range(3):
         events.extend(
             create_test_event(
-                j.id, n, start_date=f"2021-01-0{n+1}", related_bill=(n == 0)
+                j.id,
+                n,
+                start_date=f"2021-01-0{n+1}",
+                related_bill=(n == 0),
+                related_committee=(n > 1),
             )
         )
     events.extend(create_test_event(j.id, 4, start_date="2021-01-04", deleted=True))

@@ -53,10 +53,10 @@ def custom_openapi():
 * [Register for an account](https://openstates.org/accounts/signup/)
 
 
-**As of August 2021 we are working to restore experimental support for committees.**
+**We are currently working to restore experimental support for committees & events.**
 
 During this period please note that data is not yet available for all states
-and the exact format of the committees endpoints may change slightly depending on user feedback.
+and the exact format of the new endpoints may change slightly depending on user feedback.
 
 If you have any issues or questions use our
 [GitHub Issues](https://github.com/openstates/issues/issues) to give feedback.
