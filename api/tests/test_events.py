@@ -59,6 +59,29 @@ def test_events_list_deleted(client):
     assert response["results"][0]["deleted"] is True
 
 
+def test_events_list_before(client):
+    response = client.get("/events?jurisdiction=ne&before=2021-01-02").json()
+    assert query_logger.count == 2
+    assert len(response["results"]) == 1
+    assert response["results"][0]["start_date"] == "2021-01-01"
+
+
+def test_events_list_after(client):
+    response = client.get("/events?jurisdiction=ne&after=2021-01-02").json()
+    assert query_logger.count == 2
+    assert len(response["results"]) == 1
+    assert response["results"][0]["start_date"] == "2021-01-03"
+
+
+def test_events_list_before_and_after(client):
+    response = client.get(
+        "/events?jurisdiction=ne&after=2021-01-01&before=2021-01-03"
+    ).json()
+    assert query_logger.count == 2
+    assert len(response["results"]) == 1
+    assert response["results"][0]["start_date"] == "2021-01-02"
+
+
 BASIC_EVENT = {
     "all_day": False,
     "classification": "",
