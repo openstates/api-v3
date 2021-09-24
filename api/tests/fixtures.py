@@ -117,7 +117,7 @@ def create_test_event(jid, n, *, start_date, deleted=False):
         all_day=False,
         status="normal",
         upstream_id="",
-        deleted=False,
+        deleted=deleted,
         location=loc,
         links=[{"note": "source", "url": f"https://example.com/{n}"}],
         sources=[{"note": "source", "url": f"https://example.com/{n}"}],
@@ -260,7 +260,8 @@ def nebraska():
         )
     events = []
     for n in range(3):
-        events.extend(create_test_event(j.id, n, start_date="2021-01-01"))
+        events.extend(create_test_event(j.id, n, start_date=f"2021-01-0{n+1}"))
+    events.extend(create_test_event(j.id, 4, start_date="2021-01-04", deleted=True))
 
     return [
         j,

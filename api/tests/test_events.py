@@ -51,6 +51,14 @@ def test_events_list_join_agenda(client):
     assert response["results"][0]["agenda"][1]["description"] == "Agenda Item 2"
 
 
+def test_events_list_deleted(client):
+    response = client.get("/events?jurisdiction=ne&deleted=true").json()
+    assert query_logger.count == 2
+    assert len(response["results"]) == 1
+    assert response["results"][0]["name"] == "Event #4"
+    assert response["results"][0]["deleted"] is True
+
+
 BASIC_EVENT = {
     "all_day": False,
     "classification": "",

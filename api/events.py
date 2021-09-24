@@ -43,6 +43,13 @@ class EventPagination(Pagination):
 )
 async def event_list(
     jurisdiction: str = Query(None, description="Filter by jurisdiction name or ID."),
+    deleted: bool = Query(False, description="Return events marked as deleted?"),
+    before: str = Query(
+        None, description="Limit results to those starting before a given datetime."
+    ),
+    after: str = Query(
+        None, description="Limit results to those starting before a given datetime."
+    ),
     include: List[EventInclude] = Query(
         [], description="Additional includes for the Event response."
     ),
@@ -72,9 +79,14 @@ async def event_list(
         ),
     )
 
-    # TODO: handle parameters
-    # if classification:
-    #     query = query.filter(models.Organization.classification == classification)
+    # handle parameters
+    print(deleted)
+    query = query.filter(models.Event.deleted.is_(deleted))
+
+    if before:
+        query = query.filter(models.Event.start_date < before)
+    if after:
+        query = query.filter(models.Event.start_date > after)
 
     return pagination.paginate(query, includes=include)
 
@@ -95,7 +107,6 @@ async def event_detail(
     auth: str = Depends(apikey_auth),
 ):
     """Get details on a single event by ID."""
-    print(event_id)
     query = (
         db.query(models.Event)
         .filter(models.Event.id == event_id)
