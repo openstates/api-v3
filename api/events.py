@@ -92,7 +92,6 @@ async def event_list(
     if after:
         query = query.filter(models.Event.start_date > after)
     if require_bills:
-        # TODO: test with agenda joins
         query = (
             query.outerjoin(models.Event.agenda)
             .outerjoin(models.EventAgendaItem.related_entities)

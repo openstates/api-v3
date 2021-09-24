@@ -89,6 +89,16 @@ def test_events_list_require_bills(client):
     assert response["results"][0]["name"] == "Event #0"
 
 
+def test_events_list_require_bills_include_agenda(client):
+    response = client.get(
+        "/events?jurisdiction=ne&require_bills=true&include=agenda"
+    ).json()
+    # join count should still be 5, checking for weirdness w/ group by/agenda join
+    assert query_logger.count == 5
+    assert len(response["results"]) == 1
+    assert response["results"][0]["name"] == "Event #0"
+
+
 BASIC_EVENT = {
     "all_day": False,
     "classification": "",
