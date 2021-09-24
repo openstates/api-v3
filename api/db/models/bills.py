@@ -138,7 +138,7 @@ class BillSource(LinkBase, BillRelatedBase, Base):
 
 
 class DocVerBase(BillRelatedBase):
-    """ base class for document & version """
+    """base class for document & version"""
 
     note = Column(String)
     date = Column(String)
