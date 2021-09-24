@@ -82,7 +82,7 @@ async def jurisdiction_detail(
     db: SessionLocal = Depends(get_db),
     auth: str = Depends(apikey_auth),
 ):
-    """ Get details on a single Jurisdiction (e.g. state or municipality). """
+    """Get details on a single Jurisdiction (e.g. state or municipality)."""
     query = db.query(models.Jurisdiction).filter(
         jurisdiction_filter(jurisdiction_id, jid_field=models.Jurisdiction.id)
     )

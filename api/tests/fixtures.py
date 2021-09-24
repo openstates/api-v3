@@ -3,29 +3,37 @@ import uuid
 import datetime
 from sqlalchemy import func
 from api.db.models import (
-    LegislativeSession,
-    Jurisdiction,
-    Organization,
-    Membership,
-    Post,
-    Person,
-    PersonName,
-    PersonLink,
-    PersonSource,
-    PersonContactDetail,
     Bill,
     BillAction,
-    BillSponsorship,
-    BillSource,
-    BillVersion,
-    BillVersionLink,
     BillDocument,
     BillDocumentLink,
-    SearchableBill,
-    VoteEvent,
-    VoteCount,
+    BillSource,
+    BillSponsorship,
+    BillVersion,
+    BillVersionLink,
+    Event,
+    EventAgendaItem,
+    EventAgendaMedia,
+    EventDocument,
+    EventLocation,
+    EventMedia,
+    EventParticipant,
+    EventRelatedEntity,
+    Jurisdiction,
+    LegislativeSession,
+    Membership,
+    Organization,
+    Person,
+    PersonContactDetail,
+    PersonLink,
+    PersonName,
+    PersonSource,
     PersonVote,
+    Post,
     RunPlan,
+    SearchableBill,
+    VoteCount,
+    VoteEvent,
 )
 
 
@@ -94,6 +102,112 @@ def create_test_bill(
         )
 
 
+def create_test_event(
+    jid, n, *, start_date, deleted=False, related_bill=False, related_committee=False
+):
+    loc = EventLocation(
+        id=str(uuid.uuid4()), name=f"Location #{n}", jurisdiction_id=jid, url=""
+    )
+    e = Event(
+        jurisdiction_id=jid,
+        id=f"ocd-event/00000000-0000-0000-0000-{n:012d}",
+        name=f"Event #{n}",
+        description="",
+        classification="",
+        start_date=start_date,
+        end_date="",
+        all_day=False,
+        status="normal",
+        upstream_id="",
+        deleted=deleted,
+        location=loc,
+        links=[{"note": "source", "url": f"https://example.com/{n}"}],
+        sources=[{"note": "source", "url": f"https://example.com/{n}"}],
+    )
+    yield loc
+    yield e
+    yield EventMedia(
+        event=e,
+        note="",
+        date=start_date,
+        offset=0,
+        classification="",
+        links=[],
+    )
+    yield EventDocument(
+        event=e,
+        date=start_date,
+        note="document 1",
+        classification="",
+        links=[],
+    )
+    yield EventDocument(
+        event=e,
+        date=start_date,
+        note="document 2",
+        classification="",
+        links=[],
+    )
+    yield EventParticipant(
+        event=e,
+        note="",
+        name="John",
+        entity_type="person",
+    )
+    yield EventParticipant(
+        event=e,
+        note="",
+        name="Jane",
+        entity_type="person",
+    )
+    yield EventParticipant(
+        event=e,
+        note="",
+        name="Javier",
+        entity_type="person",
+    )
+    a1 = EventAgendaItem(
+        id=str(uuid.uuid4()),
+        event=e,
+        description="Agenda Item 1",
+        classification="",
+        subjects=[],
+        notes=[],
+        extras={},
+        order=1,
+    )
+    yield a1
+    yield EventAgendaMedia(
+        agenda_item=a1,
+        note="",
+        date=start_date,
+        offset=0,
+        classification="",
+        links=[],
+    )
+    yield EventAgendaItem(
+        id=str(uuid.uuid4()),
+        event=e,
+        description="Agenda Item 2",
+        classification="",
+        subjects=[],
+        notes=[],
+        extras={},
+        order=2,
+    )
+    if related_bill:
+        yield EventRelatedEntity(
+            agenda_item=a1,
+            note="",
+            name="SB 1",
+            entity_type="bill",
+        )
+    if related_committee:
+        yield EventRelatedEntity(
+            agenda_item=a1, note="", name="Finance", entity_type="organization"
+        )
+
+
 def nebraska():
     j = Jurisdiction(
         id="ocd-jurisdiction/country:us/state:ne/government",
@@ -153,6 +267,18 @@ def nebraska():
                 identifier=f"SB {n+1}",
             )
         )
+    events = []
+    for n in range(3):
+        events.extend(
+            create_test_event(
+                j.id,
+                n,
+                start_date=f"2021-01-0{n+1}",
+                related_bill=(n == 0),
+                related_committee=(n > 1),
+            )
+        )
+    events.extend(create_test_event(j.id, 4, start_date="2021-01-04", deleted=True))
 
     return [
         j,
@@ -161,6 +287,7 @@ def nebraska():
         leg,
         *runs,
         *bills,
+        *events,
         Organization(
             id="nee",
             name="Nebraska Executive",

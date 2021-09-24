@@ -244,7 +244,7 @@ async def bill_detail_by_id(
     db: SessionLocal = Depends(get_db),
     auth: str = Depends(apikey_auth),
 ):
-    """ Obtain bill information by internal ID in the format ocd-bill/*uuid*. """
+    """Obtain bill information by internal ID in the format ocd-bill/*uuid*."""
     query = base_query(db).filter(models.Bill.id == "ocd-bill/" + openstates_bill_id)
     return BillPagination.detail(query, includes=include)
 
@@ -264,7 +264,7 @@ async def bill_detail(
     db: SessionLocal = Depends(get_db),
     auth: str = Depends(apikey_auth),
 ):
-    """ Obtain bill information based on (state, session, bill_id)."""
+    """Obtain bill information based on (state, session, bill_id)."""
     query = base_query(db).filter(
         models.Bill.identifier == fix_bill_id(bill_id).upper(),
         models.LegislativeSession.identifier == session,

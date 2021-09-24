@@ -104,7 +104,7 @@ class Pagination:
 
     @classmethod
     def detail(cls, query, *, includes):
-        """ convert a single instance query to a model with the appropriate includes """
+        """convert a single instance query to a model with the appropriate includes"""
         query = cls.select_or_noload(query, includes)
         try:
             obj = query.one()
@@ -133,7 +133,7 @@ class Pagination:
 
     @classmethod
     def select_or_noload(cls, query, includes):
-        """ either pre-join or no-load data based on whether it has been requested """
+        """either pre-join or no-load data based on whether it has been requested"""
         for fieldname in cls.IncludeEnum:
             if fieldname in includes:
                 # selectinload seems like a strong default choice, but it is possible that

@@ -152,6 +152,24 @@ class CompactPerson(BaseModel):
         orm_mode = True
 
 
+class CompactBill(BaseModel):
+    id: str = Field(..., example="ocd-bill/12345678-0000-1111-2222-333344445555")
+    session: str
+    identifier: str
+    title: str
+
+    class Config:
+        orm_mode = True
+
+
+class CompactVoteEvent(BaseModel):
+    id: str = Field(..., example="ocd-vote/12345678-0000-1111-2222-333344445555")
+    motion_text: str = Field(..., example="Shall the bill be passed?")
+
+    class Config:
+        orm_mode = True
+
+
 class Person(CompactPerson):
     jurisdiction: CompactJurisdiction
 
@@ -270,7 +288,7 @@ class VoteEvent(BaseModel):
     start_date: str = Field(..., example="2020-09-18")
     result: str = Field(..., example="pass")
     identifier: str = Field(..., example="HV #3312")
-    extras: dict = dict
+    extras: dict
 
     organization: Organization
     votes: List[PersonVote]
@@ -347,6 +365,100 @@ class Committee(BaseModel):
     other_names: Optional[List[AltName]]
     links: Optional[List[Link]]
     sources: Optional[List[Link]]
+
+    class Config:
+        orm_mode = True
+
+
+class EventLocation(BaseModel):
+    name: str
+    url: str
+
+    class Config:
+        orm_mode = True
+
+
+class EventMedia(BaseModel):
+    note: str
+    date: str
+    offset: int
+    classification: str
+    links: list[Link]
+
+    class Config:
+        orm_mode = True
+
+
+class EventDocument(BaseModel):
+    note: str
+    date: str
+    classification: str
+    links: list[Link]
+
+    class Config:
+        orm_mode = True
+
+
+class EventParticipant(BaseModel):
+    note: str
+    name: str = Field(..., example="JONES")
+    entity_type: str = Field(..., example="person")
+    organization: Optional[Organization] = Field(None, example=None)
+    person: Optional[CompactPerson]
+
+    class Config:
+        orm_mode = True
+
+
+class EventRelatedEntity(BaseModel):
+    note: str
+    name: str = Field(..., example="JONES")
+    entity_type: str = Field(..., example="person")
+    organization: Optional[Organization] = Field(None, example=None)
+    person: Optional[CompactPerson]
+    bill: Optional[CompactBill]
+    vote: Optional[CompactVoteEvent]
+
+    class Config:
+        orm_mode = True
+
+
+class EventAgendaItem(BaseModel):
+    description: str
+    classification: List[str]
+    order: int
+    subjects: List[str]
+    notes: List[str]
+    extras: dict
+
+    related_entities: List[EventRelatedEntity]
+    media: List[EventMedia]
+
+    class Config:
+        orm_mode = True
+
+
+class Event(BaseModel):
+    id: str
+    name: str
+    jurisdiction: CompactJurisdiction
+    description: str
+    classification: str
+    start_date: str
+    end_date: str
+    all_day: bool
+    status: str
+    upstream_id: str
+    deleted: bool
+    location: Optional[EventLocation]
+
+    # related fields
+    links: Optional[List[Link]]
+    sources: Optional[List[Link]]
+    media: Optional[List[EventMedia]]
+    documents: Optional[List[EventDocument]]
+    participants: Optional[List[EventParticipant]]
+    agenda: Optional[List[EventAgendaItem]]
 
     class Config:
         orm_mode = True
