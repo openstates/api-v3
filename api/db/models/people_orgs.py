@@ -127,7 +127,14 @@ class PersonOffice(PrimaryUUID, Base):
     address = Column(String)
     voice = Column(String)
     fax = Column(String)
-    name = Column(String)
+    name_ = Column("name", String)
+
+    @property
+    def name(self):
+        if self.name_:
+            return self.name_
+        else:
+            return self.classification.title() + " Office"
 
 
 class Membership(PrimaryUUID, Base):

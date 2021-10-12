@@ -159,7 +159,12 @@ def test_people_include_office(client):
     ).json()
     assert query_logger.count == 3  # 1 extra query
     assert response["results"][0]["offices"] == [
-        {"name": "Capitol Office", "address": "123 Main St", "voice": "555-555-5555"}
+        {
+            "name": "Capitol Office",
+            "address": "123 Main St",
+            "voice": "555-555-5555",
+            "fax": "",
+        }
     ]
 
 

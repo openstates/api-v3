@@ -336,7 +336,7 @@ def nebraska():
             voice="555-555-5555",
             fax="",
             address="123 Main St",
-            name="",
+            name_="",
         ),
         Person(
             id=dummy_person_id("2"),
