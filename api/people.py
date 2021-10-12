@@ -22,7 +22,7 @@ class PersonInclude(str, Enum):
 class PeoplePagination(Pagination):
     ObjCls = Person
     IncludeEnum = PersonInclude
-    include_map_overrides = {PersonInclude.offices: ["contact_details"]}
+    include_map_overrides = {}
     max_per_page = 50
 
 

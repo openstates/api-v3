@@ -1,7 +1,6 @@
 import uuid
 import base62
 from slugify import slugify
-from collections import defaultdict
 from sqlalchemy import Column, String, ForeignKey, DateTime, Integer
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
@@ -79,31 +78,12 @@ class Person(Base):
     other_names = relationship("PersonName", back_populates="person")
     links = relationship("PersonLink", back_populates="person")
     sources = relationship("PersonSource", back_populates="person")
-    contact_details = relationship("PersonContactDetail", back_populates="person")
+    offices = relationship("PersonOffice", back_populates="person")
 
     @property
     def openstates_url(self):
         """get canonical URL for openstates.org"""
         return f"https://openstates.org/person/{slugify(self.name)}-{encode_uuid(self.id)}/"
-
-    @property
-    def offices(self):
-        """transform contact details to something more usable"""
-        contact_details = []
-        offices = defaultdict(dict)
-        for cd in self.contact_details:
-            offices[cd.note][cd.type] = cd.value
-        for office, details in offices.items():
-            contact_details.append(
-                {
-                    "name": office,
-                    "fax": None,
-                    "voice": None,
-                    "address": None,
-                    **details,
-                }
-            )
-        return contact_details
 
 
 class PersonIdentifier(PrimaryUUID, Base):
@@ -138,14 +118,16 @@ class PersonSource(LinkBase, Base):
     person = relationship(Person)
 
 
-class PersonContactDetail(PrimaryUUID, Base):
-    __tablename__ = "opencivicdata_personcontactdetail"
+class PersonOffice(PrimaryUUID, Base):
+    __tablename__ = "openstates_personoffice"
 
     person_id = Column(String, ForeignKey(Person.id))
     person = relationship(Person)
-    type = Column(String)
-    value = Column(String)
-    note = Column(String)
+    classification = Column(String)
+    address = Column(String)
+    voice = Column(String)
+    fax = Column(String)
+    name = Column(String)
 
 
 class Membership(PrimaryUUID, Base):

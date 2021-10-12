@@ -7,7 +7,7 @@ from .people_orgs import (
     PersonName,
     PersonLink,
     PersonSource,
-    PersonContactDetail,
+    PersonOffice,
     Membership,
 )
 from .bills import (

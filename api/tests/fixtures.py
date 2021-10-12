@@ -24,7 +24,7 @@ from api.db.models import (
     Membership,
     Organization,
     Person,
-    PersonContactDetail,
+    PersonOffice,
     PersonLink,
     PersonName,
     PersonSource,
@@ -330,17 +330,13 @@ def nebraska():
         PersonSource(
             person_id=dummy_person_id("1"), url="https://example.com/amy", note=""
         ),
-        PersonContactDetail(
+        PersonOffice(
             person_id=dummy_person_id("1"),
-            type="voice",
-            value="555-555-5555",
-            note="Capitol Office",
-        ),
-        PersonContactDetail(
-            person_id=dummy_person_id("1"),
-            type="address",
-            value="123 Main St",
-            note="Capitol Office",
+            classification="capitol",
+            voice="555-555-5555",
+            fax="",
+            address="123 Main St",
+            name="",
         ),
         Person(
             id=dummy_person_id("2"),
