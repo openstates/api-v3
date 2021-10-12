@@ -128,6 +128,7 @@ class Office(BaseModel):
     fax: Optional[str] = Field(None, example="919-555-1234")
     voice: Optional[str] = Field(None, example="919-555-0064")
     address: Optional[str] = Field(None, example="212 Maple Lane; Raleigh NC; 27526")
+    classification: Optional[str] = Field(None, example="capitol")
 
     class Config:
         orm_mode = True

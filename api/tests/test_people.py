@@ -164,6 +164,7 @@ def test_people_include_office(client):
             "address": "123 Main St",
             "voice": "555-555-5555",
             "fax": "",
+            "classification": "capitol",
         }
     ]
 
