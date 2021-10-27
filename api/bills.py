@@ -23,6 +23,7 @@ class BillInclude(str, Enum):
     documents = "documents"
     versions = "versions"
     votes = "votes"
+    related_bills = "related_bills"
 
 
 class BillSortOption(str, Enum):
