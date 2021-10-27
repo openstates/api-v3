@@ -43,6 +43,9 @@ class Bill(Base):
     documents = relationship("BillDocument", back_populates="bill")
     versions = relationship("BillVersion", back_populates="bill")
     votes = relationship("VoteEvent", back_populates="bill")
+    related_bills = relationship(
+        "RelatedBill", back_populates="bill", foreign_keys="RelatedBill.bill_id"
+    )
 
     @property
     def jurisdiction(self):

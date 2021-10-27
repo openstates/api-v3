@@ -201,6 +201,15 @@ class Person(CompactPerson):
         orm_mode = True
 
 
+class RelatedBill(BaseModel):
+    identifier: str = Field(..., example="HB 123")
+    legislative_session: str = Field(..., example="2022S1")
+    relation_type: str = Field(..., example="companion")
+
+    class Config:
+        orm_mode = True
+
+
 class BillAbstract(BaseModel):
     abstract: str = Field(..., example="This bill designates a new state arachnid.")
     note: str = Field(..., example="house abstract")
@@ -322,6 +331,7 @@ class Bill(BaseModel):
     latest_action_description: Optional[str] = Field("", example="Introduced in House")
     latest_passage_date: Optional[str] = Field("", example="2020-03-01")
 
+    related_bills: Optional[List[RelatedBill]]
     abstracts: Optional[List[BillAbstract]]
     other_titles: Optional[List[BillTitle]]
     other_identifiers: Optional[List[BillIdentifier]]
