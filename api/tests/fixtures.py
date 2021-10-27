@@ -11,6 +11,7 @@ from api.db.models import (
     BillSponsorship,
     BillVersion,
     BillVersionLink,
+    RelatedBill,
     Event,
     EventAgendaItem,
     EventAgendaMedia,
@@ -426,6 +427,15 @@ def ohio():
         updated_at=datetime.datetime.utcnow(),
         latest_action_date="2021-01-01",
     )
+    # sb1 = Bill(
+    #     id="ocd-bill/9999",
+    #     identifier="SB 1",
+    related_bill = RelatedBill(
+        bill=hb1,
+        identifier="SB 1",
+        legislative_session="2021",
+        relation_type="companion",
+    )
     ruth = Person(
         id=dummy_person_id("9"),
         name="Ruth",
@@ -507,6 +517,7 @@ def ohio():
         lower,
         ls2021,
         hb1,
+        related_bill,
         ruth,
         marge,
         sp1,

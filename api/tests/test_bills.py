@@ -256,6 +256,20 @@ def test_bills_include_votes(client):
     ]
 
 
+def test_bills_include_related_bills(client):
+    response = client.get("/bills?q=HB1&include=related_bills")
+    assert query_logger.count == 3
+    assert response.status_code == 200
+    b = response.json()["results"][0]
+    assert b["related_bills"] == [
+        {
+            "identifier": "SB 1",
+            "legislative_session": "2021",
+            "relation_type": "companion",
+        }
+    ]
+
+
 def test_bills_all_sort_options_valid(client):
     for sort_param in BillSortOption:
         response = client.get(f"/bills/?jurisdiction=ne&sort={sort_param}")
