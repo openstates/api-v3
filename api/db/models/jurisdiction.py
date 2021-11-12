@@ -46,7 +46,11 @@ class LegislativeSession(PrimaryUUID, Base):
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")
 
-    downloads = relationship("DataExport", back_populates="session")
+    downloads = relationship(
+        "DataExport",
+        back_populates="session",
+        primaryjoin="""and_(DataExport.session_id == LegislativeSession.id, DataExport.data_type == 'csv')""",
+    )
 
 
 class DataExport(Base):
