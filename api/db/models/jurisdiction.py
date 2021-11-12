@@ -24,7 +24,9 @@ class Jurisdiction(Base):
         )""",
     )
     legislative_sessions = relationship(
-        "LegislativeSession", back_populates="jurisdiction"
+        "LegislativeSession",
+        order_by="LegislativeSession.start_date",
+        back_populates="jurisdiction",
     )
     run_plans = relationship(
         "RunPlan", order_by="desc(RunPlan.end_time)", back_populates="jurisdiction"
