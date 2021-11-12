@@ -1,5 +1,5 @@
 # flake8: noqa
-from .jurisdiction import Jurisdiction, LegislativeSession, RunPlan
+from .jurisdiction import Jurisdiction, LegislativeSession, RunPlan, DataExport
 from .people_orgs import (
     Organization,
     Post,

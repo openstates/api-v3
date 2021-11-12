@@ -22,6 +22,7 @@ from api.db.models import (
     EventRelatedEntity,
     Jurisdiction,
     LegislativeSession,
+    DataExport,
     Membership,
     Organization,
     Person,
@@ -237,6 +238,13 @@ def nebraska():
         start_date="2020-01-01",
         end_date="2020-12-31",
     )
+    data_export = DataExport(
+        session=ls2020,
+        data_type="csv",
+        created_at="2021-01-01",
+        updated_at="2021-01-01",
+        url="https://example.com",
+    )
     ls2021 = LegislativeSession(jurisdiction=j, identifier="2021", name="2020")
     leg = Organization(
         id="nel",
@@ -284,6 +292,7 @@ def nebraska():
     return [
         j,
         ls2020,
+        data_export,
         ls2021,
         leg,
         *runs,

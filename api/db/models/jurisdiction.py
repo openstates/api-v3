@@ -56,7 +56,7 @@ class LegislativeSession(PrimaryUUID, Base):
 class DataExport(Base):
     __tablename__ = "bulk_dataexport"
 
-    id = Column(String, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
     session_id = Column(UUID(as_uuid=True), ForeignKey(LegislativeSession.id))
