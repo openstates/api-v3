@@ -49,12 +49,23 @@ class Chamber(Organization):
     districts: Optional[List[Post]] = None
 
 
+class DataExport(BaseModel):
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+    data_type: str
+    url: str
+
+    class Config:
+        orm_mode = True
+
+
 class LegislativeSession(BaseModel):
     identifier: str
     name: str
     classification: str
     start_date: str
     end_date: str
+    downloads: Optional[List[DataExport]]
 
     class Config:
         orm_mode = True

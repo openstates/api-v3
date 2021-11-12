@@ -1,5 +1,6 @@
 from .. import Base
 from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DateTime
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, object_session
 from .common import PrimaryUUID
 
@@ -44,6 +45,21 @@ class LegislativeSession(PrimaryUUID, Base):
 
     jurisdiction_id = Column(String, ForeignKey(Jurisdiction.id))
     jurisdiction = relationship("Jurisdiction")
+
+    downloads = relationship("DataExport", back_populates="session")
+
+
+class DataExport(Base):
+    __tablename__ = "bulk_dataexport"
+
+    id = Column(String, primary_key=True, index=True)
+    created_at = Column(DateTime)
+    updated_at = Column(DateTime)
+    session_id = Column(UUID(as_uuid=True), ForeignKey(LegislativeSession.id))
+    data_type = Column(String)
+    url = Column(String)
+
+    session = relationship(LegislativeSession)
 
 
 class RunPlan(Base):
