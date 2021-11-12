@@ -20,6 +20,10 @@ class JurisdictionPagination(Pagination):
     include_map_overrides = {
         JurisdictionInclude.organizations: ["organizations", "organizations.posts"],
         JurisdictionInclude.latest_runs: [],  # no preloading for this one, needs to be dynamic
+        JurisdictionInclude.legislative_sessions: [
+            "legislative_sessions",
+            "legislative_sessions.downloads",
+        ],
     }
     max_per_page = 52
 

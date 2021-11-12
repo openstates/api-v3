@@ -91,7 +91,7 @@ def test_jurisdiction_include_sessions(client):
     )
     response = response.json()
     # is included, legislative sessions are inline
-    assert query_logger.count == 3
+    assert query_logger.count == 4
     assert len(response["results"][0]["legislative_sessions"]) == 2
     assert response["results"][0]["legislative_sessions"][0] == {
         "identifier": "2020",
@@ -99,6 +99,14 @@ def test_jurisdiction_include_sessions(client):
         "classification": "",
         "start_date": "2020-01-01",
         "end_date": "2020-12-31",
+        "downloads": [
+            {
+                "created_at": "2021-01-01T00:00:00",
+                "updated_at": "2021-01-01T00:00:00",
+                "data_type": "csv",
+                "url": "https://example.com",
+            }
+        ],
     }
 
 
