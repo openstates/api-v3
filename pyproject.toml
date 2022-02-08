@@ -2,7 +2,7 @@
 name = "openstates-api"
 version = "3.0.0"
 description = "Open States API v3"
-authors = ["James Turk <james@openstates.org>"]
+authors = ["James Turk <dev@jamesturk.net>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
