@@ -34,23 +34,11 @@ class Jurisdiction(Base):
 
     def get_latest_runs(self):
         """
-        We only want the last <=20 most recent runs
-        Run objects look like:
-        {
-          "success": true,
-          "start_time": "2022-02-09T15:13:21.034Z",
-          "end_time": "2022-02-09T15:13:21.034Z"
-        }
-        To get our results, we first ensure the list of run
-        objects is sorted by start_time and then end_time (if two objects
-        have the same start time), then reverse the order of the
-        list to ensure the first 20 items returned are
-        the most recent.
+        We only want the last <=20 most recent runs,
+        so ask for the last 20 objects in the returned
+        list.
         """
-        runs = object_session(self).query(RunPlan).with_parent(self)
-        return sorted(
-            runs, key=lambda i: (i["start_time"], i["end_time"]), reverse=True
-        )[:20]
+        return = object_session(self).query(RunPlan).with_parent(self)[-20:]
 
 
 class LegislativeSession(PrimaryUUID, Base):
