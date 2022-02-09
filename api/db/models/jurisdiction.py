@@ -38,7 +38,7 @@ class Jurisdiction(Base):
         so ask for the last 20 objects in the returned
         list.
         """
-        return = object_session(self).query(RunPlan).with_parent(self)[-20:]
+        return object_session(self).query(RunPlan).with_parent(self)[-20:]
 
 
 class LegislativeSession(PrimaryUUID, Base):
