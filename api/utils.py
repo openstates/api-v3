@@ -4,6 +4,9 @@ from openstates.metadata import lookup
 
 
 def jurisdiction_filter(j: str, *, jid_field):
+    if not j:
+        # an empty object can't equal anything
+        return False
     # check either by Jurisdiction.name or a specified field's jurisdiction_id
     if len(j) == 2:
         try:
