@@ -245,7 +245,9 @@ def nebraska():
         updated_at="2021-01-01",
         url="https://example.com",
     )
-    ls2021 = LegislativeSession(jurisdiction=j, identifier="2021", name="2020")
+    ls2021 = LegislativeSession(
+        jurisdiction=j, identifier="2021", name="2020", start_date="2021-01-01"
+    )
     leg = Organization(
         id="nel",
         name="Nebraska Legislature",
