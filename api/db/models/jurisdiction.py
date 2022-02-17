@@ -33,7 +33,12 @@ class Jurisdiction(Base):
     )
 
     def get_latest_runs(self):
-        return object_session(self).query(RunPlan).with_parent(self)[:20]
+        """
+        We only want the last <=20 most recent runs,
+        so ask for the last 20 objects in the returned
+        list.
+        """
+        return object_session(self).query(RunPlan).with_parent(self)[-20:]
 
 
 class LegislativeSession(PrimaryUUID, Base):
