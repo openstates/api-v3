@@ -134,7 +134,7 @@ async def people_geo(
     """
     Get list of people currently representing a given location.
 
-    **Note:** Currently limited to state legislators.  Governors & mayors are not included.
+    **Note:** Currently limited to state legislators and US Congress.  Governors & mayors are not included.
     """
     url = f"https://v3.openstates.org/divisions.geo?lat={lat}&lng={lng}"
     data = requests.get(url).json()
