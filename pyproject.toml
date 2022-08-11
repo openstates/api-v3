@@ -18,9 +18,9 @@ sentry-sdk = "^1.0.0"
 pybase62 = "^0.4.3"
 python-slugify = "^4.0.1"
 rrl = "^0.3.1"
+black = "^22.6.0"
 
 [tool.poetry.dev-dependencies]
-black = "^19.10b0"
 flake8 = "^3.8.3"
 
 [build-system]

@@ -18,7 +18,9 @@ app.include_router(bills.router)
 app.include_router(committees.router)
 app.include_router(events.router)
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_headers=["*"],
 )
 
 
