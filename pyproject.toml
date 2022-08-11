@@ -18,6 +18,7 @@ sentry-sdk = "^1.0.0"
 pybase62 = "^0.4.3"
 python-slugify = "^4.0.1"
 rrl = "^0.3.1"
+prometheus-fastapi-instrumentator = "^5.8.2"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
