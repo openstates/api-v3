@@ -2,9 +2,11 @@ name: Test Python
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - "**"
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   test:
@@ -47,10 +49,12 @@ jobs:
     - name: install dependencies
       run: poetry install
       # if: steps.cache.outputs.cache-hit != 'true'
+    - name: lint with black
+      run: poetry run black --diff --check .
     - name: lint with flake8
       run: poetry run flake8 api --show-source --statistics
     - name: pytest
       run: poetry run pytest
-      env: 
+      env:
         PYTHONPATH: scripts
         DATABASE_URL: postgresql://v3test:v3test@localhost/v3test
