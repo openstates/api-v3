@@ -89,8 +89,7 @@ async def bills_search(
         None, description="Filter by chamber of origination."
     ),
     identifier: Optional[List[str]] = Query(
-        [],
-        description="Filter to only include bills with this identifier.",
+        [], description="Filter to only include bills with this identifier.",
     ),
     classification: Optional[str] = Query(
         None, description="Filter by classification, e.g. bill or resolution"
@@ -168,8 +167,7 @@ async def bills_search(
     if identifier:
         if len(identifier) > 20:
             raise HTTPException(
-                400,
-                "can only provide up to 20 identifiers in one request",
+                400, "can only provide up to 20 identifiers in one request",
             )
         identifiers = [fix_bill_id(bill_id).upper() for bill_id in identifier]
         query = query.filter(models.Bill.identifier.in_(identifiers))

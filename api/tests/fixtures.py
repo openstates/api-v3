@@ -129,44 +129,22 @@ def create_test_event(
     yield loc
     yield e
     yield EventMedia(
-        event=e,
-        note="",
-        date=start_date,
-        offset=0,
-        classification="",
-        links=[],
+        event=e, note="", date=start_date, offset=0, classification="", links=[],
     )
     yield EventDocument(
-        event=e,
-        date=start_date,
-        note="document 1",
-        classification="",
-        links=[],
+        event=e, date=start_date, note="document 1", classification="", links=[],
     )
     yield EventDocument(
-        event=e,
-        date=start_date,
-        note="document 2",
-        classification="",
-        links=[],
+        event=e, date=start_date, note="document 2", classification="", links=[],
     )
     yield EventParticipant(
-        event=e,
-        note="",
-        name="John",
-        entity_type="person",
+        event=e, note="", name="John", entity_type="person",
     )
     yield EventParticipant(
-        event=e,
-        note="",
-        name="Jane",
-        entity_type="person",
+        event=e, note="", name="Jane", entity_type="person",
     )
     yield EventParticipant(
-        event=e,
-        note="",
-        name="Javier",
-        entity_type="person",
+        event=e, note="", name="Javier", entity_type="person",
     )
     a1 = EventAgendaItem(
         id=str(uuid.uuid4()),
@@ -180,12 +158,7 @@ def create_test_event(
     )
     yield a1
     yield EventAgendaMedia(
-        agenda_item=a1,
-        note="",
-        date=start_date,
-        offset=0,
-        classification="",
-        links=[],
+        agenda_item=a1, note="", date=start_date, offset=0, classification="", links=[],
     )
     yield EventAgendaItem(
         id=str(uuid.uuid4()),
@@ -199,10 +172,7 @@ def create_test_event(
     )
     if related_bill:
         yield EventRelatedEntity(
-            agenda_item=a1,
-            note="",
-            name="SB 1",
-            entity_type="bill",
+            agenda_item=a1, note="", name="SB 1", entity_type="bill",
         )
     if related_committee:
         yield EventRelatedEntity(
@@ -384,22 +354,13 @@ def ohio():
     )
     ls2021 = LegislativeSession(jurisdiction=j, identifier="2021", name="2021")
     leg = Organization(
-        id="ohl",
-        name="Ohio Legislature",
-        classification="legislature",
-        jurisdiction=j,
+        id="ohl", name="Ohio Legislature", classification="legislature", jurisdiction=j,
     )
     upper = Organization(
-        id="ohs",
-        name="Ohio Senate",
-        classification="upper",
-        jurisdiction=j,
+        id="ohs", name="Ohio Senate", classification="upper", jurisdiction=j,
     )
     lower = Organization(
-        id="ohh",
-        name="Ohio House",
-        classification="lower",
-        jurisdiction=j,
+        id="ohh", name="Ohio House", classification="lower", jurisdiction=j,
     )
     house_education = Organization(
         id="ocd-organization/11112222-3333-4444-5555-666677778888",

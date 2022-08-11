@@ -62,10 +62,7 @@ async def people_search(
     org_classification: Optional[OrgClassification] = Query(
         None, description="Filter by current role."
     ),
-    district: Optional[str] = Query(
-        None,
-        description="Filter by district name.",
-    ),
+    district: Optional[str] = Query(None, description="Filter by district name.",),
     include: List[PersonInclude] = Query(
         [], description="Additional information to include in response."
     ),

@@ -52,8 +52,7 @@ async def event_list(
         None, description="Limit results to those starting before a given datetime."
     ),
     require_bills: bool = Query(
-        False,
-        description="Limit results to events with associated bills.",
+        False, description="Limit results to events with associated bills.",
     ),
     include: List[EventInclude] = Query(
         [], description="Additional includes for the Event response."
@@ -64,8 +63,7 @@ async def event_list(
 ):
     if not jurisdiction:
         raise HTTPException(
-            400,
-            "must provide 'jurisdiction' parameter",
+            400, "must provide 'jurisdiction' parameter",
         )
     query = (
         db.query(models.Event)
@@ -76,12 +74,8 @@ async def event_list(
         )
         .order_by(models.Event.start_date)
     ).options(
-        contains_eager(
-            models.Event.jurisdiction,
-        ),
-        contains_eager(
-            models.Event.location,
-        ),
+        contains_eager(models.Event.jurisdiction,),
+        contains_eager(models.Event.location,),
     )
 
     # handle parameters
@@ -125,12 +119,8 @@ async def event_detail(
         .join(models.Event.jurisdiction)
         .outerjoin(models.Event.location)
         .options(
-            contains_eager(
-                models.Event.jurisdiction,
-            ),
-            contains_eager(
-                models.Event.location,
-            ),
+            contains_eager(models.Event.jurisdiction,),
+            contains_eager(models.Event.location,),
         )
     )
     return EventPagination.detail(query, includes=include)
