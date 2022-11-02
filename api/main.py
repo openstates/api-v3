@@ -34,7 +34,7 @@ instrumentator = Instrumentator(
     inprogress_labels=True,
 )
 instrumentator.instrument(app)
-instrumentator.expose(app, include_in_schema=False, should_gzip=True)
+instrumentator.expose(app, include_in_schema=True, should_gzip=True)
 
 
 @app.get("/", include_in_schema=False)
