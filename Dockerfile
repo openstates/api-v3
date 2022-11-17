@@ -5,8 +5,10 @@ RUN pip3 install --disable-pip-version-check --no-cache-dir wheel \
     && pip3 install --disable-pip-version-check --no-cache-dir poetry crcmod
 
 ENV MODULE_NAME=api.main
+WORKDIR /app
 
-COPY pyproject.toml poetry.lock /app/
-RUN poetry install --no-root --no-dev
+COPY pyproject.toml /app/
+COPY poetry.lock /app/
+RUN poetry install --no-root --only main
 COPY . /app
 
