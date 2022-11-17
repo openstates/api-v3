@@ -11,4 +11,3 @@ COPY pyproject.toml /app/
 COPY poetry.lock /app/
 RUN poetry install --no-root --only main
 COPY . /app
-
