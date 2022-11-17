@@ -9,7 +9,7 @@ services:
     build:
       context: .
     volumes:
-      - .:/code
+      - .:/app
     environment:
       - DATABASE_URL=postgresql://openstates:openstates@db/openstatesorg
       - RRL_REDIS_HOST=redis
@@ -17,6 +17,8 @@ services:
       - "7000:80"
     networks:
       - openstates-network
+    command:
+      - poetry run uvicorn api.main:app
   redis:
     image: redis
     hostname: redis
