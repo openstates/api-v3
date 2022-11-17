@@ -1,12 +1,13 @@
 name: Build and push Docker images
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
     tags:
       - '*'
-jobs: 
+jobs:
   publish:
-    steps: 
+    steps:
       - uses: actions/checkout@v2
       - name: build docker image
         uses: docker/build-push-action@v1.1.0
@@ -17,4 +18,4 @@ jobs:
           dockerfile: /github/workspace/Dockerfile
           tag_with_ref: true
           tags: latest
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
