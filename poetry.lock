@@ -1152,7 +1152,7 @@ python-versions = "*"
 
 [[package]]
 name = "sqlalchemy"
-version = "1.4.25"
+version = "1.4.44"
 description = "Database Abstraction Library"
 category = "main"
 optional = false
@@ -1165,8 +1165,8 @@ greenlet = {version = "!=0.4.17", markers = "python_version >= \"3\" and (platfo
 aiomysql = ["greenlet (!=0.4.17)", "aiomysql"]
 aiosqlite = ["typing_extensions (!=3.10.0.1)", "greenlet (!=0.4.17)", "aiosqlite"]
 asyncio = ["greenlet (!=0.4.17)"]
-asyncmy = ["greenlet (!=0.4.17)", "asyncmy (>=0.2.0)"]
-mariadb_connector = ["mariadb (>=1.0.1)"]
+asyncmy = ["greenlet (!=0.4.17)", "asyncmy (>=0.2.3,!=0.2.4)"]
+mariadb_connector = ["mariadb (>=1.0.1,!=1.1.2)"]
 mssql = ["pyodbc"]
 mssql_pymssql = ["pymssql"]
 mssql_pyodbc = ["pyodbc"]
@@ -1176,7 +1176,7 @@ mysql_connector = ["mysql-connector-python"]
 oracle = ["cx_oracle (>=7,<8)", "cx_oracle (>=7)"]
 postgresql = ["psycopg2 (>=2.7)"]
 postgresql_asyncpg = ["greenlet (!=0.4.17)", "asyncpg"]
-postgresql_pg8000 = ["pg8000 (>=1.16.6)"]
+postgresql_pg8000 = ["pg8000 (>=1.16.6,!=1.29.0)"]
 postgresql_psycopg2binary = ["psycopg2-binary"]
 postgresql_psycopg2cffi = ["psycopg2cffi"]
 pymysql = ["pymysql (<1)", "pymysql"]
@@ -1420,7 +1420,7 @@ python-versions = ">=3.4"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "ea4e30bf9e5b276230acf48d9ffca47c949d43045145cd77072ec09d85379045"
+content-hash = "afc6e451c4d32b55246cb8a4be0ba0b6353c7a96af919a08180f811a0aacd92d"
 
 [metadata.files]
 aiofiles = []
