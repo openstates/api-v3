@@ -27,7 +27,9 @@ pool_recycle=28800 - this setting causes the pool to recycle connections after t
     automatically if no activity is detected on a connection for eight hours
     (although this is configurable with the MySQLDB connection itself and the server configuration as well).
 """
-engine = create_engine(DATABASE_URL, pool_size=10, max_overflow=15, pool_timeout=30, pool_recycle=28800)
+engine = create_engine(
+    DATABASE_URL, pool_size=10, max_overflow=15, pool_timeout=30, pool_recycle=28800
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
