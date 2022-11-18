@@ -15,12 +15,9 @@ WORKDIR /app
 COPY pyproject.toml /app/
 COPY poetry.lock /app/
 # the extra delete steps here probably aren't needed, but good to have available
-RUN poetry install --no-root --only main
-COPY . /app
-
-# run a full install (can help with some weird edge cases)
-RUN poetry install --only main \
+RUN poetry install --no-root --only main \
   && rm -r /root/.cache/pypoetry/cache /root/.cache/pypoetry/artifacts/ \
   && apt-get autoremove -yqq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+COPY . /app
