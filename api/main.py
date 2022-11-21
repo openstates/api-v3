@@ -37,6 +37,11 @@ instrumentator.instrument(app)
 instrumentator.expose(app, include_in_schema=True, should_gzip=True)
 
 
+@app.get("/healthz", include_in_schema=False)
+async def health():
+    return "OK"
+
+
 @app.get("/", include_in_schema=False)
 async def read_typer():
     return RedirectResponse("/docs")
