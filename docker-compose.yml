@@ -14,11 +14,14 @@ services:
       - DATABASE_URL=postgresql://openstates:openstates@db/openstatesorg
       - RRL_REDIS_HOST=redis
     ports:
-      - "7000:80"
+      - "7000:8000"
     networks:
       - openstates-network
     command:
-      - poetry run uvicorn api.main:app
+      - poetry
+      - run
+      - uvicorn
+      - api.main:app
   redis:
     image: redis
     hostname: redis

@@ -1,4 +1,4 @@
-FROM antonapetrov/uvicorn-gunicorn-fastapi:python3.9
+FROM python:3.9-slim
 
 # install Poetry
 RUN pip3 install --disable-pip-version-check --no-cache-dir wheel \
