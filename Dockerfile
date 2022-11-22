@@ -1,4 +1,4 @@
-FROM antonapetrov/uvicorn-gunicorn-fastapi:python3.9-slim
+FROM python:3.9-slim
 
 # improve logging performance (don't buffer messages to output)
 ENV PYTHONUNBUFFERED=1
@@ -8,12 +8,13 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONIOENCODING='utf-8'
 ENV LANG='C.UTF-8'
 # required for uvicorn
+
+# install Poetry
+RUN pip3 install --disable-pip-version-check --no-cache-dir wheel \
+    && pip3 install --disable-pip-version-check --no-cache-dir poetry crcmod
+
 ENV MODULE_NAME=api.main
 WORKDIR /app
-
-# install Poetry (separate step to make faster rebuilds)
-RUN pip install --disable-pip-version-check --no-cache-dir -q wheel \
-    pip install --disable-pip-version-check --no-cache-dir -q poetry crcmod
 
 COPY pyproject.toml /app/
 COPY poetry.lock /app/
