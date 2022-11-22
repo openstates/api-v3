@@ -1,8 +1,8 @@
-FROM antonapetrov/uvicorn-gunicorn-fastapi:python3.9
+FROM python:3.9-slim
 
 # install Poetry
-RUN pip install --disable-pip-version-check --no-cache-dir -q wheel \
-    pip install --disable-pip-version-check --no-cache-dir -q poetry crcmod
+RUN pip3 install --disable-pip-version-check --no-cache-dir wheel \
+    && pip3 install --disable-pip-version-check --no-cache-dir poetry crcmod
 
 ENV MODULE_NAME=api.main
 WORKDIR /app
@@ -11,4 +11,3 @@ COPY pyproject.toml /app/
 COPY poetry.lock /app/
 RUN poetry install --no-root --only main
 COPY . /app
-

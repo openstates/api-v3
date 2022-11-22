@@ -4,12 +4,12 @@ from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from prometheus_fastapi_instrumentator import Instrumentator
 from uvicorn.workers import UvicornWorker
 from . import jurisdictions, people, bills, committees, events
 
 if "SENTRY_URL" in os.environ:
     sentry_sdk.init(os.environ["SENTRY_URL"], traces_sample_rate=0.05)
-
 
 app = FastAPI()
 app.include_router(jurisdictions.router)
@@ -22,6 +22,24 @@ app.add_middleware(
     allow_origins=["*"],
     allow_headers=["*"],
 )
+
+instrumentator = Instrumentator(
+    should_group_status_codes=False,
+    should_ignore_untemplated=True,
+    should_instrument_requests_inprogress=True,
+    excluded_handlers=[
+        "/metrics",
+    ],
+    inprogress_name="inprogress",
+    inprogress_labels=True,
+)
+instrumentator.instrument(app)
+instrumentator.expose(app, include_in_schema=True, should_gzip=True)
+
+
+@app.get("/healthz", include_in_schema=False)
+async def health():
+    return "OK"
 
 
 @app.get("/", include_in_schema=False)
