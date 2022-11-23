@@ -21,7 +21,7 @@ jobs:
       - name: build docker image
         uses: docker/build-push-action@v3
         with:
-          dockerfile: /github/workspace/Dockerfile
-          tags: "openstates/api-v3:latest,openstates/api-v3:${{ github.ref }}"
+          tags: "openstates/api-v3:latest,openstates/api-v3:${{ github.ref_name }}"
           platforms: amd64,arm64
+          push: true
     runs-on: ubuntu-latest
