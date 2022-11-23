@@ -11,3 +11,5 @@ COPY pyproject.toml /app/
 COPY poetry.lock /app/
 RUN poetry install --no-root --only main
 COPY . /app
+
+CMD ["poetry", "run", "uvicorn", "api.main:app"]
