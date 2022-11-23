@@ -17,12 +17,6 @@ services:
       - "7000:8000"
     networks:
       - openstates-network
-    command:
-      - poetry
-      - run
-      - uvicorn
-      - api.main:app
-      - --host=0.0.0.0
   redis:
     image: redis
     hostname: redis

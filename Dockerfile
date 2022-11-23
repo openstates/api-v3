@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM antonapetrov/uvicorn-gunicorn-fastapi:python3.9-slim
 
 # install Poetry
 RUN pip3 install --disable-pip-version-check --no-cache-dir wheel \
@@ -11,5 +11,3 @@ COPY pyproject.toml /app/
 COPY poetry.lock /app/
 RUN poetry install --no-root --only main
 COPY . /app
-
-CMD ["poetry", "run", "uvicorn", "api.main:app"]
