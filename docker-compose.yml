@@ -14,7 +14,7 @@ services:
       - DATABASE_URL=postgresql://openstates:openstates@db/openstatesorg
       - RRL_REDIS_HOST=redis
     ports:
-      - "7000:8000"
+      - "7000:80"
     networks:
       - openstates-network
   redis:
