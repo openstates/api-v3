@@ -19,7 +19,6 @@ python-slugify = "^4.0.1"
 rrl = "^0.3.1"
 prometheus-fastapi-instrumentator = "^5.8.2"
 fastapi = {extras = ["all"], version = "^0.87.0"}
-setuptools = "^65.6.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.10.0"
