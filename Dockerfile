@@ -1,14 +1,13 @@
-FROM antonapetrov/uvicorn-gunicorn-fastapi:python3.9
+FROM python:3.9-slim
 
 # install Poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \
-    cd /usr/local/bin && \
-    ln -s /opt/poetry/bin/poetry && \
-    poetry config virtualenvs.create false
+RUN pip3 install --disable-pip-version-check --no-cache-dir wheel \
+    && pip3 install --disable-pip-version-check --no-cache-dir poetry crcmod
 
 ENV MODULE_NAME=api.main
+WORKDIR /app
 
-COPY pyproject.toml poetry.lock /app/
-RUN poetry install --no-root --no-dev
+COPY pyproject.toml /app/
+COPY poetry.lock /app/
+RUN poetry install --no-root --only main
 COPY . /app
-
