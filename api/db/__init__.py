@@ -28,7 +28,11 @@ pool_recycle=28800 - this setting causes the pool to recycle connections after t
     (although this is configurable with the MySQLDB connection itself and the server configuration as well).
 """
 engine = create_engine(
-    DATABASE_URL, pool_size=10, max_overflow=7, pool_timeout=45, pool_recycle=7200,
+    DATABASE_URL,
+    pool_size=10,
+    max_overflow=7,
+    pool_timeout=45,
+    pool_recycle=7200,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
