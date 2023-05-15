@@ -9,7 +9,7 @@ from uvicorn.workers import UvicornWorker
 from . import jurisdictions, people, bills, committees, events
 
 if "SENTRY_URL" in os.environ:
-    sentry_sdk.init(os.environ["SENTRY_URL"], traces_sample_rate=0.05)
+    sentry_sdk.init(os.environ["SENTRY_URL"], traces_sample_rate=0)
 
 app = FastAPI()
 app.include_router(jurisdictions.router)
