@@ -40,7 +40,7 @@ def people_query(db):
 
 
 router = APIRouter()
-session = reqeusts.Session()
+session = requests.Session()
 
 
 @router.get(
