@@ -140,7 +140,7 @@ async def people_geo(
     data = requests.get(url).json()
     try:
         divisions = [d["id"] for d in data["divisions"]]
-        divisions.append(add_state_divisions(d["state"]))
+        divisions.append(add_state_divisions(data["state"]))
     except KeyError:
         raise HTTPException(
             500, "unexpected upstream response, try again in 60 seconds"
