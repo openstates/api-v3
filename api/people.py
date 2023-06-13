@@ -141,9 +141,7 @@ async def people_geo(
     try:
         data = session.get(url).json()
     except Exception as e:
-        raise HTTPException(
-            500, f"Failed to retrieve data from Geo endpoint :: {e}"
-        )
+        raise HTTPException(500, f"Failed to retrieve data from Geo endpoint :: {e}")
     try:
         divisions = [d["id"] for d in data["divisions"]]
     except KeyError:
