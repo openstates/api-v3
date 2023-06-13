@@ -140,6 +140,11 @@ async def people_geo(
     url = f"https://v3.openstates.org/divisions.geo?lat={lat}&lng={lng}"
     try:
         data = session.get(url).json()
+    except Exception as e:
+        raise HTTPException(
+            500, f"Failed to retrieve data from Geo endpoint :: {e}"
+        )
+    try:
         divisions = [d["id"] for d in data["divisions"]]
     except KeyError:
         raise HTTPException(
