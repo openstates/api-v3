@@ -170,7 +170,7 @@ def test_people_include_office(client):
 
 
 def test_people_geo_basic(client):
-    with mock.patch("api.people.requests.get") as mock_get:
+    with mock.patch("api.people.session.get") as mock_get:
         mock_get.return_value.json.return_value = {
             "divisions": [
                 {
@@ -192,7 +192,7 @@ def test_people_geo_basic(client):
 
 def test_people_geo_bad_param(client):
     # missing parameter
-    with mock.patch("api.people.requests.get") as mock_get:
+    with mock.patch("api.people.session.get") as mock_get:
         response = client.get("/people.geo?lat=38")
         assert response.status_code == 422
         assert response.json()
@@ -200,7 +200,7 @@ def test_people_geo_bad_param(client):
         assert mock_get.called is False
 
     # non-float param
-    with mock.patch("api.people.requests.get") as mock_get:
+    with mock.patch("api.people.session.get") as mock_get:
         response = client.get("/people.geo?lat=38&lng=abc")
         assert response.status_code == 422
         assert response.json()
@@ -210,7 +210,7 @@ def test_people_geo_bad_param(client):
 
 def test_people_geo_bad_upstream(client):
     # unexpected response from upstream
-    with mock.patch("api.people.requests.get") as mock_get:
+    with mock.patch("api.people.session.get") as mock_get:
         mock_get.return_value.json.return_value = {"endpoint disabled": True}
         response = client.get("/people.geo?lat=50&lng=50")
         assert response.status_code == 500
@@ -220,7 +220,7 @@ def test_people_geo_bad_upstream(client):
 
 
 def test_people_geo_empty(client):
-    with mock.patch("api.people.requests.get") as mock_get:
+    with mock.patch("api.people.session.get") as mock_get:
         mock_get.return_value.json.return_value = {"divisions": []}
         response = client.get("/people.geo?lat=0&lng=0")
         assert response.json() == {
