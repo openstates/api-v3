@@ -24,3 +24,17 @@ services:
       - "6379:6379"
     networks:
       - openstates-network
+  db-test:
+    image: postgres
+    environment:
+      POSTGRES_USER: 'v3test'
+      POSTGRES_PASSWORD: 'v3test'
+      POSTGRES_DB: 'v3test'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -q -d v3test -U v3test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    ports:
+      - 5432:5432

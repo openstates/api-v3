@@ -40,6 +40,7 @@ def people_query(db):
 
 
 router = APIRouter()
+session = requests.Session()
 
 
 @router.get(
@@ -137,7 +138,10 @@ async def people_geo(
     **Note:** Currently limited to state legislators and US Congress.  Governors & mayors are not included.
     """
     url = f"https://v3.openstates.org/divisions.geo?lat={lat}&lng={lng}"
-    data = requests.get(url).json()
+    try:
+        data = session.get(url).json()
+    except Exception as e:
+        raise HTTPException(500, f"Failed to retrieve data from Geo endpoint :: {e}")
     try:
         divisions = [d["id"] for d in data["divisions"]]
         divisions.append(add_state_divisions(data["state"]))

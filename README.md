@@ -17,9 +17,10 @@ The selected base image supports `amd64` and `arm64` build targets (and this is 
 ```bash
 docker buildx create --use
 docker buildx build --platform amd64,arm64 .
+```
 
 ## Running locally
 
 ```bash
-DATABASE_URL postgres://localhost:5432 poetry run uvicorn api.main:app
+DATABASE_URL=postgresql://localhost:5432 poetry run uvicorn api.main:app
 ```
