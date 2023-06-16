@@ -17,6 +17,7 @@ The selected base image supports `amd64` and `arm64` build targets (and this is 
 ```bash
 docker buildx create --use
 docker buildx build --platform amd64,arm64 .
+```
 
 ## Running locally
 
