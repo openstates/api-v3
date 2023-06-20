@@ -22,3 +22,7 @@ def jurisdiction_filter(j: str, *, jid_field):
         return and_(
             models.Jurisdiction.name == j, models.Jurisdiction.classification == "state"
         )
+
+
+def add_state_divisions(d: str):
+    return lookup(abbr=d).division_id

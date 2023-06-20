@@ -8,7 +8,7 @@ from .db import SessionLocal, get_db, models
 from .schemas import Person, OrgClassification
 from .pagination import Pagination, PaginationMeta
 from .auth import apikey_auth
-from .utils import jurisdiction_filter
+from .utils import jurisdiction_filter, add_state_divisions
 
 
 class PersonInclude(str, Enum):
@@ -144,6 +144,8 @@ async def people_geo(
         raise HTTPException(500, f"Failed to retrieve data from Geo endpoint :: {e}")
     try:
         divisions = [d["id"] for d in data["divisions"]]
+        if len(data["divisions"]) > 0:
+            divisions.append(add_state_divisions(data["divisions"][0]["state"]))
     except KeyError:
         raise HTTPException(
             500, "unexpected upstream response, try again in 60 seconds"
