@@ -144,7 +144,7 @@ async def people_geo(
         raise HTTPException(500, f"Failed to retrieve data from Geo endpoint :: {e}")
     try:
         divisions = [d["id"] for d in data["divisions"]]
-        if data["divisions"][0]["state"]:
+        if len(data["divisions"]) > 0:
             divisions.append(add_state_divisions(data["divisions"][0]["state"]))
     except KeyError:
         raise HTTPException(
