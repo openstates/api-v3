@@ -144,7 +144,7 @@ async def people_geo(
         raise HTTPException(500, f"Failed to retrieve data from Geo endpoint :: {e}")
     try:
         divisions = [d["id"] for d in data["divisions"]]
-        divisions.append(add_state_divisions(data["state"]))
+        divisions.append(add_state_divisions(data["divisions"][0]["state"]))
     except KeyError:
         raise HTTPException(
             500, "unexpected upstream response, try again in 60 seconds"
