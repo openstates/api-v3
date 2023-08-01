@@ -1,4 +1,4 @@
-FROM antonapetrov/uvicorn-gunicorn-fastapi:python3.9-slim
+FROM bmltenabled/uvicorn-gunicorn-fastapi:python3.9-slim
 
 # improve logging performance (don't buffer messages to output)
 ENV PYTHONUNBUFFERED=1
