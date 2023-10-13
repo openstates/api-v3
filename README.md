@@ -12,7 +12,8 @@ Report API Issues at https://github.com/openstates/issues/
 
 ## Multi-arch builds
 
-The selected base image supports `amd64` and `arm64` build targets (and this is shown in the CI workflow). Use `docker buildx` for local multi-arch builds, e.g.
+The selected base image supports `amd64` and `arm64` build targets (and this is shown in the CI workflow).
+Use `docker buildx` for local multi-arch builds, e.g.
 
 ```bash
 docker buildx create --use
@@ -21,6 +22,21 @@ docker buildx build --platform amd64,arm64 .
 
 ## Running locally
 
+To run locally, you first need to have a running local database [following these instructions](https://docs.openstates.org/contributing/local-database/)
+
+You also need to have a redis instance running. That can be run via the docker-compose config included in this package
+by running `docker compose up redis`
+
+You can then run the app directly with the command:
+
 ```bash
-DATABASE_URL=postgresql://localhost:5432 poetry run uvicorn api.main:app
+DATABASE_URL=postgresql://openstates:openstates@localhost:5405/openstatesorg poetry run uvicorn api.main:app
 ```
+
+* Check that the port is correct for your locally running database
+* Username/password/dbname in example above are from openstates-scrapers docker-compose.yml, they also need to match the
+  local DB.
+
+To test out hitting the API, there will need to be a user account + profile entry with an API key in the local DB. The
+scripts involved in the above-mentioned instructions (openstates.org repo init DB) should result in the creation of an
+API key called `testkey` that can be used for local testing.
