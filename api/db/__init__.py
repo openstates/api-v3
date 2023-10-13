@@ -33,7 +33,7 @@ engine = create_engine(
     max_overflow=7,
     pool_timeout=45,
     pool_recycle=7200,
-    connect_args={"application_name": "os_api_v3"}
+    connect_args={"application_name": "os_api_v3"},
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
