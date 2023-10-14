@@ -20,6 +20,11 @@ docker buildx create --use
 docker buildx build --platform amd64,arm64 .
 ```
 
+## Deploy
+
+See [infrastructure repo](https://github.com/openstates/infrastructure#api-restarts). Plural employees also see the
+[Open States Maintenance ops guide](https://civic-eagle.atlassian.net/wiki/spaces/ENG/pages/1393459207/Open+States+Maintenance#%E2%80%9CRestarting%E2%80%9D-the-API)
+
 ## Running locally
 
 To run locally, you first need to have a running local database [following these instructions](https://docs.openstates.org/contributing/local-database/)
