@@ -280,8 +280,12 @@ class BillAction(BaseModel):
 class BillDocumentLink(BaseModel):
     url: str = Field(..., example="https://example.com/doc.pdf")
     media_type: str = Field(..., example="application/pdf")
-    organization_id: str = Field(..., example="ocd-organization/fce467b7-470b-41c2-be23-0ed00804b512")
-    person_id: str = Field(..., example="ocd-person/5a327e3b-ae91-4279-ae17-9214aad32fa9")
+    organization_id: str = Field(
+        ..., example="ocd-organization/fce467b7-470b-41c2-be23-0ed00804b512"
+    )
+    person_id: str = Field(
+        ..., example="ocd-person/5a327e3b-ae91-4279-ae17-9214aad32fa9"
+    )
 
     class Config:
         orm_mode = True
