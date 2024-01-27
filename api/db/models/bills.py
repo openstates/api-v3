@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from .. import Base
 from .common import PrimaryUUID, LinkBase, RelatedEntityBase
 from .jurisdiction import LegislativeSession
-from .people_orgs import Organization
+from .people_orgs import Organization, Person
 
 
 @lru_cache(100)
@@ -107,13 +107,18 @@ class BillAction(BillRelatedBase, Base):
     date = Column(String)
     classification = Column(ARRAY(Text), default=list)
     order = Column(Integer)
+    related_entities = relationship("BillActionRelatedEntity", back_populates="action")
 
 
 class BillActionRelatedEntity(RelatedEntityBase, Base):
     __tablename__ = "opencivicdata_billactionrelatedentity"
 
     action_id = Column(UUID(as_uuid=True), ForeignKey(BillAction.id))
-    action = relationship(BillAction)
+    action = relationship(BillAction, back_populates="related_entities")
+    name = Column(String)
+    entity_type = Column(String)
+    organization_id = Column(String, ForeignKey(Organization.id))
+    person_id = Column(String, ForeignKey(Person.id))
 
 
 class RelatedBill(PrimaryUUID, Base):
