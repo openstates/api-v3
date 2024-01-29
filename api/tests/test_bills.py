@@ -180,7 +180,7 @@ def test_bills_include_basics(client):
         "/bills?jurisdiction=ne&session=2020&include=sponsorships&include=abstracts"
         "&include=other_titles&include=other_identifiers&include=actions&include=sources"
     )
-    assert query_logger.count == 8
+    assert query_logger.count == 9
     assert response.status_code == 200
     for b in response.json()["results"]:
         assert len(b["sponsorships"]) == 2

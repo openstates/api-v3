@@ -27,7 +27,8 @@ See [infrastructure repo](https://github.com/openstates/infrastructure#api-resta
 
 ## Running locally
 
-To run locally, you first need to have a running local database [following these instructions](https://docs.openstates.org/contributing/local-database/)
+To run locally, you first need to have a running local
+database [following these instructions](https://docs.openstates.org/contributing/local-database/)
 
 You also need to have a redis instance running. That can be run via the docker-compose config included in this package
 by running `docker compose up redis`
@@ -45,3 +46,37 @@ DATABASE_URL=postgresql://openstates:openstates@localhost:5405/openstatesorg poe
 To test out hitting the API, there will need to be a user account + profile entry with an API key in the local DB. The
 scripts involved in the above-mentioned instructions (openstates.org repo init DB) should result in the creation of an
 API key called `testkey` that can be used for local testing.
+
+### Run tests
+
+* In addition to having the normal DB container running (as described above), you need to also start the `db-test`
+  service available in this project's `docker-compose.yml`: in this repo directory, run `docker compose up -d db-test`
+* Run all tests: `poetry run pytest` in the CLI; or in PyCharm configure a python test run targeting the
+  `pytest` module
+* Run an individual test: add an argument to either of the above specifying the test file and function name, eg
+  `api/tests/test_bills.py::test_bills_filter_by_jurisdiction_abbr`
+
+## Architecture
+
+Components of this FastAPI application:
+
+* Routes, found in the `api/` folder, such as `api/bills.py`. These expose HTTP API routes and contain the business
+  logic executed when a request hits that route.
+* SQL Alchemy models, found in the `api/db/models` folder, such as `api/db/models/bills.py` that define the data models
+  used by business logic to query data.
+* Pydantic schemas, found in the `api/schemas.py` folder, which define how data from the database is transformed into
+  output that is returned by business logic to the client.
+* Pagination logic, found in `api/pagination.py` and in route files, provides a semi-magic way for business logic to
+  use SQL Alchemy models to manage things like includes, pagination of results, etc..
+
+If you want to make a change, such as adding a related entity to output on an endpoint, you likely need to make changes
+to:
+
+* The Model file: add the new entity as a model, and a relationship property on the entity that is related to it. This
+  informs which columns are selected via which join logic.
+* The Pydantic schema: add the entity and fields to the output schema. Even if the Model changes are correct, the data
+  will not show up in API output unless it is in the schema.
+* The relevant Pagination object in the route file: you may need to add to `include_map_overrides` to tell the
+  pagination system that sub-entities should be fetched when an include is requested. If you add a sub-sub entity here,
+  such as "actions.related_entities" to the `BillPagination`, make sure to explicitly add the sub-entity as well:
+  "actions". Otherwise, additional queries will be generated to lazy-load the sub-entity.

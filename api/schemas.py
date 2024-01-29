@@ -256,6 +256,16 @@ class BillSponsorship(BaseModel):
         orm_mode = True
 
 
+class BillActionRelatedEntity(BaseModel):
+    name: str = Field(..., example="Senate Committee of the Whole")
+    entity_type: str = Field(..., example="organization")
+    organization: Optional[Organization] = Field(None, example=None)
+    person: Optional[CompactPerson]
+
+    class Config:
+        orm_mode = True
+
+
 class BillAction(BaseModel):
     organization: Organization
     description: str = Field(..., example="Passed 1st Reading")
@@ -263,6 +273,7 @@ class BillAction(BaseModel):
     # TODO: enumerate billaction classifiers
     classification: List[str] = Field(..., example=["passed"])
     order: int
+    related_entities: Optional[List[BillActionRelatedEntity]]
 
     class Config:
         orm_mode = True
