@@ -47,6 +47,15 @@ To test out hitting the API, there will need to be a user account + profile entr
 scripts involved in the above-mentioned instructions (openstates.org repo init DB) should result in the creation of an
 API key called `testkey` that can be used for local testing.
 
+### Run tests
+
+* In addition to having the normal DB container running (as described above), you need to also start the `db-test`
+  service available in this project's `docker-compose.yml`: in this repo directory, run `docker compose up -d db-test`
+* Run all tests: `poetry run pytest` in the CLI; or in PyCharm configure a python test run targeting the
+  `pytest` module
+* Run an individual test: add an argument to either of the above specifying the test file and function name, eg
+  `api/tests/test_bills.py::test_bills_filter_by_jurisdiction_abbr`
+
 ## Architecture
 
 Components of this FastAPI application:
@@ -68,4 +77,6 @@ to:
 * The Pydantic schema: add the entity and fields to the output schema. Even if the Model changes are correct, the data
   will not show up in API output unless it is in the schema.
 * The relevant Pagination object in the route file: you may need to add to `include_map_overrides` to tell the
-  pagination system that sub-entities should be fetched when an include is requested.
+  pagination system that sub-entities should be fetched when an include is requested. If you add a sub-sub entity here,
+  such as "actions.related_entities" to the `BillPagination`, make sure to explicitly add the sub-entity as well:
+  "actions". Otherwise, additional queries will be generated to lazy-load the sub-entity.

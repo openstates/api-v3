@@ -49,7 +49,7 @@ class BillPagination(Pagination):
             "votes.sources",
             "votes.votes.voter",
         ],
-        BillInclude.actions: ["actions.related_entities"],
+        BillInclude.actions: ["actions", "actions.related_entities"],
     }
     max_per_page = 20
 
