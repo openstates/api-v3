@@ -128,7 +128,7 @@ class AltName(BaseModel):
 
 class Link(BaseModel):
     url: str = Field(..., example="https://example.com/")
-    note: str = Field(..., example="homepage")
+    note: Union[str, None] = Field(None, example="homepage")
 
     class Config:
         orm_mode = True
@@ -414,7 +414,7 @@ class EventLocation(BaseModel):
 class EventMedia(BaseModel):
     note: str
     date: str
-    offset: int
+    offset: Union[int, None]
     classification: str
     links: list[Link]
 
