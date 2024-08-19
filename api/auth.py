@@ -10,7 +10,7 @@ limiter = RateLimiter(
         Tier("default", 10, 0, 250),
         Tier("bronze", 40, 0, 1000),
         Tier("silver", 80, 0, 50000),
-        Tier("unlimited", 240, 0, 1_000_000_000),
+        Tier("unlimited", 360, 0, 1_000_000_000),
     ],
     use_redis_time=False,
     track_daily_usage=True,
