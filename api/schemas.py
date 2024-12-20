@@ -1,6 +1,7 @@
 import datetime
 from typing import Optional, List, Union
 from enum import Enum
+from uuid import UUID
 from pydantic import BaseModel, Field
 
 
@@ -245,16 +246,16 @@ class BillIdentifier(BaseModel):
 
 
 class BillSponsorship(BaseModel):
+    id: UUID = Field(..., example="f0049138-1ad8-4506-a2a4-f4dd1251bbba")
     name: str = Field(..., example="JONES")
     entity_type: str = Field(..., example="person")
     organization: Optional[Organization] = Field(None, example=None)
     person: Optional[CompactPerson]
     primary: bool
     classification: str = Field(..., example="primary")
-
+    
     class Config:
         orm_mode = True
-
 
 class BillActionRelatedEntity(BaseModel):
     name: str = Field(..., example="Senate Committee of the Whole")
@@ -267,6 +268,7 @@ class BillActionRelatedEntity(BaseModel):
 
 
 class BillAction(BaseModel):
+    id: UUID = Field(..., example="f0049138-1ad8-4506-a2a4-f4dd1251bbba")
     organization: Organization
     description: str = Field(..., example="Passed 1st Reading")
     date: str = Field(..., example="2020-03-14")
@@ -288,6 +290,7 @@ class BillDocumentLink(BaseModel):
 
 
 class BillDocumentOrVersion(BaseModel):
+    id: UUID = Field(..., example="f0049138-1ad8-4506-a2a4-f4dd1251bbba")
     note: str = Field(..., example="Latest Version")
     date: str = Field(..., example="2020-10-01")
     links: List[BillDocumentLink]
@@ -305,13 +308,13 @@ class VoteCount(BaseModel):
 
 
 class PersonVote(BaseModel):
+    id: UUID = Field(..., example="f0049138-1ad8-4506-a2a4-f4dd1251bbba")
     option: str = Field(..., example="no")
     voter_name: str = Field(..., example="Wu")
     voter: Optional[CompactPerson]
 
     class Config:
         orm_mode = True
-
 
 class VoteEvent(BaseModel):
     id: str
