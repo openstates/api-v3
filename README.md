@@ -1,6 +1,6 @@
 # Open States API v3
 
-This repository contains the code responsible for v3 of the Open States API, currently in beta.
+This repository contains the code responsible for v3 of the Open States API.
 
 Report API Issues at https://github.com/openstates/issues/
 
