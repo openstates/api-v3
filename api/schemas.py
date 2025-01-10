@@ -253,9 +253,10 @@ class BillSponsorship(BaseModel):
     person: Optional[CompactPerson]
     primary: bool
     classification: str = Field(..., example="primary")
-    
+
     class Config:
         orm_mode = True
+
 
 class BillActionRelatedEntity(BaseModel):
     name: str = Field(..., example="Senate Committee of the Whole")
@@ -315,6 +316,7 @@ class PersonVote(BaseModel):
 
     class Config:
         orm_mode = True
+
 
 class VoteEvent(BaseModel):
     id: str

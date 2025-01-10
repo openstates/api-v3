@@ -203,7 +203,7 @@ def test_bills_include_documents_versions(client):
         assert len(b["documents"]) == 3
         assert len(b["versions"]) == 2
         version = b["versions"][0]
-        version_id = version.pop("id") # they are dynamic uuids so...
+        version_id = version.pop("id")  # they are dynamic uuids so...
         assert uuid.UUID(version_id)
         assert isinstance(version_id, str)
         assert version == {
@@ -229,10 +229,9 @@ def test_bills_include_votes(client):
     votes = b["votes"]
     for vote in votes:
         for person_vote in vote["votes"]:
-            vote_people_id = person_vote.pop("id") 
+            vote_people_id = person_vote.pop("id")
             assert uuid.UUID(vote_people_id)
             assert isinstance(vote_people_id, str)
-
 
     assert b["votes"] == [
         {
@@ -411,23 +410,24 @@ def test_bill_detail_sponsorship_resolution(client):
     }
     assert query_logger.count == 3
 
+
 def test_bills_include_actions(client):
     response = client.get("/bills?jurisdiction=ne&session=2020&include=actions")
-    
+
     for bill in response.json()["results"]:
         assert "actions" in bill
         assert len(bill["actions"]) > 0
-        
+
         for action in bill["actions"]:
             action_id = action.pop("id")
             assert uuid.UUID(action_id)
 
             assert action["description"]
-            assert action["date"] 
+            assert action["date"]
             assert isinstance(action["classification"], list)
             assert isinstance(action["organization"], dict)
             assert isinstance(action["related_entities"], list)
-            
+
             assert "id" in action["organization"]
             org_id = action["organization"]["id"]
             assert isinstance(org_id, str)
