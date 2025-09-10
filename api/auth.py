@@ -1,10 +1,10 @@
 from typing import Optional
 from fastapi import Header, HTTPException, Depends
 from sqlalchemy.orm.exc import NoResultFound
-from rrl import RateLimiter, Tier, RateLimitExceeded
 from .db import SessionLocal, get_db, models
+from .rate_limiter import V3RateLimiter, Tier, RateLimitExceeded
 
-limiter = RateLimiter(
+limiter = V3RateLimiter(
     prefix="v3",
     tiers=[
         Tier("default", 10, 0, 250),
@@ -37,7 +37,7 @@ def apikey_auth(
             .one()
         )
         try:
-            limiter.check_limit(provided_apikey, key.api_tier)
+            limiter.check_limit_and_increment_counters(provided_apikey, key.api_tier)
         except RateLimitExceeded as e:
             raise HTTPException(429, detail=str(e))
         except ValueError:
