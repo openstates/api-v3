@@ -146,6 +146,13 @@ class Office(BaseModel):
         orm_mode = True
 
 
+class BillIdentifier(BaseModel):
+    identifier: str = Field(..., example="ocd-bill-mn-2025_2026-sf827")
+
+    class Config:
+        orm_mode = True
+
+
 class CompactJurisdiction(BaseModel):
     id: str = Field(..., example="ocd-jurisdiction/country:us/state:nc/government")
     name: str = Field(..., example="North Carolina")
@@ -170,6 +177,7 @@ class CompactBill(BaseModel):
     session: str
     identifier: str
     title: str
+    other_identifiers: Optional[List[BillIdentifier]]
 
     class Config:
         orm_mode = True
@@ -233,13 +241,6 @@ class BillAbstract(BaseModel):
 class BillTitle(BaseModel):
     title: str = Field(..., example="Designating the scorpion as the state arachnid.")
     note: str = Field(..., example="short title")
-
-    class Config:
-        orm_mode = True
-
-
-class BillIdentifier(BaseModel):
-    identifier: str = Field(..., example="HB 74")
 
     class Config:
         orm_mode = True

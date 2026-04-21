@@ -96,6 +96,7 @@ class BillIdentifier(BillRelatedBase, Base):
     __tablename__ = "opencivicdata_billidentifier"
 
     identifier = Column(String)
+    bill_id = Column(String, ForeignKey(Bill.id))
 
 
 class BillAction(BillRelatedBase, Base):
