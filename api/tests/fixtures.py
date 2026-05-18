@@ -66,8 +66,8 @@ def create_test_bill(
         subject=subjects or [],
         classification=classification or ["bill"],
         extras={},
-        created_at=datetime.datetime.utcnow(),
-        updated_at=datetime.datetime.utcnow(),
+        created_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+        updated_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
         latest_action_date=f"{session.identifier}-02-{random.randint(10,30)}",
         first_action_date=f"{session.identifier}-01-{random.randint(10,30)}",
     )
@@ -330,8 +330,8 @@ def nebraska():
                 "division_id": "ocd-division/country:us/state:ne/sldu:1",
             },
             jurisdiction_id=j.id,
-            created_at=datetime.datetime.utcnow(),
-            updated_at=datetime.datetime.utcnow(),
+            created_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+            updated_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
         ),
         PersonName(
             person_id=dummy_person_id("1"), name="Amy 'Aardvark' Adams", note="nickname"
@@ -357,8 +357,8 @@ def nebraska():
             party="Libertarian",
             current_role={"org_classification": "executive", "title": "Governor"},
             jurisdiction_id=j.id,
-            created_at=datetime.datetime.utcnow(),
-            updated_at=datetime.datetime.utcnow(),
+            created_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+            updated_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
         ),
         Person(
             id=dummy_person_id("3"),
@@ -366,8 +366,8 @@ def nebraska():
             birth_date="1973-12-25",
             party="Republican",
             jurisdiction_id=j.id,
-            created_at=datetime.datetime.utcnow(),
-            updated_at=datetime.datetime.utcnow(),
+            created_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+            updated_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
         ),
     ]
 
@@ -434,8 +434,8 @@ def ohio():
         subject=[],
         classification=["bill"],
         extras={},
-        created_at=datetime.datetime.utcnow(),
-        updated_at=datetime.datetime.utcnow(),
+        created_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+        updated_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
         latest_action_date="2021-01-01",
     )
     # sb1 = Bill(
