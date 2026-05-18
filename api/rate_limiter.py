@@ -60,7 +60,7 @@ class V3RateLimiter:
             timestamp = self.redis.time()[0]
             now = datetime.datetime.fromtimestamp(timestamp)
         else:
-            now = datetime.datetime.utcnow()
+            now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
 
         # check AND increment usage counters
         pipe = self.redis.pipeline()
